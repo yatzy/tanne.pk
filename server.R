@@ -16,9 +16,9 @@ shinyServer(function(input, output, session) {
       # set initial boundaries to centre of Helsinki
       setView( lng=24.95 , lat=60.21 , zoom = 13) %>%
       # add test circles
-      addMarkers(lng = runif(10 , min = 24.9 , max = 25 )
-                       , lat = runif(10 , min = 60.20 , max = 60.22), 
-                       layerId = paste0("marker", 1:10))
+      addMarkers(lng = runif(3 , min = 24.8 , max = 25.2 )
+                       , lat = runif(3 , min = 60.19 , max = 60.22), 
+                       layerId = paste0("marker", 1:3))
   }) 
   
   # example placeholder for texts
