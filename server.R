@@ -28,14 +28,18 @@ shinyServer(function(input, output, session) {
   output$koti_pic = renderPlot(plot(1:10))
   output$muutto_pic = renderPlot(plot(10:1))
   
+  # adding new markers
+  observeEvent(input$map_in_ui_click, {
+    leafletProxy("map_in_ui" , session) %>%
+      addMarkers(lng = input$map_in_ui_click$lng
+                 , lat = input$map_in_ui_click$lat
+                 , layerId = paste0( 'marker', runif(1,11,100000)) )
+  })
+  
+  # removing existing markers
   observeEvent(input$map_in_ui_marker_click, {
     leafletProxy("map_in_ui", session) %>% 
       removeMarker(input$map_in_ui_marker_click$id)
-  })
-  
-  observeEvent(input$map_in_ui_click, {
-      leafletProxy("map_in_ui") %>%
-        addMarkers(lng = input$map_in_ui_click$lng, lat = input$map_in_ui_click$lat)
   })
   
 })
