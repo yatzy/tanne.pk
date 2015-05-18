@@ -1,6 +1,4 @@
-# server_dir <- dirname(sys.frame(1)$ofile)
-
-library(leaflet)
+source('packages.R' , local = T , chdir=T)
 
 shinyServer(function(input, output, session) {
   

@@ -16,6 +16,10 @@ shinyUI(
       , width = 330, height = "auto" 
       , h3("Koti-osoite")
       , textInput("kotiosoite_from_ui", label = p(""), value = "Kotiosoite") 
+      , conditionalPanel(
+        condition = "input.muutto_osoite_from_ui == 'Muutto-osoite'"
+        , h5('Syötä, tai klikkaa kartalta kotiosoite') 
+      )
       , conditionalPanel( condition = "input.kotiosoite_from_ui != 'Kotiosoite'"
                           , h5('Hyvin menee')
                           , plotOutput( "koti_pic" )
