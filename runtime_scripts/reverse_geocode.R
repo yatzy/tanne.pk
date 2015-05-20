@@ -10,7 +10,7 @@ return_names = c("place_id", "licence", "osm_type", "osm_id", "boundingbox",
 )
 
 
-reverse_geocode_table_nominatim = function(address, source_url='mapquest'){
+geocode_table_nominatim = function(address, source_url='mapquest'){
    # Gets location data form a given address.
    #
    # Args:
@@ -42,9 +42,9 @@ reverse_geocode_table_nominatim = function(address, source_url='mapquest'){
 }
 
 
-reverse_geocode_nominatim = function(address){
+geocode_nominatim = function(address){
    # returns the best bet for address
-   addr_table = reverse_geocode_table_nominatim(address)
+   addr_table = geocode_table_nominatim(address)
    best = try( addr_table[ which.max(addr_table$importance) , ] , silent = TRUE )
    if(class(best) == 'try-error') {
       best = rep(NA , length(return_names))
@@ -56,9 +56,9 @@ reverse_geocode_nominatim = function(address){
 }
 
 # example
-# reverse_geocode_nominatim('mannerheimintie 53 , helsinki')[c('lat','lon')]
-# reverse_geocode_nominatim('mannerheimintie 55 , helsinki')[c('lat','lon')]
-# reverse_geocode_nominatim('mannerheimintie 49 , helsinki')[c('lat','lon')]
-# reverse_geocode_nominatim('mannerheimintie 59 , helsinki')[c('lat','lon')]
-# reverse_geocode_nominatim('mannerheimintie 50 , helsinki')[c('lat','lon')]
-# reverse_geocode_table_nominatim('mannerheimintie 50 , helsinki')
+# geocode_nominatim('mannerheimintie 53 , helsinki')[c('lat','lon')]
+# geocode_nominatim('mannerheimintie 55 , helsinki')[c('lat','lon')]
+# geocode_nominatim('mannerheimintie 49 , helsinki')[c('lat','lon')]
+# geocode_nominatim('mannerheimintie 59 , helsinki')[c('lat','lon')]
+# geocode_nominatim('mannerheimintie 50 , helsinki')[c('lat','lon')]
+# geocode_table_nominatim('mannerheimintie 50 , helsinki')

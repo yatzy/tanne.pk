@@ -1,6 +1,3 @@
-# ui_dir <- dirname(sys.frame(1)$ofile)
-# devtools::install_github("rstudio/leaflet")
-library('shinythemes')
 
 shinyUI(
   fluidPage(              
@@ -16,30 +13,23 @@ shinyUI(
       , width = 330, height = "auto" 
       , h3("Koti-osoite")
       , textInput("kotiosoite_from_ui", label = p(""), value = "Kotiosoite") 
-      , conditionalPanel(
-        condition = "input.muutto_osoite_from_ui == 'Muutto-osoite'"
-        , h5('Syötä, tai klikkaa kartalta kotiosoite') 
-      )
+
       , conditionalPanel( condition = "input.kotiosoite_from_ui != 'Kotiosoite'"
                           , h5('Hyvin menee')
                           , plotOutput( "koti_pic" )
       )
     )
     
-    ### oikean puolen paneeeli
-    
-    , absolutePanel(  
-      fixed = F, draggable = FALSE
-      , id = "right_side_panel"
-      , top = 60, left = "auto", right = 40, bottom = "auto"
-      , width = 330, height = "auto"
-      , h3("Muutto-osoite")
-      , textInput("muutto_osoite_from_ui", label = p(""), value = "Muutto-osoite") 
-      , conditionalPanel(
-        condition = "input.muutto_osoite_from_ui != 'Muutto-osoite'"
-        , h5('Ei hyvin mene!')
-        , plotOutput( "muutto_pic" )
-      )
-    )
+    ### oikean puolen debug paneeeli
+    , if(DEBUG){
+      absolutePanel(  
+        fixed = F, draggable = T
+        , id = "right_side_panel"
+        , top = 60, left = "auto", right = 40, bottom = "auto"
+        , width = 500, height = "auto"
+        , h3("DEBUG")
+        , textOutput("click_latlon")
+        , textOutput("click_address")
+      )}
   )
 )

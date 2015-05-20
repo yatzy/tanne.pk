@@ -1,4 +1,3 @@
-source('packages.R' , local = T , chdir=T)
 
 shinyServer(function(input, output, session) {
   
@@ -12,14 +11,14 @@ shinyServer(function(input, output, session) {
       addTiles('//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png'
                , attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>' ) %>% 
       # set initial boundaries to centre of Helsinki
-      setView( lng=24.95 , lat=60.21 , zoom = 13) %>%
-      # add test circles
-      addMarkers(lng = runif(3 , min = 24.8 , max = 25.2 )
-                       , lat = runif(3 , min = 60.19 , max = 60.22), 
-                       layerId = paste0("marker", 1:3))
+      setView( lng=24.95 , lat=60.21 , zoom = 13) 
+    # add test circles
+    #             addMarkers(lng = runif(3 , min = 24.8 , max = 25.2 )
+    #                              , lat = runif(3 , min = 60.19 , max = 60.22), 
+    #                              layerId = paste0("marker", 1:3))
   }) 
   
-  # example placeholder for texts
+  # example placeholder for texst
   output$kotiosoite <- renderText({ paste( input$kotiosoite_from_ui ) })
   output$muutto_osoite <- renderPrint({ cat(input$muutto_osoite_from_ui) })
   # example placeholder for pictures  
@@ -32,7 +31,18 @@ shinyServer(function(input, output, session) {
       addMarkers(lng = input$map_in_ui_click$lng
                  , lat = input$map_in_ui_click$lat
                  , layerId = paste0( 'marker', runif(1,11,100000)) )
+    
   })
+  lonlat = eventReactive(input$map_in_ui_click , { 
+    c( lon = round(as.numeric(input$map_in_ui_click$lng) , 3) 
+      , lat = round(as.numeric(input$map_in_ui_click$lat) , 3))
+    
+  })
+
+  output$click_latlon = renderText( paste( 'click lon lat: ' , lonlat()[1] , lonlat()[2]  ))
+  output$click_address = renderText( paste( 'address: ' 
+                                            , revgeocode(lonlat() )
+  ))
   
   # removing existing markers
   observeEvent(input$map_in_ui_marker_click, {
