@@ -10,7 +10,7 @@ return_names = c("place_id", "licence", "osm_type", "osm_id", "boundingbox",
 )
 
 
-geocode_table_nominatim = function(address, source_url='mapquest'){
+geocode_table_nominatim = function(address, result_count=1, source_url='mapquest'  ){
    # Gets location data form a given address.
    #
    # Args:
@@ -18,14 +18,15 @@ geocode_table_nominatim = function(address, source_url='mapquest'){
    #
    # Returns:
    #   An object with the address data.
-   
+  require(magrittr) 
+  
    properaddress   = gsub(' ','+',address) %>% gsub( 'ä','%C3%A4',. ) %>% gsub( 'ö','%C3%B6',. )
    if(source_url == 'mapquest'){
-      urlformat = 'http://open.mapquestapi.com/nominatim/v1/search.php?format=json&q=%s&addressdetails=1&limit=3'
+      urlformat = 'http://open.mapquestapi.com/nominatim/v1/search.php?format=json&q=%s&addressdetails=1&limit=%d'
    } else if(source_url == 'osm'){
    urlformat = 'http://nominatim.openstreetmap.org/search?q=%s&format=json&polygon=0&addressdetails=1'
    }
-   searchurl = sprintf(urlformat,properaddress)
+   searchurl = sprintf(urlformat,properaddress , result_count)
    
    #searchjson = try(getURIAsynchronous(searchurl)  , silent = TRUE )
    searchjson = try(getURL(searchurl)  , silent = TRUE )
@@ -55,8 +56,20 @@ geocode_nominatim = function(address){
    }
 }
 
+reverse_geocode_nominatim = function( lat , lon ){
+  
+  base_url = 'http://open.mapquestapi.com/nominatim/v1/reverse.php?format=json&limi=1&lat=%f&lon=%f'
+  searchurl   = sprintf(base_url , lat , lon)
+  searchjson = getURL(searchurl)
+  data = jsonlite::fromJSON(searchjson,flatten=TRUE)
+  return(data)
+  
+}
+
+
 # example
-# geocode_nominatim('mannerheimintie 53 , helsinki')[c('lat','lon')]
+# geocode_table_nominatim('mannerheimintie 53 , helsinki')[c('lat','lon')]
+# geocode_table_nominatim('mannerheimintie 53 , helsinki' , 3)[c('lat','lon')]
 # geocode_nominatim('mannerheimintie 55 , helsinki')[c('lat','lon')]
 # geocode_nominatim('mannerheimintie 49 , helsinki')[c('lat','lon')]
 # geocode_nominatim('mannerheimintie 59 , helsinki')[c('lat','lon')]
