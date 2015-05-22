@@ -12,10 +12,6 @@ shinyServer(function(input, output, session) {
                , attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>' ) %>% 
       # set initial boundaries to centre of Helsinki
       setView( lng=24.95 , lat=60.21 , zoom = 13) 
-    # add test circles
-    #             addMarkers(lng = runif(3 , min = 24.8 , max = 25.2 )
-    #                              , lat = runif(3 , min = 60.19 , max = 60.22), 
-    #                              layerId = paste0("marker", 1:3))
   }) 
   
   # example placeholder for texst
