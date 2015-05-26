@@ -1,3 +1,10 @@
+makeDF <- function(List, Names) {
+  m <- t(vapply(List, 
+                FUN = function(X) unlist(X)[Names], 
+                FUN.VALUE = numeric(length(Names))))
+  as.data.frame(m)
+}
+
 library(RCurl)
 library(jsonlite)
 library(magrittr)
@@ -45,6 +52,30 @@ geocode_nominatim = function(address, result_count=1, source_url='mapquest'  ){
 }
 
 
+# used in geocode_vec to return full data frame with all names in any element of result list
+list_to_df = function(vec_list){
+  nimet = unique( unlist( sapply(vec_list , names) ) )
+  rivit = length(vec_list)
+  
+  ret_df = data.frame( matrix( NA , nrow=rivit , ncol=length(nimet)  ) )
+  colnames(ret_df) = nimet
+  helper_row = ret_df[1,]
+  
+  for(rivi in 1:rivit){
+    taysi_rivi = merge(helper_row , t(data.frame(vec_list[[rivi]])) , all=T )[1,]
+    ret_df[rivi , ] = taysi_rivi
+  }
+  return(ret_df)
+}
+
+geocode_vec = function(address_vec ){
+  library(pbapply) 
+  library(dplyr)
+  ret = pblapply( address_vec ,   geocode_nominatim ) %>% sapply(unlist) 
+  return(list_to_df(ret))
+}
+
+# not reaylly needed any more
 geocode_nominatim_best = function(address){
   # returns the best bet for address
   addr_table = geocode_nominatim(address)
@@ -68,8 +99,7 @@ reverse_geocode_nominatim = function( lat , lon , get='street' , limit=1 ){
   searchurl   = sprintf(base_url , limit , lat , lon)
   searchjson = try( getURL(searchurl) , silent=TRUE)
   
-  if( class(searchjson) == 'try-error' ){
-    
+  if( class(searchjson) == 'try-error' ){    
     data = rep(NA , length(reverse_names))
     names(data) = reverse_names
   } else{
@@ -89,6 +119,12 @@ reverse_geocode_nominatim = function( lat , lon , get='street' , limit=1 ){
   #       data$address$house_number = number
   #     }
   #   }
+  
+  if( is.null(data$address$street_number)) {
+    if( !is.null(data$address$house_number)) {
+      data$address$street_number = data$address$house_number
+    }
+  }
   
   ## joskus data$address$road on kohdassa data$address$construction tai data$address$pedestrian
   if( is.null( data$address$road )  ){

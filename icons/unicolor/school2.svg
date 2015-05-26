@@ -15,9 +15,17 @@
    id="svg4234"
    version="1.1"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="template_ring.svg">
+   sodipodi:docname="school2.svg">
   <defs
-     id="defs4236" />
+     id="defs4236">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 526.1811 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="744.09449 : 526.1811 : 1"
+       inkscape:persp3d-origin="372.04724 : 350.7874 : 1"
+       id="perspective4187" />
+  </defs>
   <sodipodi:namedview
      id="base"
      pagecolor="#ffffff"
@@ -25,9 +33,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.5"
-     inkscape:cx="495.16638"
-     inkscape:cy="584.60786"
+     inkscape:zoom="0.70710678"
+     inkscape:cx="481.91664"
+     inkscape:cy="670.38208"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -67,7 +75,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -87,5 +95,37 @@
        cx="372.74628"
        cy="332.12341"
        r="188.89853" />
+    <rect
+       style="fill:#ff6600;fill-opacity:1;stroke:#ffffff;stroke-width:12.16428852;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect4161"
+       width="244.18114"
+       height="196.94382"
+       x="253.90009"
+       y="229.95616" />
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:6.65489864;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect4205"
+       width="31.430563"
+       height="7.071877"
+       x="425.5029"
+       y="410.42728" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:300;font-stretch:normal;font-size:110.09009552px;line-height:64.99999762%;font-family:'Waiting for the Sunrise';-inkscape-font-specification:'Waiting for the Sunrise, Light';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="382.78534"
+       y="308.66608"
+       id="text4288"
+       sodipodi:linespacing="64.999998%"
+       transform="scale(0.97191174,1.0289)"><tspan
+         sodipodi:role="line"
+         id="tspan4290"
+         x="382.78534"
+         y="308.66608"
+         style="font-style:normal;font-variant:normal;font-weight:300;font-stretch:normal;font-size:110.09009552px;line-height:64.99999762%;font-family:'Waiting for the Sunrise';-inkscape-font-specification:'Waiting for the Sunrise, Light';text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#ffffff;fill-opacity:1">2+2</tspan><tspan
+         sodipodi:role="line"
+         x="382.78534"
+         y="380.22464"
+         id="tspan4296"
+         style="font-style:normal;font-variant:normal;font-weight:300;font-stretch:normal;font-size:110.09009552px;line-height:64.99999762%;font-family:'Waiting for the Sunrise';-inkscape-font-specification:'Waiting for the Sunrise, Light';text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#ffffff;fill-opacity:1">=4</tspan></text>
   </g>
 </svg>

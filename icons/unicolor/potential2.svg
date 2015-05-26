@@ -15,7 +15,7 @@
    id="svg4234"
    version="1.1"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="template_ring.svg">
+   sodipodi:docname="potential2.svg">
   <defs
      id="defs4236" />
   <sodipodi:namedview
@@ -26,8 +26,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.5"
-     inkscape:cx="495.16638"
-     inkscape:cy="584.60786"
+     inkscape:cx="-409.79396"
+     inkscape:cy="684.68778"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -43,21 +43,21 @@
      inkscape:window-maximized="1"
      showborder="false">
     <sodipodi:guide
-       position="717.00628,660.43775"
+       position="674.00001,938.00002"
        orientation="1,0"
        id="guide5973" />
     <sodipodi:guide
-       position="4,680.00002"
+       position="86.000001,726.00002"
        orientation="1,0"
        id="guide4136" />
     <sodipodi:guide
-       position="386,36.000001"
+       position="964.00001,122"
        orientation="0,1"
        id="guide4156" />
     <sodipodi:guide
-       position="370,1068"
+       position="-449.71992,1199.2531"
        orientation="0,1"
-       id="guide4145" />
+       id="guide4195" />
   </sodipodi:namedview>
   <metadata
      id="metadata4239">
@@ -67,7 +67,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -87,5 +87,46 @@
        cx="372.74628"
        cy="332.12341"
        r="188.89853" />
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-opacity:1"
+       id="rect4137"
+       width="139.29738"
+       height="149.48987"
+       x="305.44919"
+       y="289.10294" />
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:3.84383583;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect4139"
+       width="15.03836"
+       height="147.37593"
+       x="417.50513"
+       y="-112.01054"
+       transform="matrix(0.70803066,0.70618169,-0.70803066,0.70618169,0,0)" />
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:3.84383225;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect4139-1"
+       width="15.034573"
+       height="147.33881"
+       x="-112.23971"
+       y="417.74161"
+       transform="matrix(-0.70776035,0.70645261,0.70776035,0.70645261,0,0)" />
+    <path
+       style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.60059828px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 309.92944,297.09708 66.06581,-66.96671 69.9697,70.5703 z"
+       id="path4158"
+       inkscape:connector-curvature="0" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:223.83531189px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ff6600;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="284.83652"
+       y="467.54587"
+       id="text4216"
+       sodipodi:linespacing="125%"
+       transform="scale(1.1030915,0.90654312)"><tspan
+         sodipodi:role="line"
+         id="tspan4218"
+         x="284.83652"
+         y="467.54587"
+         style="font-weight:normal">?</tspan></text>
   </g>
 </svg>
