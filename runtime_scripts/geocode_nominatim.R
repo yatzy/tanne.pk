@@ -120,6 +120,7 @@ reverse_geocode_nominatim = function( lat , lon , get='street' , limit=1 ){
   #     }
   #   }
   
+  # jos street_number, niin kaytetaan house_number, jos saatavilla
   if( is.null(data$address$street_number)) {
     if( !is.null(data$address$house_number)) {
       data$address$street_number = data$address$house_number
@@ -178,5 +179,5 @@ reverse_geocode_nominatim = function( lat , lon , get='street' , limit=1 ){
 ## mita tapahtuu
 # reverse_geocode_nominatim(60.1704434 , 24.934 , get = 'listing' ) # korjattu
 ## mita tapahtuu
-# reverse_geocode_nominatim(60.2708953 , 24.9257921 , get = 'listing' )
+# reverse_geocode_nominatim(60.2708953 , 24.9257921 , get = 'listing' ) # korjattu
 
