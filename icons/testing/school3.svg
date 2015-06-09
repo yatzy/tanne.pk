@@ -15,7 +15,7 @@
    id="svg4234"
    version="1.1"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="school.svg">
+   sodipodi:docname="school2.svg">
   <defs
      id="defs4236">
     <inkscape:perspective
@@ -33,9 +33,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.4142136"
-     inkscape:cx="488.83829"
-     inkscape:cy="710.20654"
+     inkscape:zoom="0.70710678"
+     inkscape:cx="543.35193"
+     inkscape:cy="720.48996"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -71,7 +71,7 @@
        orientation="0,1"
        id="guide4159" />
     <sodipodi:guide
-       position="654.00001,695.00002"
+       position="626.49661,131.52186"
        orientation="0,1"
        id="guide4161" />
     <sodipodi:guide
@@ -127,39 +127,39 @@
        y="410.42728" />
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:91.0863266px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="272.72134"
-       y="357.36151"
+       style="font-style:normal;font-weight:normal;font-size:91.0863266px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;"
+       x="286.75687"
+       y="388.11151"
        id="text4147"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan4149"
-         x="272.72134"
-         y="357.36151"
-         style="font-weight:bold;fill:#ffffff;fill-opacity:1">A</tspan></text>
+         x="286.75687"
+         y="388.11151"
+         style="font-weight:bold;fill:#ffffff;fill-opacity:1;">A</tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:93.34796143px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="344.98892"
-       y="357.0925"
+       style="font-style:normal;font-weight:normal;font-size:93.34796143px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;"
+       x="348.49933"
+       y="318.5925"
        id="text4151"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan4153"
-         x="344.98892"
-         y="357.0925"
-         style="font-weight:bold;fill:#ffffff;fill-opacity:1">B</tspan></text>
+         x="348.49933"
+         y="318.5925"
+         style="font-weight:bold;fill:#ffffff;fill-opacity:1;">B</tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:89.20941925px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="416.03198"
-       y="356.15976"
+       style="font-style:normal;font-weight:normal;font-size:89.20941925px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;"
+       x="406.71396"
+       y="387.05621"
        id="text4155"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan4157"
-         x="416.03198"
-         y="356.15976"
-         style="font-weight:bold;fill:#ffffff;fill-opacity:1">C</tspan></text>
+         x="406.71396"
+         y="387.05621"
+         style="font-weight:bold;fill:#ffffff;fill-opacity:1;">C</tspan></text>
   </g>
 </svg>

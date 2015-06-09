@@ -59,8 +59,11 @@ shinyServer(function(input, output, session) {
   output$click_address = renderText( paste( 'address: ' 
                                             , reverse_geocode_nominatim(lat = lonlat()$value[2] 
                                                                         , lon = lonlat()$value[1]  )))
+# palauttaa kaiken lonlat()-funktion antaman infon yhtenä pötkönä
   output$click_all_info = renderText(
-    paste( reverse_geocode_nominatim(lat = lonlat()$value[2] , lon = lonlat()$value[1] , get = 'listing' ) )
+    paste( reverse_geocode_nominatim(lat = lonlat()$value[2] 
+                                     , lon = lonlat()$value[1] 
+                                     , get = 'listing' ) )
     )
   
   # removing existing markers
