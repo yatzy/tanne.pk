@@ -1,3 +1,5 @@
+# helper functions
+
 makeDF <- function(List, Names) {
   m <- t(vapply(List, 
                 FUN = function(X) unlist(X)[Names], 
@@ -18,7 +20,10 @@ return_names = c("place_id", "licence", "osm_type", "osm_id", "boundingbox",
 )
 reverse_names = c("place_id","licence","osm_type","osm_id","lat","lon","display_name","address" )
 
-geocode_nominatim = function(address, result_count=1, source_url='mapquest'  ){
+maquest_key = 'ZrgKqyIi3Dlj5CWAxKfLZEv7EcFtuFVh'
+
+geocode_nominatim = function(address, result_count=1, source_url='mapquest' , key = maquest_key  ){
+  
   # Gets location data form a given address.
   #
   # Args:
@@ -26,17 +31,18 @@ geocode_nominatim = function(address, result_count=1, source_url='mapquest'  ){
   #
   # Returns:
   #   An object with the address data.
+  
   require(magrittr) 
   require(jsonlite) 
   require(RCurl) 
   
   properaddress   = gsub(' ','+',address) %>% gsub( 'ä','%C3%A4',. ) %>% gsub( 'ö','%C3%B6',. )
   if(source_url == 'mapquest'){
-    urlformat = 'http://open.mapquestapi.com/nominatim/v1/search.php?format=json&q=%s&addressdetails=1&limit=%d'
+    urlformat = 'http://open.mapquestapi.com/nominatim/v1/search.php?format=json&key=%s&q=%s&addressdetails=1&limit=%d'
   } else if(source_url == 'osm'){
     urlformat = 'http://nominatim.openstreetmap.org/search?q=%s&format=json&polygon=0&addressdetails=1'
   }
-  searchurl = sprintf(urlformat,properaddress , result_count)
+  searchurl = sprintf(urlformat , key ,properaddress , result_count)
   
   #searchjson = try(getURIAsynchronous(searchurl)  , silent = TRUE )
   searchjson = try(getURL(searchurl)  , silent = TRUE )
@@ -75,7 +81,7 @@ geocode_vec = function(address_vec ){
   return(list_to_df(ret))
 }
 
-# not reaylly needed any more
+# not reaylly needed anymore
 geocode_nominatim_best = function(address){
   # returns the best bet for address
   addr_table = geocode_nominatim(address)
@@ -89,14 +95,14 @@ geocode_nominatim_best = function(address){
   }
 }
 
-reverse_geocode_nominatim = function( lat , lon , get='street' , limit=1 ){
+reverse_geocode_nominatim = function( lat , lon , key = maquest_key , get='street' , limit=1 ){
   
   require(magrittr) 
   require(jsonlite) 
   require(RCurl) 
   
-  base_url = 'http://open.mapquestapi.com/nominatim/v1/reverse.php?format=json&limi=%d&lat=%f&lon=%f'
-  searchurl   = sprintf(base_url , limit , lat , lon)
+  base_url = 'http://open.mapquestapi.com/nominatim/v1/reverse.php?format=json&key=%s&limit=%d&lat=%f&lon=%f'
+  searchurl   = sprintf(base_url , key , limit , lat , lon)
   searchjson = try( getURL(searchurl) , silent=TRUE)
   
   if( class(searchjson) == 'try-error' ){    
