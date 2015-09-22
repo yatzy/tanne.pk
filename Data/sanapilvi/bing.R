@@ -3,6 +3,7 @@ library(stringr)
 
 ### EXAMPLE
 # key = '8SB9Z27it4UfuFAQfLEkj26yXzV8DHS4DJffkOQ81l4='
+# key = 'i46gcg0DlHwi9uvo3SeUPfROxIMNO9G37ah5XTdHZPA'
 # bing = 'https://api.datamarket.azure.com/Bing/Search/Web?Query=%27kamppi%27&Market=%27fi-FI%27&$top=10&$format=json'
 # resp = GET(bing , authenticate( '' , key )  , verbose() )
 # data = content(resp)
@@ -87,4 +88,5 @@ bing_urls = function(key , query , market = 'fi-FI' , pages = 1 , ... ){
 
 ### EXAMPLE
 # lots_of_pant_links = bing_urls( key = key , query = 'housut' , pages = 2)
-# lots_of_pant_links
+
+
