@@ -165,6 +165,19 @@ reverse_geocode_nominatim = function( lat , lon , key = maquest_key , get='stree
   
 }
 
+address_from_listing = function(listing_object){
+  if( !is.null(listing_object$address$house_number) ){
+    return_value = paste(   listing_object$address$road , ' ' 
+                            , listing_object$address$house_number , ', '
+                            , listing_object$address$postcode , ' '
+                            , listing_object$address$city , sep='')
+  } else{
+    return_value = paste(   listing_object$address$road , ', ' 
+                            , listing_object$address$postcode , ' '
+                            , listing_object$address$city , sep='')
+  }
+  return(return_value)
+}
 
 # example
 # geocode_nominatim('mannerheimintie 53 , helsinki')[c('lat','lon')]
@@ -175,7 +188,8 @@ reverse_geocode_nominatim = function( lat , lon , key = maquest_key , get='stree
 # geocode_nominatim('mannerheimintie 50 , helsinki')[c('lat','lon')]
 # geocode_nominatim('mannerheimintie 50 , helsinki')
 # reverse_geocode_nominatim(60.238 , 24.934 )
-# reverse_geocode_nominatim(60.238 , 24.934 , get = 'listing' )
+# asdf =  reverse_geocode_nominatim(60.238 , 24.934 , get = 'listing' )
+# address_from_listing(asdf)
 # 
 # reverse_geocode_nominatim(60.1899456 , 24.916448 , get = 'listing' )
 ## mita tapahtuu?
