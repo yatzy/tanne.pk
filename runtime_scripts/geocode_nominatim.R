@@ -53,6 +53,8 @@ geocode_nominatim = function(address, result_count=1, source_url='mapquest' , ke
     names(data) = return_names
   } else{
     data = jsonlite::fromJSON(searchjson,flatten=F)
+    data$lat = as.numeric(data$lat)
+    data$lon = as.numeric(data$lon)
   }
   return(data)
 }
