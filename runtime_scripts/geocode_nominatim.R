@@ -32,7 +32,7 @@ geocode_nominatim = function(address, result_count=1, source_url='mapquest' , ke
   # Returns:
   #   An object with the address data.
   
-  require(magrittr) 
+  # require(magrittr) 
   require(jsonlite) 
   require(RCurl) 
   
@@ -52,7 +52,7 @@ geocode_nominatim = function(address, result_count=1, source_url='mapquest' , ke
     data = rep(NA , length(return_names))
     names(data) = return_names
   } else{
-    data = jsonlite::fromJSON(searchjson,flatten=TRUE)
+    data = jsonlite::fromJSON(searchjson,flatten=F)
   }
   return(data)
 }
@@ -109,7 +109,7 @@ reverse_geocode_nominatim = function( lat , lon , key = maquest_key , get='stree
     data = rep(NA , length(reverse_names))
     names(data) = reverse_names
   } else{
-    data = jsonlite::fromJSON(searchjson,flatten=TRUE)
+    data = jsonlite::fromJSON(searchjson,flatten=F)
   }
   
   # jossain tapauksissa kadun numero menee väärään paikkaan
@@ -180,6 +180,7 @@ address_from_listing = function(listing_object){
 }
 
 # example
+geocode_nominatim('mannerheimintie 53 , helsinki')
 # geocode_nominatim('mannerheimintie 53 , helsinki')[c('lat','lon')]
 # geocode_nominatim('mannerheimintie 53 , helsinki' , 3)[c('lat','lon')]
 # geocode_nominatim('mannerheimintie 55 , helsinki')[c('lat','lon')]

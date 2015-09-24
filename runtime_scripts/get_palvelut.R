@@ -23,7 +23,7 @@ get_palvelunumero = function(palvelu){
   return(palvelutaulu[ palvelutaulu$palvelu == palvelu , 'id'  ])
 }
 
-get_palvelulistaus = function(){
+list_palvelut = function(){
   conn <- dbConnect(PostgreSQL(), host="localhost", 
                     user= "postgres", password = ei_mitaan , dbname="karttasovellus")
   query = "select distinct(palvelu) from kunnalliset_palvelut"
@@ -42,18 +42,23 @@ get_palvelu = function(palvelu , lat , lon , radius = 10){
   
   res = try(fromJSON(query_url) )
   
-  if(class(res) == 'try-error'){return(NA)}
-  # print('no errors found')
-  drops = sapply( res , is.list ) 
-  wanted_columns = c('name_fi' , 'street_address_fi' , 'latitude' , 'longitude' , 'address_zip' , 'www_fi','address_city_fi')
-  res = res[ , wanted_columns ]
-  
-  mypoint = c(lon , lat)
-  otherpoints = matrix( c(res$longitude , res$latitude) , ncol = 2  )
-  
-  res$distance = spDistsN1(otherpoints , mypoint, longlat=TRUE)
-  res = res[ order(res$distance), ]
-  return(res)
+#   if(class(res) == 'try-error'){
+#     return('error')
+#   } else{
+    # print('no errors found')
+    drops = sapply( res , is.list ) 
+    wanted_columns = c('name_fi' , 'street_address_fi' , 'latitude' , 'longitude' , 'address_zip' , 'www_fi','address_city_fi')
+    res = res[ , wanted_columns ]
+    
+    mypoint = c(lon , lat)
+    otherpoints = matrix( c(res$longitude , res$latitude) , ncol = 2  )
+    
+    res$distance = spDistsN1(otherpoints , mypoint, longlat=TRUE)
+    colnames(res)[tolower(colnames(res)) %in% c('lng','long' , 'longitude')] = 'lon'
+    colnames(res)[tolower(colnames(res)) == 'latitude'] = 'lat'
+    res = res[ order(res$distance), ]
+    return(res)
+  # }
 }
 
 # palvelu = 'ala_asteet'
@@ -62,3 +67,5 @@ get_palvelu = function(palvelu , lat , lon , radius = 10){
 # radius = 6
 # asdf = get_palvelu(palvelu , lat , lon , radius )
 # colnames(asdf)
+
+

@@ -20,6 +20,7 @@ setwd(this_dir)
 source('runtime_scripts/geocode_nominatim.R')
 source('runtime_scripts/get_nearest.R')
 source('runtime_scripts/get_palvelut.R')
+source('runtime_scripts/point_methods.R')
 
 # iconit
 icon_koti <- icons(iconUrl = 'icons/live/home.svg' , iconWidth = 60)
@@ -34,10 +35,8 @@ icon_ala_aste <- icons(iconUrl = 'icons/live/school.svg' , iconWidth = 50)
 # globaalit parametrit capsilla, niin erottaa
 
 click_count = 0
-tyo_last_added =F
 DEBUG = T
-
-koti_marker_store = c()
-tyo_marker_store = c()
-potentiaalinen_marker_store = c()
-last_click_location = c()
+radius = 2
+init_ready = F
+marker_store = c()
+last_added_marker = ''
