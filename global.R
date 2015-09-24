@@ -34,4 +34,10 @@ icon_ala_aste <- icons(iconUrl = 'icons/live/school.svg' , iconWidth = 50)
 # globaalit parametrit capsilla, niin erottaa
 
 click_count = 0
+tyo_last_added =F
 DEBUG = T
+
+koti_marker_store = c()
+tyo_marker_store = c()
+potentiaalinen_marker_store = c()
+last_click_location = c()
