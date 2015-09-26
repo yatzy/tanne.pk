@@ -61,11 +61,11 @@ get_palvelu = function(palvelu , lat , lon , radius = 10){
   # }
 }
 
-# palvelu = 'ala_asteet'
-# lat = 60.18288
-# lon = 24.92204
-# radius = 6
-# asdf = get_palvelu(palvelu , lat , lon , radius )
-# colnames(asdf)
+palvelu = 'ala_asteet'
+lat = 60.18288
+lon = 24.92204
+radius = 6
+asdf = get_palvelu(palvelu , lat , lon , radius )
+colnames(asdf)
 
 

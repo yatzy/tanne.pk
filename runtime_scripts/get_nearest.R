@@ -72,8 +72,13 @@ get_nearest = function( conn , tablename , lat , lon , radius , tyyppi  , count 
                         , user= "postgres"
                         , password=ei_mitaan
                         , dbname="karttasovellus"))
+  on.exit(dbDisconnect(conn), add=TRUE)
+#   conn <- getConnection(PostgreSQL()
+#                         , host="localhost" 
+#                         , user= "postgres"
+#                         , password=ei_mitaan
+#                         , dbname="karttasovellus")
   if(class(conn)=='try-error'){
-    RPostgreSQL::dbDisconnect(conn)
     return(NA)
   } else{
     
@@ -82,14 +87,11 @@ get_nearest = function( conn , tablename , lat , lon , radius , tyyppi  , count 
       return(NA)  
     }
     if(nrow(res_df) == 0){
-      RPostgreSQL::dbDisconnect(conn)
       stop('No data found')
     }
     
-    RPostgreSQL::dbDisconnect(conn)
     return(res_df)
   }
-  RPostgreSQL::dbDisconnect(conn)
 }
 
 # 

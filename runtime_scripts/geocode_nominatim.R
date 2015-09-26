@@ -182,7 +182,7 @@ address_from_listing = function(listing_object){
 }
 
 # example
-geocode_nominatim('mannerheimintie 53 , helsinki')
+# geocode_nominatim('mannerheimintie 53 , helsinki')
 # geocode_nominatim('mannerheimintie 53 , helsinki')[c('lat','lon')]
 # geocode_nominatim('mannerheimintie 53 , helsinki' , 3)[c('lat','lon')]
 # geocode_nominatim('mannerheimintie 55 , helsinki')[c('lat','lon')]
@@ -193,6 +193,9 @@ geocode_nominatim('mannerheimintie 53 , helsinki')
 # reverse_geocode_nominatim(60.238 , 24.934 )
 # asdf =  reverse_geocode_nominatim(60.238 , 24.934 , get = 'listing' )
 # address_from_listing(asdf)
+# 
+# asd = geocode_nominatim('rinne 4, helsinki')
+# address_from_listing(asd)
 # 
 # reverse_geocode_nominatim(60.1899456 , 24.916448 , get = 'listing' )
 ## mita tapahtuu?
