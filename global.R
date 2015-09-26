@@ -17,10 +17,12 @@ setwd(this_dir)
 
 ### omat kirjastot
 
+source('runtime_scripts/get_location_information.R')
 source('runtime_scripts/geocode_nominatim.R')
 source('runtime_scripts/get_nearest.R')
 source('runtime_scripts/get_palvelut.R')
 source('runtime_scripts/point_methods.R')
+source('runtime_scripts/zip_methods.R')
 
 ### iconit
 icon_koti <- icons(iconUrl = 'icons/live/home.svg' , iconWidth = 60)
@@ -41,3 +43,5 @@ ui_interaction_lag = 5 # seconds
 koti_value_default = "Kotiosoite"
 tyo_value_default = "Työosoite"
 potentiaalinen_value_default = "Potentiaalinen osoite"
+
+# asuntojen_hinta_df = 

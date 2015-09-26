@@ -24,15 +24,6 @@ maquest_key = 'ZrgKqyIi3Dlj5CWAxKfLZEv7EcFtuFVh'
 
 geocode_nominatim = function(address, result_count=1, source_url='mapquest' , key = maquest_key  ){
   
-  # Gets location data form a given address.
-  #
-  # Args:
-  #   address: Given address.
-  #
-  # Returns:
-  #   An object with the address data.
-  
-  # require(magrittr) 
   require(jsonlite) 
   require(RCurl) 
   
@@ -55,6 +46,10 @@ geocode_nominatim = function(address, result_count=1, source_url='mapquest' , ke
     data = jsonlite::fromJSON(searchjson,flatten=F)
     data$lat = as.numeric(data$lat)
     data$lon = as.numeric(data$lon)
+    # zip = try(as.character(data$address$postcode))
+#     if(class(zip) != 'try-error'){
+#       data$zip = as.character(data$address$postcode)
+#     }
   }
   return(data)
 }
@@ -97,7 +92,7 @@ geocode_nominatim_best = function(address){
   }
 }
 
-reverse_geocode_nominatim = function( lat , lon , key = maquest_key , get='street' , limit=1 ){
+reverse_geocode_nominatim = function( lat , lon , key = maquest_key , get='listing' , limit=1 ){
   
   require(magrittr) 
   require(jsonlite) 
@@ -111,7 +106,7 @@ reverse_geocode_nominatim = function( lat , lon , key = maquest_key , get='stree
     data = rep(NA , length(reverse_names))
     names(data) = reverse_names
   } else{
-    data = jsonlite::fromJSON(searchjson,flatten=F)
+    data = jsonlite::fromJSON(searchjson,flatten=T)
   }
   
   # jossain tapauksissa kadun numero menee väärään paikkaan

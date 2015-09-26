@@ -27,7 +27,7 @@ shinyServer(function(input, output, session) {
   
   # click_info() - functio palauttaa viimeisimmän karttaklikin leveys- ja pituuspiirit, sekä osoitetiedot
   
-  click_info = eventReactive(input$map_in_ui_click , { 
+  click_info <<- eventReactive(input$map_in_ui_click , { 
     list(
       lat = as.numeric(input$map_in_ui_click$lat)
       , lon = as.numeric(input$map_in_ui_click$lng)
@@ -46,7 +46,7 @@ shinyServer(function(input, output, session) {
   observeEvent(input$map_in_ui_click, {
     
     click_time <<- Sys.time()
-    cat('LAT:', click_info()$lat, 'LON:' , click_info()$lat ,'\n'  )
+    cat('LAT:', click_info()$lat, 'LON:' , click_info()$lon ,'\n'  )
     
     if(input$koti_osoite_from_ui==koti_value_default){
       output$koti_valikko = renderUI({
@@ -73,79 +73,85 @@ shinyServer(function(input, output, session) {
   
   observeEvent(input$koti_osoite_from_ui , {
     
+    osoite = input$koti_osoite_from_ui
     if(init_ready){
       
       ui_time = Sys.time()
       this_input <<- 'koti'
-      # jos klikattu 
-      # tiedetään klikin koordinaatit ja haetaan osoitteet
-      # jos muutettu osoitteesta, tiedetään osoite, ja haetaan koordinaatit
-      if(as.numeric(difftime(ui_time , click_time , units='secs')) < ui_interaction_lag ){
-        
-        user_interaction_method ='click'
-        
-        cat('muuttui klikkaamalla')
-        cat(', ero: ' , as.numeric(difftime(ui_time , click_time , units='secs')),'\n' )
-        
-        location_info = click_info()$adress_details
-        location_info$lat = click_info()$lat
-        location_info$lon = click_info()$lon
-        
-      } else{
-        
-        user_interaction_method ='text'
-        
-        cat('Muuttui kirjoittamalla')
-        cat(', ero: ' , as.numeric(difftime(ui_time , click_time , units='secs')),'\n' )
-        
-        location_info = geocode_nominatim(input$koti_osoite_from_ui)
-        
-      }
+      
+      # palauta paikkaa koskevat tiedot
+      location_info = try(get_location_information(ui_time , click_time , ui_interaction_lag , osoite))
       
       ### jos koordinaatit löytyvät ###
       if(!is.null(location_info$lon)){
-        
-        ### lisää kodille markkeri ###  
-        leafletProxy("map_in_ui" , session) %>%
-          addMarkers(lng = location_info$lon
-                     , lat = location_info$lat
-                     , layerId = 'koti'
-                     , icon = icon_koti)
-        
-        ### poista vanhat kotiin liityvät markkerit ###
-        leafletProxy("map_in_ui", session) %>% 
-          removeMarker( marker_store[ grep('koti',marker_store ) ] )
-        marker_store <<- marker_store[ !grep('koti',marker_store ) ]
-        
-        ### hae palvelut
-        
-        services = try(get_point_objects(lat=location_info$lat , lon = location_info$lon , radius = radius ))
-        
-        ### lisää uudet kotiin liittyvät markkerit ###         
-        
-        for( i in 1:length(services)){
+        if(class(location_info) !='try-error' ){
           
-          this_service = services[[i]] 
-          this_name = names(services[i]) 
+          ### lisää kodille markkeri ###  
+          leafletProxy("map_in_ui" , session) %>%
+            addMarkers(lng = location_info$lon
+                       , lat = location_info$lat
+                       , layerId = 'koti'
+                       , icon = icon_koti)
           
-          if(class(this_service) != 'try-error' ){
+          ### poista vanhat kotiin liityvät markkerit ###
+          leafletProxy("map_in_ui", session) %>% 
+            removeMarker( marker_store[ grep('koti',marker_store ) ] )
+          marker_store <<- marker_store[ !grep('koti',marker_store ) ]
+          
+          ### hae koordinaattitason palvelut
+          
+          services = try(get_point_objects(lat=location_info$lat , lon = location_info$lon , radius = radius ))
+          
+          ### lisää uudet kotiin liittyvät markkerit ###         
+          
+          for( i in 1:length(services)){
             
-            these_ids = paste0(this_input , this_service$lon , this_service$lat ) 
-            icon_name = paste0( 'icon_' , this_name , sep=''  ) 
+            this_service = services[[i]] 
+            this_name = names(services[i]) 
             
-            leafletProxy("map_in_ui" , session) %>%
-              addMarkers(lng = this_service$lon
-                         , lat = this_service$lat
-                         , layerId = these_ids
-                         , icon = eval(parse(text = icon_name)) ) 
-            marker_store <<- append(marker_store , these_ids )
+            if(class(this_service) != 'try-error' ){
+              
+              these_ids = paste0(this_input , this_service$lon , this_service$lat ) 
+              icon_name = paste0( 'icon_' , this_name , sep=''  ) 
+              
+              leafletProxy("map_in_ui" , session) %>%
+                addMarkers(lng = this_service$lon
+                           , lat = this_service$lat
+                           , layerId = these_ids
+                           , icon = eval(parse(text = icon_name)) ) 
+              marker_store <<- append(marker_store , these_ids )
+              
+            }
+          }
+          
+          # hae zip-tason info
+          
+          if(!is.null(location_info$address$postcode)){
+            
+            home_zip_objects <<- get_zip_objects(location_info$address$postcode)
+            home_zip_objects$asuntojen_hinnat$paikka = this_input
+            print(str(home_zip_objects))
             
           }
         }
+        
       }
     }
     init_ready <<- T
   })
+  
+#   output$asuntojen_hinta_time_series_plot <- renderChart({
+#     if(!is.null(home_zip_objects$asuntojen_hinnat)){
+#       if(ncol(home_zip_objects$asuntojen_hinnat)){
+#         n <- nPlot(Keskiarvo ~ Vuosi, data=home_zip_objects$asuntojen_hinnat
+#                    , type = "lineChart" , group="paikka")
+#         n$chart(useInteractiveGuideline=TRUE)
+#         n$set(dom = 'asuntojen_hinta_time_series_plot', width = 330 , height=280)
+#         n
+#       }
+#     }
+#   })
+  
   
   #   observeEvent(input$tyo_valikko , {
   #     

@@ -18,7 +18,7 @@ shinyUI(
         , conditionalPanel( condition = "input.kotiosoite_from_ui != 'Kotiosoite'"
                             , h5('Hyvin menee')
                             #, plotOutput( "koti_pic" )
-                            , showOutput("test_data_time_series_plot" , 'nvd3' )
+                            # , showOutput("asuntojen_hinta_time_series_plot" , 'nvd3' )
         )
       )
       , mainPanel(  

@@ -26,9 +26,10 @@ get_palvelunumero = function(palvelu){
 list_palvelut = function(){
   conn <- dbConnect(PostgreSQL(), host="localhost", 
                     user= "postgres", password = ei_mitaan , dbname="karttasovellus")
+  on.exit(dbDisconnect(conn), add=TRUE)
   query = "select distinct(palvelu) from kunnalliset_palvelut"
   res = dbGetQuery(conn , query)
-  RPostgreSQL::dbDisconnect(conn)
+  # RPostgreSQL::dbDisconnect(conn)
   return(res)
 }
 
@@ -61,11 +62,11 @@ get_palvelu = function(palvelu , lat , lon , radius = 10){
   # }
 }
 
-palvelu = 'ala_asteet'
-lat = 60.18288
-lon = 24.92204
-radius = 6
-asdf = get_palvelu(palvelu , lat , lon , radius )
-colnames(asdf)
+# palvelu = 'ala_asteet'
+# lat = 60.18288
+# lon = 24.92204
+# radius = 6
+# asdf = get_palvelu(palvelu , lat , lon , radius )
+# colnames(asdf)
 
 
