@@ -26,13 +26,14 @@ source('runtime_scripts/point_methods.R')
 icon_koti <- icons(iconUrl = 'icons/live/home.svg' , iconWidth = 60)
 icon_potentiaalinen <- icons(iconUrl = 'icons/live/potential.svg' , iconWidth = 60)
 icon_tyo <- icons(iconUrl = 'icons/live/work.svg' , iconWidth = 60)
-icon_kauppa <- icons(iconUrl = 'icons/live/shop.svg' , iconWidth = 50)
-icon_ala_aste <- icons(iconUrl = 'icons/live/school.svg' , iconWidth = 50)
+icon_kaupat <- icons(iconUrl = 'icons/live/shop.svg' , iconWidth = 50)
+icon_ala_asteet <- icons(iconUrl = 'icons/live/school.svg' , iconWidth = 50)
+icon_yla_asteet <- icons(iconUrl = 'icons/live/high_school.svg' , iconWidth = 50)
 
 
 
 ### asetukset tahan
-# globaalit parametrit capsilla, niin erottaa
+# --globaalit parametrit capsilla, niin erottaa--
 
 click_count = 0
 DEBUG = T
