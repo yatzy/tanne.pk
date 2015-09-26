@@ -81,6 +81,11 @@ get_nearest = function( conn , tablename , lat , lon , radius , tyyppi  , count 
     if(class(res_df) == 'try-error'){
       return(NA)  
     }
+    if(nrow(res_df) == 0){
+      RPostgreSQL::dbDisconnect(conn)
+      stop('No data found')
+    }
+    
     RPostgreSQL::dbDisconnect(conn)
     return(res_df)
   }

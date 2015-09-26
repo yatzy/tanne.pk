@@ -130,6 +130,10 @@ shinyServer(function(input, output, session) {
         ala_asteet = try(get_ala_asteet(lat = location_info$lat , lon = location_info$lon , radius = radius ))
         # print(ruokakaupat)
         
+        print('######### palautetut #########' )
+        a = get_objects(lat=location_info$lat , lon = location_info$lon , radius = radius )
+        print(str(a))
+        
         ### lisää uudet kotiin liittyvät markkerit ###         
         
         print('ruokakaupat:')

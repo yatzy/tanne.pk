@@ -1,3 +1,4 @@
+# ala asteet
 get_ala_asteet = function(lat , lon  , radius ){
   ala_asteet = get_palvelu('ala_asteet' 
                            , lat = lat
@@ -6,6 +7,7 @@ get_ala_asteet = function(lat , lon  , radius ){
   return(ala_asteet)
 }
 
+# yla asteet
 get_yla_asteet = function(lat , lon  , radius ){
   yla_asteet = get_palvelu('yla_asteet' 
                            , lat = lat
@@ -25,6 +27,14 @@ get_ruokakaupat = function(lat, lon , radius){
   return(ruokakaupat)
 }
 
-# get_objects = function(lat , lon , radius){
-#   
-# }
+get_objects = function(lat , lon , radius){
+  # lisää tähän kaikki metodikutsut!
+  ala_asteet = get_ala_asteet(lat, lon , radius)
+  yla_asteet = get_yla_asteet(lat, lon , radius)
+  ruokakaupat = get_ruokakaupat(lat, lon , radius)
+  
+  # ja palauta kaikki objektit
+  return( list( ala_asteet = ala_asteet
+                , yla_asteet = yla_asteet
+                , ruokakaupat = ruokakaupat ) )
+}
