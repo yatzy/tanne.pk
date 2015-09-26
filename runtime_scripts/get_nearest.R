@@ -1,6 +1,17 @@
 
 get_nearest = function( conn , tablename , lat , lon , radius , tyyppi  , count ){
   
+  needed_arguments = c('conn' , 'tablename' , 'lat' , 'lon' , 'radius' , 'tyyppi'  , 'count')
+  given_arguments = names(as.list(match.call())[-1])
+  # print(given_arguments)
+  success_list = sapply(needed_arguments , function(x){
+    x %in% given_arguments
+  })
+  if(!all(success_list)){
+    return(NA)
+  }
+  
+  
   query_base = "
   SELECT 
   nimi , 
@@ -56,29 +67,32 @@ get_nearest = function( conn , tablename , lat , lon , radius , tyyppi  , count 
   distance
   LIMIT %d "
   
-  conn <- dbConnect(PostgreSQL()
-                    , host="localhost" 
-                    , user= "postgres"
-                    , password=ei_mitaan
-                    , dbname="karttasovellus")
-  
-  res_df = try(dbGetQuery(conn ,  sprintf( query_base , tablename , lat , lon , radius , tyyppi , count ) ) )
-  if(class(res_df) == 'try-error'){
-    res_df = data.frame(nimi = 'liikkaa yhteyksia'
-                        , tyyppi = ''
-                        , lat = NA
-                        , lon =NA
-                        , distance = 0)
+  conn <- try(dbConnect(PostgreSQL()
+                        , host="localhost" 
+                        , user= "postgres"
+                        , password=ei_mitaan
+                        , dbname="karttasovellus"))
+  if(class(conn)=='try-error'){
+    RPostgreSQL::dbDisconnect(conn)
+    return(NA)
+  } else{
+    
+    res_df = try(dbGetQuery(conn ,  sprintf( query_base , tablename , lat , lon , radius , tyyppi , count ) ) )
+    if(class(res_df) == 'try-error'){
+      return(NA)  
+    }
+    RPostgreSQL::dbDisconnect(conn)
+    return(res_df)
   }
   RPostgreSQL::dbDisconnect(conn)
-  return(res_df)
 }
 
-
+# 
 # osoite = list()
 # osoite$lat = 60.239
 # osoite$lon = 24.938
-# 
-# get_nearest( conn , 'coord' , osoite$lat , osoite$lon , 2 , 'Ruokakaupat' , 100 )
-# get_nearest( conn , 'coord' , osoite$lat , osoite$lon , 15 , 'Autoliikkeet' , 100 )
-# get_nearest( conn , 'coord' , osoite$lat , osoite$lon , 0.5 , 'Ruokakaupat' , 100 )
+# # # 
+# # get_nearest( conn , 'coord' , osoite$lat , osoite$lon  , 'Ruokakaupat' , 100 )
+# asdf = get_nearest( conn , 'coord' , osoite$lat , osoite$lon , 2 , 'Ruokakaupat' , 100 )
+# # get_nearest( conn , 'coord' , osoite$lat , osoite$lon , 15 , 'Autoliikkeet' , 100 )
+# # get_nearest( conn , 'coord' , osoite$lat , osoite$lon , 0.5 , 'Ruokakaupat' , 100 )

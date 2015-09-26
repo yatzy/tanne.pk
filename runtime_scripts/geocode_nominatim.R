@@ -32,7 +32,7 @@ geocode_nominatim = function(address, result_count=1, source_url='mapquest' , ke
   # Returns:
   #   An object with the address data.
   
-  require(magrittr) 
+  # require(magrittr) 
   require(jsonlite) 
   require(RCurl) 
   
@@ -52,7 +52,9 @@ geocode_nominatim = function(address, result_count=1, source_url='mapquest' , ke
     data = rep(NA , length(return_names))
     names(data) = return_names
   } else{
-    data = jsonlite::fromJSON(searchjson,flatten=TRUE)
+    data = jsonlite::fromJSON(searchjson,flatten=F)
+    data$lat = as.numeric(data$lat)
+    data$lon = as.numeric(data$lon)
   }
   return(data)
 }
@@ -109,7 +111,7 @@ reverse_geocode_nominatim = function( lat , lon , key = maquest_key , get='stree
     data = rep(NA , length(reverse_names))
     names(data) = reverse_names
   } else{
-    data = jsonlite::fromJSON(searchjson,flatten=TRUE)
+    data = jsonlite::fromJSON(searchjson,flatten=F)
   }
   
   # jossain tapauksissa kadun numero menee väärään paikkaan
@@ -165,8 +167,22 @@ reverse_geocode_nominatim = function( lat , lon , key = maquest_key , get='stree
   
 }
 
+address_from_listing = function(listing_object){
+  if( !is.null(listing_object$address$house_number) ){
+    return_value = paste(   listing_object$address$road , ' ' 
+                            , listing_object$address$house_number , ', '
+                            , listing_object$address$postcode , ' '
+                            , listing_object$address$city , sep='')
+  } else{
+    return_value = paste(   listing_object$address$road , ', ' 
+                            , listing_object$address$postcode , ' '
+                            , listing_object$address$city , sep='')
+  }
+  return(return_value)
+}
 
 # example
+geocode_nominatim('mannerheimintie 53 , helsinki')
 # geocode_nominatim('mannerheimintie 53 , helsinki')[c('lat','lon')]
 # geocode_nominatim('mannerheimintie 53 , helsinki' , 3)[c('lat','lon')]
 # geocode_nominatim('mannerheimintie 55 , helsinki')[c('lat','lon')]
@@ -175,7 +191,8 @@ reverse_geocode_nominatim = function( lat , lon , key = maquest_key , get='stree
 # geocode_nominatim('mannerheimintie 50 , helsinki')[c('lat','lon')]
 # geocode_nominatim('mannerheimintie 50 , helsinki')
 # reverse_geocode_nominatim(60.238 , 24.934 )
-# reverse_geocode_nominatim(60.238 , 24.934 , get = 'listing' )
+# asdf =  reverse_geocode_nominatim(60.238 , 24.934 , get = 'listing' )
+# address_from_listing(asdf)
 # 
 # reverse_geocode_nominatim(60.1899456 , 24.916448 , get = 'listing' )
 ## mita tapahtuu?

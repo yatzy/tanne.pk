@@ -49,9 +49,11 @@ shinyUI(
       sidebarPanel(  style = "background-color: #ffffff;"
         , width = 3               
         , h3("Osoitteet")
-        , textInput("kotiosoite_from_ui", label = p(""), value = "Kotiosoite") 
-        , textInput("tyo_osoite_from_ui", label = p(""), value = "Työpaikan osoite") 
-        , textInput("pontentiaalinen_osoite_from_ui", label = p(""), value = "Potentiaalinen osoite") 
+        # , textInput("kotiosoite_from_ui", label = p(""), value = "Kotiosoite") 
+        , uiOutput("koti_valikko")
+        , uiOutput("tyo_valikko")
+        , uiOutput("potentiaalinen_valikko")
+        , actionButton("reset_button", "Nollaa osoitteet")
         
         , conditionalPanel( condition = "input.kotiosoite_from_ui != 'Kotiosoite'"
                             , h5('Hyvin menee')

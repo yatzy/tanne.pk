@@ -20,12 +20,23 @@ setwd(this_dir)
 source('runtime_scripts/geocode_nominatim.R')
 source('runtime_scripts/get_nearest.R')
 source('runtime_scripts/get_palvelut.R')
+source('runtime_scripts/point_methods.R')
 
 # iconit
+icon_koti <- icons(iconUrl = 'icons/live/home.svg' , iconWidth = 60)
+icon_potentiaalinen <- icons(iconUrl = 'icons/live/potential.svg' , iconWidth = 60)
+icon_tyo <- icons(iconUrl = 'icons/live/work.svg' , iconWidth = 60)
 icon_kauppa <- icons(iconUrl = 'icons/live/shop.svg' , iconWidth = 50)
 icon_ala_aste <- icons(iconUrl = 'icons/live/school.svg' , iconWidth = 50)
+
+
 
 ### asetukset tahan
 # globaalit parametrit capsilla, niin erottaa
 
+click_count = 0
 DEBUG = T
+radius = 2
+init_ready = F
+marker_store = c()
+last_added_marker = ''
