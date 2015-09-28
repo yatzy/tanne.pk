@@ -26,40 +26,44 @@ get_palvelunumero = function(palvelu){
 list_palvelut = function(){
   conn <- dbConnect(PostgreSQL(), host="localhost", 
                     user= "postgres", password = ei_mitaan , dbname="karttasovellus")
+  on.exit(dbDisconnect(conn), add=TRUE)
   query = "select distinct(palvelu) from kunnalliset_palvelut"
   res = dbGetQuery(conn , query)
-  RPostgreSQL::dbDisconnect(conn)
+  # RPostgreSQL::dbDisconnect(conn)
   return(res)
 }
 
 get_palvelu = function(palvelu , lat , lon , radius = 10){
   # radius kilometreissa
-  radius = radius * 1000
+  radius = round(radius * 1000)
   palvelunro = get_palvelunumero(palvelu)
   
   base_url = 'http://www.hel.fi/palvelukarttaws/rest/v2/unit/?service=%d&lat=%2.5f&lon=%2.5f&distance=%d'
   query_url = sprintf(base_url , palvelunro , lat , lon , radius )
   
   res = try(fromJSON(query_url) )
+  wanted_columns = c('name_fi' , 'street_address_fi' , 'latitude' , 'longitude' , 'address_zip' , 'www_fi','address_city_fi')
   
-#   if(class(res) == 'try-error'){
-#     return('error')
-#   } else{
-    # print('no errors found')
-    drops = sapply( res , is.list ) 
-    wanted_columns = c('name_fi' , 'street_address_fi' , 'latitude' , 'longitude' , 'address_zip' , 'www_fi','address_city_fi')
-    res = res[ , wanted_columns ]
-    
-    mypoint = c(lon , lat)
-    otherpoints = matrix( c(res$longitude , res$latitude) , ncol = 2  )
-    
-    res$distance = spDistsN1(otherpoints , mypoint, longlat=TRUE)
-    colnames(res)[tolower(colnames(res)) %in% c('lng','long' , 'longitude')] = 'lon'
-    colnames(res)[tolower(colnames(res)) == 'latitude'] = 'lat'
-    res = res[ order(res$distance), ]
-    return(res)
-  # }
+  if(class(res) == 'try-error'){
+    stop('error retrieving nearest locations')
+  } 
+  if( !all(wanted_columns %in% colnames(res) ) ){
+    stop('not all information retrieved')
+  }
+  # print('no errors found')
+  drops = sapply( res , is.list ) 
+  res = res[ , wanted_columns ]
+  
+  mypoint = c(lon , lat)
+  otherpoints = matrix( c(res$longitude , res$latitude) , ncol = 2  )
+  
+  res$distance = spDistsN1(otherpoints , mypoint, longlat=TRUE)
+  colnames(res)[tolower(colnames(res)) %in% c('lng','long' , 'longitude')] = 'lon'
+  colnames(res)[tolower(colnames(res)) == 'latitude'] = 'lat'
+  res = res[ order(res$distance), ]
+  return(res)
 }
+
 
 # palvelu = 'ala_asteet'
 # lat = 60.18288

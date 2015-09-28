@@ -20,19 +20,8 @@ return_names = c("place_id", "licence", "osm_type", "osm_id", "boundingbox",
 )
 reverse_names = c("place_id","licence","osm_type","osm_id","lat","lon","display_name","address" )
 
-maquest_key = 'ZrgKqyIi3Dlj5CWAxKfLZEv7EcFtuFVh'
-
-geocode_nominatim = function(address, result_count=1, source_url='mapquest' , key = maquest_key  ){
+geocode_nominatim = function(address, result_count=1, source_url='mapquest' , key = mapquest_key  ){
   
-  # Gets location data form a given address.
-  #
-  # Args:
-  #   address: Given address.
-  #
-  # Returns:
-  #   An object with the address data.
-  
-  # require(magrittr) 
   require(jsonlite) 
   require(RCurl) 
   
@@ -55,6 +44,10 @@ geocode_nominatim = function(address, result_count=1, source_url='mapquest' , ke
     data = jsonlite::fromJSON(searchjson,flatten=F)
     data$lat = as.numeric(data$lat)
     data$lon = as.numeric(data$lon)
+    # zip = try(as.character(data$address$postcode))
+#     if(class(zip) != 'try-error'){
+#       data$zip = as.character(data$address$postcode)
+#     }
   }
   return(data)
 }
@@ -97,7 +90,7 @@ geocode_nominatim_best = function(address){
   }
 }
 
-reverse_geocode_nominatim = function( lat , lon , key = maquest_key , get='street' , limit=1 ){
+reverse_geocode_nominatim = function( lat , lon , key = mapquest_key , get='listing' , limit=1 ){
   
   require(magrittr) 
   require(jsonlite) 
@@ -111,7 +104,7 @@ reverse_geocode_nominatim = function( lat , lon , key = maquest_key , get='stree
     data = rep(NA , length(reverse_names))
     names(data) = reverse_names
   } else{
-    data = jsonlite::fromJSON(searchjson,flatten=F)
+    data = jsonlite::fromJSON(searchjson,flatten=T)
   }
   
   # jossain tapauksissa kadun numero menee väärään paikkaan
@@ -169,20 +162,37 @@ reverse_geocode_nominatim = function( lat , lon , key = maquest_key , get='stree
 
 address_from_listing = function(listing_object){
   if( !is.null(listing_object$address$house_number) ){
-    return_value = paste(   listing_object$address$road , ' ' 
+    return_value = try(paste(   listing_object$address$road , ' ' 
                             , listing_object$address$house_number , ', '
                             , listing_object$address$postcode , ' '
-                            , listing_object$address$city , sep='')
+                            , listing_object$address$city , sep='') )
   } else{
-    return_value = paste(   listing_object$address$road , ', ' 
+    return_value = try(paste(   listing_object$address$road , ', ' 
                             , listing_object$address$postcode , ' '
-                            , listing_object$address$city , sep='')
+                            , listing_object$address$city , sep=''))
   }
+  
+  if(class(return_value) == 'try-error'){
+    stop( 'error with address decoding' )
+  }
+  
   return(return_value)
 }
 
+validy_check_address = function(address){
+  require(stringr)
+  if(class(address) != 'try-error'){
+    long_enough = nchar( str_replace_all(address , "[-., ]",'')) > 1
+    if(long_enough){
+      return(TRUE)
+    }
+  }
+  return(FALSE)
+}
+
+
 # example
-geocode_nominatim('mannerheimintie 53 , helsinki')
+# geocode_nominatim('mannerheimintie 53 , helsinki')
 # geocode_nominatim('mannerheimintie 53 , helsinki')[c('lat','lon')]
 # geocode_nominatim('mannerheimintie 53 , helsinki' , 3)[c('lat','lon')]
 # geocode_nominatim('mannerheimintie 55 , helsinki')[c('lat','lon')]
@@ -193,6 +203,9 @@ geocode_nominatim('mannerheimintie 53 , helsinki')
 # reverse_geocode_nominatim(60.238 , 24.934 )
 # asdf =  reverse_geocode_nominatim(60.238 , 24.934 , get = 'listing' )
 # address_from_listing(asdf)
+# 
+# asd = geocode_nominatim('rinne 4, helsinki')
+# address_from_listing(asd)
 # 
 # reverse_geocode_nominatim(60.1899456 , 24.916448 , get = 'listing' )
 ## mita tapahtuu?
