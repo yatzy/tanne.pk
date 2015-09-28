@@ -10,6 +10,8 @@ library(RPostgreSQL)
 library(sp)
 
 ei_mitaan = read_file('/home/juha/.salasana') %>% gsub('\n','',.)
+mapquest_key = read_file('/home/juha/.mapquest') %>% gsub('\n','',.)
+
 ### working directory tahan paikkaan
 
 this_dir <- dirname(parent.frame(2)$ofile)

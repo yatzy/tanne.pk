@@ -9,8 +9,8 @@ get_asuntojen_hinnat = function(zip ){
 
 get_zip_objects = function(zip){
   zip = as.character(zip)
-  ah = get_asuntojen_hinnat(zip)
+  asuntojen_hinnat = get_asuntojen_hinnat(zip)
   return( list(
-    asuntojen_hinnat = ah
+    asuntojen_hinnat = asuntojen_hinnat
   ) )
 }

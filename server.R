@@ -131,15 +131,16 @@ shinyServer(function(input, output, session) {
           }
           # hae zip-tason info
           
-          if(!is.null(location_info$address$postcode)){
-            
-            home_zip_objects <- try(get_zip_objects(location_info$address$postcode))
-            if(class(home_zip_objects) != 'try-error'){
-              home_zip_objects <<- home_zip_objects
-              home_zip_objects$asuntojen_hinnat$paikka = this_input
-              print(str(home_zip_objects))
-            }
-          }
+#           if(!is.null(location_info$address$postcode)){
+#             
+#             potentiaalinen_zip_objects <- try(get_zip_objects(location_info$address$postcode))
+#             if(class(potentiaalinen_zip_objects) != 'try-error'){
+#                 potentiaalinen_zip_objects <<- potentiaalinen_zip_objects
+#                 potentiaalinen_zip_objects$asuntojen_hinnat$paikka = this_input
+#                 print(str(potentiaalinen_zip_objects))
+#               
+#             }
+#           }
           
           #### lopuksi päivitetään osoite
           if(location_info$user_interaction_method == 'click'){
@@ -248,15 +249,17 @@ shinyServer(function(input, output, session) {
           }
           # hae zip-tason info
           
-          if(!is.null(location_info$address$postcode)){
-            
-            home_zip_objects <- try(get_zip_objects(location_info$address$postcode))
-            if(class(home_zip_objects) != 'try-error'){
-              home_zip_objects <<- home_zip_objects
-              home_zip_objects$asuntojen_hinnat$paikka = this_input
-              print(str(home_zip_objects))
-            }
-          }
+#           if(!is.null(location_info$address$postcode)){
+#             
+#             koti_zip_objects <- try(get_zip_objects(location_info$address$postcode))
+#             if(class(koti_zip_objects) != 'try-error'){
+#               if(nrow(koti_zip_objects)>0 && ncol(koti_zip_objects)>0){
+#                 koti_zip_objects <<- koti_zip_objects
+#                 koti_zip_objects$asuntojen_hinnat$paikka = this_input
+#                 print(str(koti_zip_objects))
+#               }
+#             }
+#           }
           
           #### lopuksi päivitetään osoite
           if(location_info$user_interaction_method == 'click'){

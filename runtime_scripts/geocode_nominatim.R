@@ -20,9 +20,7 @@ return_names = c("place_id", "licence", "osm_type", "osm_id", "boundingbox",
 )
 reverse_names = c("place_id","licence","osm_type","osm_id","lat","lon","display_name","address" )
 
-maquest_key = 'ZrgKqyIi3Dlj5CWAxKfLZEv7EcFtuFVh'
-
-geocode_nominatim = function(address, result_count=1, source_url='mapquest' , key = maquest_key  ){
+geocode_nominatim = function(address, result_count=1, source_url='mapquest' , key = mapquest_key  ){
   
   require(jsonlite) 
   require(RCurl) 
@@ -92,7 +90,7 @@ geocode_nominatim_best = function(address){
   }
 }
 
-reverse_geocode_nominatim = function( lat , lon , key = maquest_key , get='listing' , limit=1 ){
+reverse_geocode_nominatim = function( lat , lon , key = mapquest_key , get='listing' , limit=1 ){
   
   require(magrittr) 
   require(jsonlite) 
