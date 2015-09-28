@@ -87,53 +87,58 @@ shinyServer(function(input, output, session) {
       location_info = try(get_location_information(ui_time , click_time , ui_interaction_lag , osoite))
       
       ### jos koordinaatit löytyvät ###
-      if(!is.null(location_info$lon)){
-        if(class(location_info) !='try-error' ){
+      if(class(location_info) !='try-error' ){
+        if(!is.null(location_info$lon)){
           
           ### lisää kodille markkeri ###  
           leafletProxy("map_in_ui" , session) %>%
             addMarkers(lng = location_info$lon
                        , lat = location_info$lat
-                       , layerId = 'koti'
+                       , layerId = this_input
                        , icon = icon_koti)
           
           ### poista vanhat kotiin liityvät markkerit ###
           leafletProxy("map_in_ui", session) %>% 
-            removeMarker( marker_store[ grep('koti',marker_store ) ] )
-          marker_store <<- marker_store[ !grep('koti',marker_store ) ]
+            clearGroup(this_input)
           
           ### hae koordinaattitason palvelut
           
           services = try(get_point_objects(lat=location_info$lat , lon = location_info$lon , radius = radius ))
           
           ### lisää uudet kotiin liittyvät markkerit ###         
-          
-          for( i in 1:length(services)){
-            
-            this_service = services[[i]] 
-            this_name = names(services[i]) 
-            
-            if(class(this_service) != 'try-error' ){
-              
-              these_ids = paste0(this_input , this_service$lon , this_service$lat ) 
-              icon_name = paste0( 'icon_' , this_name , sep=''  ) 
-              
-              leafletProxy("map_in_ui" , session) %>%
-                addMarkers(lng = this_service$lon
-                           , lat = this_service$lat
-                           , layerId = these_ids
-                           , icon = eval(parse(text = icon_name)) ) 
-              marker_store <<- append(marker_store , these_ids )
-              
+          if(class(services) != 'try-error'){
+            if(length(services) > 0 ){
+              for( i in 1:length(services)){
+                
+                this_service = services[[i]] 
+                this_name = names(services[i]) 
+                
+                if(class(this_service) != 'try-error' ){
+                  if(length(this_service$lon)>0){
+                    # these_ids = paste0(this_input , this_service$lon , this_service$lat ) 
+                    icon_name = paste0( 'icon_' , this_name , sep=''  ) 
+                    
+                    leafletProxy("map_in_ui" , session) %>%
+                      addMarkers(lng = this_service$lon
+                                 , lat = this_service$lat
+                                 , group = this_input
+                                 , icon = eval(parse(text = icon_name)) ) 
+                    # marker_store <<- append(marker_store , these_ids )
+                  }
+                }
+              }
             }
           }
-          
           # hae zip-tason info
           
           if(!is.null(location_info$address$postcode)){
             
-            home_zip_objects <<- get_zip_objects(location_info$address$postcode)
-            home_zip_objects$asuntojen_hinnat$paikka = this_input
+            home_zip_objects <- try(get_zip_objects(location_info$address$postcode))
+            if(class(home_zip_objects) != 'try-error'){
+              home_zip_objects <<- home_zip_objects
+              home_zip_objects$asuntojen_hinnat$paikka = this_input
+              print(str(home_zip_objects))
+            }
           }
           
           #### lopuksi päivitetään osoite
@@ -167,7 +172,7 @@ shinyServer(function(input, output, session) {
       leafletProxy("map_in_ui" , session) %>%
         addMarkers(lng = location_info$lon
                    , lat = location_info$lat
-                   , layerId = 'tyo'
+                   , layerId = this_input
                    , icon = icon_tyo)
       
       #### lopuksi päivitetään osoite
@@ -197,55 +202,60 @@ shinyServer(function(input, output, session) {
       location_info = try(get_location_information(ui_time , click_time , ui_interaction_lag , osoite))
       
       ### jos koordinaatit löytyvät ###
-      if(!is.null(location_info$lon)){
-        if(class(location_info) !='try-error' ){
+      if(class(location_info) !='try-error' ){
+        if(!is.null(location_info$lon)){
           
           ### lisää kodille markkeri ###  
           leafletProxy("map_in_ui" , session) %>%
             addMarkers(lng = location_info$lon
                        , lat = location_info$lat
-                       , layerId = 'potentiaalinen'
+                       , layerId = this_input
                        , icon = icon_potentiaalinen)
           
           ### poista vanhat potentiaalinenin liityvät markkerit ###
           leafletProxy("map_in_ui", session) %>% 
-            removeMarker( marker_store[ grep('potentiaalinen',marker_store ) ] )
-          marker_store <<- marker_store[ !grep('potentiaalinen',marker_store ) ]
+            clearGroup(this_input)
+          # removeMarker( marker_store[ grep('potentiaalinen',marker_store ) ] )
+          # marker_store <<- marker_store[ !grep('potentiaalinen',marker_store ) ]
           
           ### hae koordinaattitason palvelut
           
           services = try(get_point_objects(lat=location_info$lat , lon = location_info$lon , radius = radius ))
           
           ### lisää uudet potentiaalinenin liittyvät markkerit ###         
-          
-          for( i in 1:length(services)){
-            
-            this_service = services[[i]] 
-            this_name = names(services[i]) 
-            
-            if(class(this_service) != 'try-error' ){
-              
-              these_ids = paste0(this_input , this_service$lon , this_service$lat ) 
-              icon_name = paste0( 'icon_' , this_name , sep=''  ) 
-              
-              leafletProxy("map_in_ui" , session) %>%
-                addMarkers(lng = this_service$lon
-                           , lat = this_service$lat
-                           , layerId = these_ids
-                           , icon = eval(parse(text = icon_name)) ) 
-              marker_store <<- append(marker_store , these_ids )
-              
+          if(class(services) != 'try-error'){
+            if(length(services) > 0 ){
+              for( i in 1:length(services)){
+                
+                this_service = services[[i]] 
+                this_name = names(services[i]) 
+                
+                if(class(this_service) != 'try-error' ){
+                  if(length(this_service$lon)>0){
+                    # these_ids = paste0(this_input , this_service$lon , this_service$lat ) 
+                    icon_name = paste0( 'icon_' , this_name , sep=''  ) 
+                    
+                    leafletProxy("map_in_ui" , session) %>%
+                      addMarkers(lng = this_service$lon
+                                 , lat = this_service$lat
+                                 , group = this_input
+                                 , icon = eval(parse(text = icon_name)) ) 
+                    # marker_store <<- append(marker_store , these_ids )
+                  }
+                }
+              }
             }
           }
-          
           # hae zip-tason info
           
           if(!is.null(location_info$address$postcode)){
             
-            home_zip_objects <<- get_zip_objects(location_info$address$postcode)
-            home_zip_objects$asuntojen_hinnat$paikka = this_input
-            print(str(home_zip_objects))
-            
+            home_zip_objects <- try(get_zip_objects(location_info$address$postcode))
+            if(class(home_zip_objects) != 'try-error'){
+              home_zip_objects <<- home_zip_objects
+              home_zip_objects$asuntojen_hinnat$paikka = this_input
+              print(str(home_zip_objects))
+            }
           }
           
           #### lopuksi päivitetään osoite
@@ -267,37 +277,53 @@ shinyServer(function(input, output, session) {
   ### removing existing markers by clicking
   
   observeEvent(input$map_in_ui_marker_click, {
-    
-    if(input$map_in_ui_marker_click$id %in% c('koti','tyo','potentiaalinen')){
-      
-      leafletProxy("map_in_ui", session) %>% 
-        removeMarker(input$map_in_ui_marker_click$id)
-      # kun markkeri poistetaan, palauta tekstikenttä oletusasetuksiin
-      if(input$map_in_ui_marker_click$id == 'koti'){
-        output$koti_valikko = renderUI({
-          textInput("koti_osoite_from_ui", label = p(""), value = koti_value_default) 
-        })
-        # ... ja poista markkerrin liittyvät markerit
-        leafletProxy("map_in_ui", session) %>% 
-          removeMarker( marker_store[ grep('koti',marker_store ) ] )
-        marker_store <<- marker_store[ !grep('koti',marker_store ) ]
-      }
-      else if(input$map_in_ui_marker_click$id == 'tyo'){
-        output$tyo_valikko = renderUI({
-          textInput("tyo_osoite_from_ui", label = p(""), value = tyo_value_default) 
-        })
-        leafletProxy("map_in_ui", session) %>% 
-          removeMarker( marker_store[ grep('tyo',marker_store ) ] )
-        marker_store <<- marker_store[ !grep('tyo',marker_store ) ]
-      }
-      else if(input$map_in_ui_marker_click$id == 'potentiaalinen') 
-      {
-        output$potentiaalinen_valikko = renderUI({
-          textInput("pontentiaalinen_osoite_from_ui", label = p(""), value = potentiaalinen_value_default) 
-        })
-        leafletProxy("map_in_ui", session) %>% 
-          removeMarker( marker_store[ grep('potentiaalinen',marker_store ) ] )
-        marker_store <<- marker_store[ !grep('potentiaalinen',marker_store ) ]
+    this_input = try(input$map_in_ui_marker_click$id)
+    if(class(this_input) != 'try-error'){
+      if(!is.null(this_input)){
+        if(this_input %in% c('koti','tyo','potentiaalinen')){
+          
+          if(this_input == 'koti'){
+            
+            # poista itse markkeri
+            leafletProxy("map_in_ui", session) %>% 
+              removeMarker(this_input)
+            
+            # poista markkerrin liittyvät markerit
+            leafletProxy("map_in_ui", session) %>% 
+              clearGroup(this_input)
+            # removeMarker( marker_store[ grep('koti',marker_store ) ] )
+            marker_store <<- marker_store[ !grep('koti',marker_store ) ]
+            
+            # ... ja palauta tekstikenttä oletusasetuksiin  
+            output$koti_valikko = renderUI({
+              textInput("koti_osoite_from_ui", label = p(""), value = koti_value_default) 
+            })
+            
+          }
+          else if(this_input == 'tyo'){
+            
+            leafletProxy("map_in_ui", session) %>% 
+              removeMarker('tyo')
+            
+            output$tyo_valikko = renderUI({
+              textInput("tyo_osoite_from_ui", label = p(""), value = tyo_value_default) 
+            })
+          }
+          else if(this_input == 'potentiaalinen') {
+            
+            leafletProxy("map_in_ui", session) %>% 
+              removeMarker(this_input)
+            
+            leafletProxy("map_in_ui", session) %>% 
+              clearGroup(this_input)
+            # removeMarker( marker_store[ grep('potentiaalinen',marker_store ) ] )
+            # marker_store <<- marker_store[ !grep('potentiaalinen',marker_store ) ]
+            
+            output$potentiaalinen_valikko = renderUI({
+              textInput("pontentiaalinen_osoite_from_ui", label = p(""), value = potentiaalinen_value_default) 
+            })
+          }
+        }
       }
     }
   })

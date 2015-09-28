@@ -73,26 +73,26 @@ get_nearest = function( conn , tablename , lat , lon , radius , tyyppi  , count 
                         , password=ei_mitaan
                         , dbname="karttasovellus"))
   on.exit(dbDisconnect(conn), add=TRUE)
-#   conn <- getConnection(PostgreSQL()
-#                         , host="localhost" 
-#                         , user= "postgres"
-#                         , password=ei_mitaan
-#                         , dbname="karttasovellus")
+  #   conn <- getConnection(PostgreSQL()
+  #                         , host="localhost" 
+  #                         , user= "postgres"
+  #                         , password=ei_mitaan
+  #                         , dbname="karttasovellus")
   if(class(conn)=='try-error'){
-    return(NA)
-  } else{
-    
-    res_df = try(dbGetQuery(conn ,  sprintf( query_base , tablename , lat , lon , radius , tyyppi , count ) ) )
-    if(class(res_df) == 'try-error'){
-      return(NA)  
-    }
-    if(nrow(res_df) == 0){
-      stop('No data found')
-    }
-    
-    return(res_df)
+    stop('could not initialize connection')
+  } 
+  
+  res_df = try(dbGetQuery(conn ,  sprintf( query_base , tablename , lat , lon , radius , tyyppi , count ) ) )
+  if(class(res_df) == 'try-error'){
+    stop( 'Could not execute the query' )  
   }
+  if(nrow(res_df) == 0){
+    stop('No data found')
+  }
+  
+  return(res_df)
 }
+
 
 # 
 # osoite = list()
