@@ -10,7 +10,7 @@ shinyServer(function(input, output, session) {
     textInput("tyo_osoite_from_ui", label = p(""), value = tyo_value_default) 
   })
   output$potentiaalinen_valikko = renderUI({
-    textInput("pontentiaalinen_osoite_from_ui", label = p(""), value = potentiaalinen_value_default) 
+    textInput("potentiaalinen_osoite_from_ui", label = p(""), value = potentiaalinen_value_default) 
   })
   
   ### create map to ui
@@ -44,40 +44,44 @@ shinyServer(function(input, output, session) {
   ### notify ui that map clicked ###
   
   observeEvent(input$map_in_ui_click, {
-    
     click_time <<- Sys.time()
-    cat('LAT:', click_info()$lat, 'LON:' , click_info()$lon ,'\n'  )
+    cat('KLIKKI!!! LAT:', click_info()$lat, 'LON:' , click_info()$lon ,'\n'  )
     
-    if(input$koti_osoite_from_ui==koti_value_default){
+    if( input$koti_osoite_from_ui == koti_value_default ){
+      cat('klikki koski kotia')
+      print(input$koti_osoite_from_ui)
       output$koti_valikko = renderUI({
-        textInput("koti_osoite_from_ui", label = p(""), value = address_from_listing(click_info()$adress_details ) )
+        textInput("koti_osoite_from_ui", label = p("")
+                  , value = address_from_listing(click_info()$adress_details ) )
       })
       
-    } else if(input$tyo_osoite_from_ui==tyo_value_default){
-      
+    } else if( input$tyo_osoite_from_ui == tyo_value_default ){
+      cat('klikki koski tyota')
+      print(input$tyo_osoite_from_ui)
       output$tyo_valikko = renderUI({
-        textInput("tyo_osoite_from_click", label = p(""), value = address_from_listing(click_info()$adress_details ) ) 
+        textInput("tyo_osoite_from_ui", label = p("")
+                  , value = address_from_listing(click_info()$adress_details ) ) 
       })
       
     } else { #(input$pontentiaalinen_osoite_from_ui == potentiaalinen_value_default)
-      
+      cat('klikki koski potentiaalista')
+      print(input$potentiaalinen_osoite_from_ui)
       output$potentiaalinen_valikko = renderUI({
-        textInput("pontentiaalinen_osoite_from_ui", label = p(""), value = address_from_listing(click_info()$adress_details ) )
+        textInput("potentiaalinen_osoite_from_ui", label = p("")
+                  , value = address_from_listing(click_info()$adress_details ) )
       })
     }
   })
   
   ### markkerien päivitys osoitekentän kautta ###
-  
   ### kotiosoite ###
   
   observeEvent(input$koti_osoite_from_ui , {
-    
-    osoite = input$koti_osoite_from_ui
-    if(init_ready){
-      
+    if(input$koti_osoite_from_ui != koti_value_default  ){
+      osoite = input$koti_osoite_from_ui
+      print( 'muutetetaan kotia' )
       ui_time = Sys.time()
-      this_input <<- 'koti'
+      this_input <- 'koti'
       
       # palauta paikkaa koskevat tiedot
       location_info = try(get_location_information(ui_time , click_time , ui_interaction_lag , osoite))
@@ -130,94 +134,132 @@ shinyServer(function(input, output, session) {
             
             home_zip_objects <<- get_zip_objects(location_info$address$postcode)
             home_zip_objects$asuntojen_hinnat$paikka = this_input
-            print(str(home_zip_objects))
-            
           }
+          
+          #### lopuksi päivitetään osoite
+          if(location_info$user_interaction_method == 'click'){
+            new_address = try( address_from_listing(location_info ) )
+            if( validy_check_address(new_address) ){
+              output$koti_valikko = renderUI({
+                textInput("koti_osoite_from_ui", label = p("")
+                          , value = new_address )
+              })
+            }
+          }
+          
         }
-        
       }
     }
-    init_ready <<- T
-  })
+  }) 
+  ### tyoosoite ### 
   
-#   output$asuntojen_hinta_time_series_plot <- renderChart({
-#     if(!is.null(home_zip_objects$asuntojen_hinnat)){
-#       if(ncol(home_zip_objects$asuntojen_hinnat)){
-#         n <- nPlot(Keskiarvo ~ Vuosi, data=home_zip_objects$asuntojen_hinnat
-#                    , type = "lineChart" , group="paikka")
-#         n$chart(useInteractiveGuideline=TRUE)
-#         n$set(dom = 'asuntojen_hinta_time_series_plot', width = 330 , height=280)
-#         n
-#       }
-#     }
-#   })
-  
-  
-  #   observeEvent(input$tyo_valikko , {
-  #     
-  #     if(last_click != 'tyo'){
-  #       
-  #       # print(input$tyo_osoite_from_ui)
-  #       if(input$tyo_osoite_from_ui != 'Työpaikan osoite' ){
-  #         tyoosoite = try(geocode_nominatim(input$tyo_osoite_from_ui))
-  #         if(class(tyoosoite) != 'try-error' ){
-  #           if(!is.null(tyoosoite$lon))
-  #             # print(kotiosoite$lon)
-  #             
-  #             leafletProxy("map_in_ui", session) %>% 
-  #             removeMarker( marker_store[ grep('tyo',marker_store ) ] )
-  #           marker_store <<- marker_store[ !grep('tyo',marker_store ) ]
-  #           
-  #           leafletProxy("map_in_ui" , session) %>%
-  #             addMarkers(lng = tyoosoite$lon
-  #                        , lat = tyoosoite$lat
-  #                        , layerId = 'tyo'
-  #                        , icon = icon_tyo)
-  #           
-  #         } else{
-  #           tyoosoite = NULL
-  #         }
-  #       }
-  #       
-  #       last_added_marker <<- 'tyo'
-  #     } else{
-  #       leafletProxy("map_in_ui", session) %>% 
-  #         removeMarker( marker_store[ grep('tyo',marker_store ) ] )
-  #       marker_store <<- marker_store[ !grep('tyo',marker_store ) ]
-  #     }
-  #   })
-  
-  observeEvent(input$pontentiaalinen_valikko , {
-    
-    if(last_click != 'potentiaalinen'){
+  observeEvent(input$tyo_osoite_from_ui , {
+    if(input$tyo_osoite_from_ui != tyo_value_default ){
+      osoite = input$tyo_osoite_from_ui
+      print( 'muutetetaan tyota' )
+      ui_time = Sys.time()
+      this_input <- 'tyo'
       
-      # print(input$tyo_osoite_from_ui)
-      if(input$pontentiaalinen_osoite_from_ui != 'Potentiaalinen osoite' ){
-        potentiaalinenosoite = try(geocode_nominatim(input$pontentiaalinen_osoite_from_ui))
-        if(class(potentiaalinenosoite) != 'try-error' ){
-          if(!is.null(potentiaalinenosoite$lon))
-            print(potentiaalinenosoite$lon)
+      # palauta paikkaa koskevat tiedot
+      location_info = try(get_location_information(ui_time , click_time , ui_interaction_lag , osoite))
+      
+      ### lisää tyolle markkeri ###  
+      leafletProxy("map_in_ui" , session) %>%
+        addMarkers(lng = location_info$lon
+                   , lat = location_info$lat
+                   , layerId = 'tyo'
+                   , icon = icon_tyo)
+      
+      #### lopuksi päivitetään osoite
+      if(location_info$user_interaction_method == 'click'){
+        new_address = try( address_from_listing(location_info ) )
+        if( validy_check_address(new_address) ){
+          output$tyo_valikko = renderUI({
+            textInput("tyo_osoite_from_ui", label = p("")
+                      , value = new_address )
+          })
+        }
+      }
+      
+    }
+  })  
+  ### potentiaalinen ###
+  
+  observeEvent(input$potentiaalinen_osoite_from_ui , {
+    print('muutos potentiaalisessa')
+    if(input$potentiaalinen_osoite_from_ui != potentiaalinen_value_default ){
+      osoite = input$potentiaalinen_osoite_from_ui
+      print('muutetaan potentiaalista')
+      ui_time = Sys.time()
+      this_input <- 'potentiaalinen'
+      
+      # palauta paikkaa koskevat tiedot
+      location_info = try(get_location_information(ui_time , click_time , ui_interaction_lag , osoite))
+      
+      ### jos koordinaatit löytyvät ###
+      if(!is.null(location_info$lon)){
+        if(class(location_info) !='try-error' ){
           
+          ### lisää kodille markkeri ###  
+          leafletProxy("map_in_ui" , session) %>%
+            addMarkers(lng = location_info$lon
+                       , lat = location_info$lat
+                       , layerId = 'potentiaalinen'
+                       , icon = icon_potentiaalinen)
+          
+          ### poista vanhat potentiaalinenin liityvät markkerit ###
           leafletProxy("map_in_ui", session) %>% 
             removeMarker( marker_store[ grep('potentiaalinen',marker_store ) ] )
           marker_store <<- marker_store[ !grep('potentiaalinen',marker_store ) ]
           
-          leafletProxy("map_in_ui" , session) %>%
-            addMarkers(lng = potentiaalinenosoite$lon
-                       , lat = potentiaalinenosoite$lat
-                       , layerId = 'potentiaalinen'
-                       , icon = icon_potentiaalinen)
+          ### hae koordinaattitason palvelut
           
-          # } else{
-          # potentiaalinenosoite = NULL
+          services = try(get_point_objects(lat=location_info$lat , lon = location_info$lon , radius = radius ))
+          
+          ### lisää uudet potentiaalinenin liittyvät markkerit ###         
+          
+          for( i in 1:length(services)){
+            
+            this_service = services[[i]] 
+            this_name = names(services[i]) 
+            
+            if(class(this_service) != 'try-error' ){
+              
+              these_ids = paste0(this_input , this_service$lon , this_service$lat ) 
+              icon_name = paste0( 'icon_' , this_name , sep=''  ) 
+              
+              leafletProxy("map_in_ui" , session) %>%
+                addMarkers(lng = this_service$lon
+                           , lat = this_service$lat
+                           , layerId = these_ids
+                           , icon = eval(parse(text = icon_name)) ) 
+              marker_store <<- append(marker_store , these_ids )
+              
+            }
+          }
+          
+          # hae zip-tason info
+          
+          if(!is.null(location_info$address$postcode)){
+            
+            home_zip_objects <<- get_zip_objects(location_info$address$postcode)
+            home_zip_objects$asuntojen_hinnat$paikka = this_input
+            print(str(home_zip_objects))
+            
+          }
+          
+          #### lopuksi päivitetään osoite
+          if(location_info$user_interaction_method == 'click'){
+            new_address = try( address_from_listing(location_info ) )
+            if( validy_check_address(new_address) ){
+              output$potentiaalinen_valikko = renderUI({
+                textInput("potentiaalinen_osoite_from_ui", label = p("")
+                          , value = new_address )
+              })
+            }
+          }
         }
       }
-      
-      last_added_marker <<- 'potentiaalinen'
-    } else{
-      leafletProxy("map_in_ui", session) %>% 
-        removeMarker( marker_store[ grep('potentiaalinen',marker_store ) ] )
-      marker_store <<- marker_store[ !grep('potentiaalinen',marker_store ) ]
     }
   })
   
@@ -233,7 +275,7 @@ shinyServer(function(input, output, session) {
       # kun markkeri poistetaan, palauta tekstikenttä oletusasetuksiin
       if(input$map_in_ui_marker_click$id == 'koti'){
         output$koti_valikko = renderUI({
-          textInput("koti_osoite_from_ui", label = p(""), value = "Kotiosoite") 
+          textInput("koti_osoite_from_ui", label = p(""), value = koti_value_default) 
         })
         # ... ja poista markkerrin liittyvät markerit
         leafletProxy("map_in_ui", session) %>% 
@@ -242,7 +284,7 @@ shinyServer(function(input, output, session) {
       }
       else if(input$map_in_ui_marker_click$id == 'tyo'){
         output$tyo_valikko = renderUI({
-          textInput("tyo_osoite_from_ui", label = p(""), value = "Työpaikan osoite") 
+          textInput("tyo_osoite_from_ui", label = p(""), value = tyo_value_default) 
         })
         leafletProxy("map_in_ui", session) %>% 
           removeMarker( marker_store[ grep('tyo',marker_store ) ] )
@@ -251,7 +293,7 @@ shinyServer(function(input, output, session) {
       else if(input$map_in_ui_marker_click$id == 'potentiaalinen') 
       {
         output$potentiaalinen_valikko = renderUI({
-          textInput("pontentiaalinen_osoite_from_ui", label = p(""), value = "Potentiaalinen osoite") 
+          textInput("pontentiaalinen_osoite_from_ui", label = p(""), value = potentiaalinen_value_default) 
         })
         leafletProxy("map_in_ui", session) %>% 
           removeMarker( marker_store[ grep('potentiaalinen',marker_store ) ] )
@@ -361,5 +403,17 @@ shinyServer(function(input, output, session) {
   #     return(test_table_head2)
   #   })
   # output$test_table2 <- renderDataTable({ test_table_head2() })
+  
+  #   output$asuntojen_hinta_time_series_plot <- renderChart({
+  #     if(!is.null(home_zip_objects$asuntojen_hinnat)){
+  #       if(ncol(home_zip_objects$asuntojen_hinnat)){
+  #         n <- nPlot(Keskiarvo ~ Vuosi, data=home_zip_objects$asuntojen_hinnat
+  #                    , type = "lineChart" , group="paikka")
+  #         n$chart(useInteractiveGuideline=TRUE)
+  #         n$set(dom = 'asuntojen_hinta_time_series_plot', width = 330 , height=280)
+  #         n
+  #       }
+  #     }
+  #   })
   
 })

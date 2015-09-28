@@ -164,17 +164,34 @@ reverse_geocode_nominatim = function( lat , lon , key = maquest_key , get='listi
 
 address_from_listing = function(listing_object){
   if( !is.null(listing_object$address$house_number) ){
-    return_value = paste(   listing_object$address$road , ' ' 
+    return_value = try(paste(   listing_object$address$road , ' ' 
                             , listing_object$address$house_number , ', '
                             , listing_object$address$postcode , ' '
-                            , listing_object$address$city , sep='')
+                            , listing_object$address$city , sep='') )
   } else{
-    return_value = paste(   listing_object$address$road , ', ' 
+    return_value = try(paste(   listing_object$address$road , ', ' 
                             , listing_object$address$postcode , ' '
-                            , listing_object$address$city , sep='')
+                            , listing_object$address$city , sep=''))
   }
+  
+  if(class(return_value) == 'try-error'){
+    stop( 'error with address decoding' )
+  }
+  
   return(return_value)
 }
+
+validy_check_address = function(address){
+  require(stringr)
+  if(class(address) != 'try-error'){
+    long_enough = nchar( str_replace_all(address , "[-., ]",'')) > 1
+    if(long_enough){
+      return(TRUE)
+    }
+  }
+  return(FALSE)
+}
+
 
 # example
 # geocode_nominatim('mannerheimintie 53 , helsinki')
