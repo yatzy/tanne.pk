@@ -1,3 +1,16 @@
+# paivakodit
+get_paivakodit = function(lat , lon  , radius ){
+  paivakodit = try(get_palvelu('paivakodit' 
+                                  , lat = lat
+                                  , lon = lon
+                                  , radius = radius ) 
+  )
+  if(class(paivakodit) == 'try-error' ){
+    stop('could not retrieve paivakodit')
+  }
+  return(paivakodit)
+}
+
 # ala asteet
 get_ala_asteet = function(lat , lon  , radius ){
   ala_asteet = try(get_palvelu('ala_asteet' 
@@ -24,6 +37,46 @@ get_yla_asteet = function(lat , lon  , radius ){
   return(yla_asteet)
 }
 
+# kirjastot
+get_kirjastot = function(lat , lon  , radius ){
+  kirjastot = try(get_palvelu('kirjastot' 
+                               , lat = lat
+                               , lon = lon
+                               , radius = radius ) 
+  )
+  if(class(kirjastot) == 'try-error' ){
+    stop('could not retrieve kirjastot')
+  }
+  return(kirjastot)
+}
+
+# sairaalat
+get_sairaalat = function(lat , lon  , radius ){
+  sairaalat = try(get_palvelu('sairaalat' 
+                               , lat = lat
+                               , lon = lon
+                               , radius = radius ) 
+  )
+  if(class(sairaalat) == 'try-error' ){
+    stop('could not retrieve sairaalat')
+  }
+  return(sairaalat)
+}
+
+# terveysasemat
+get_terveysasemat = function(lat , lon  , radius ){
+  terveysasemat = try(get_palvelu('terveysasemat' 
+                               , lat = lat
+                               , lon = lon
+                               , radius = radius ) 
+  )
+  if(class(terveysasemat) == 'try-error' ){
+    stop('could not retrieve terveysasemat')
+  }
+  return(terveysasemat)
+}
+
+
 # ruokakaupat
 get_ruokakaupat = function(lat, lon , radius){
   ruokakaupat = try(get_nearest( conn , 'coord'
@@ -42,7 +95,8 @@ get_ruokakaupat = function(lat, lon , radius){
 get_point_objects = function(lat , lon , radius){
   # lisää tähän kaikki metodikutsut!
   # call ruokakaupat kutsuu metodia get_ruokakaupat(lat = lat , lon = lon , radius = radius )
-  calls = c('ala_asteet' , 'yla_asteet' , 'ruokakaupat')
+  calls = c('ala_asteet' , 'yla_asteet' , 'ruokakaupat' 
+            , 'kirjastot' , 'sairaalat' , 'terveysasemat','paivakodit')
   
   return_list = lapply( calls , function(call){
     try(get_call_object(call, lat=lat , lon=lon , radius = radius )  ) 
