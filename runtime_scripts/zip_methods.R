@@ -4,6 +4,9 @@ get_asuntojen_hinnat = function( zip ){
   on.exit(dbDisconnect(conn), add=TRUE)
   query = paste("select * from asuntojen_hinnat where \"Postinumero\" = '" , zip,"'" , sep='')
   res = dbGetQuery(conn , query)
+  if(ncol(res) == 0 || nrow(res) == 0){
+    stop('no data found for asuntojen hinnat')
+  }
   return(res)
 }
 
@@ -19,7 +22,8 @@ get_alue_info = function(zip){
   if(class(res) =='try-error'){
     stop('alue-info query failed')
   }
-  res = round(res)
+  nums = sapply(res , is.numeric)
+  res[nums] = round(res[nums],3)
   return(res)
 }
 
@@ -44,4 +48,4 @@ get_zip_objects = function(zip){
   return( return_list )
 }
 
-get_zip_objects('00250')
+# get_zip_objects('00250')
