@@ -99,7 +99,7 @@ get_point_objects = function(lat , lon , radius){
             , 'kirjastot' , 'sairaalat' , 'terveysasemat','paivakodit')
   
   return_list = lapply( calls , function(call){
-    try(get_call_object(call, lat=lat , lon=lon , radius = radius )  ) 
+    try(get_point_call_object(call, lat=lat , lon=lon , radius = radius )  ) 
   })
   
   names(return_list) = calls
@@ -108,7 +108,7 @@ get_point_objects = function(lat , lon , radius){
   })
   return_list = return_list[!error_ind]
   if(length(return_list) == 0){
-    stop('No method was successfull')
+    stop('No point method was successfull')
   }
   #   ala_asteet = get_ala_asteet(lat, lon , radius)
   #   yla_asteet = get_yla_asteet(lat, lon , radius)

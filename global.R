@@ -21,6 +21,7 @@ setwd(this_dir)
 
 
 source('runtime_scripts/utilities.R')
+source('runtime_scripts/zippify.R')
 source('runtime_scripts/get_location_information.R')
 source('runtime_scripts/geocode_nominatim.R')
 source('runtime_scripts/get_nearest.R')
