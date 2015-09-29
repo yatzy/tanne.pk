@@ -21,6 +21,7 @@ setwd(this_dir)
 
 
 source('runtime_scripts/utilities.R')
+source('runtime_scripts/zippify.R')
 source('runtime_scripts/get_location_information.R')
 source('runtime_scripts/geocode_nominatim.R')
 source('runtime_scripts/get_nearest.R')
@@ -29,12 +30,18 @@ source('runtime_scripts/point_methods.R')
 source('runtime_scripts/zip_methods.R')
 
 ### iconit
+
 icon_koti <- icons(iconUrl = 'icons/live/home.svg' , iconWidth = 60)
 icon_potentiaalinen <- icons(iconUrl = 'icons/live/potential.svg' , iconWidth = 60)
 icon_tyo <- icons(iconUrl = 'icons/live/work.svg' , iconWidth = 60)
-icon_ruokakaupat <- icons(iconUrl = 'icons/live/shop.svg' , iconWidth = 45)
-icon_ala_asteet <- icons(iconUrl = 'icons/live/school.svg' , iconWidth = 45)
-icon_yla_asteet <- icons(iconUrl = 'icons/live/high_school.svg' , iconWidth = 45)
+
+icon_ruokakaupat <- icons(iconUrl = 'icons/live/shop.svg' , iconWidth = 45) # lisatty
+icon_ala_asteet <- icons(iconUrl = 'icons/live/school.svg' , iconWidth = 45) # lisatty
+icon_yla_asteet <- icons(iconUrl = 'icons/live/high_school.svg' , iconWidth = 45) # lisatty
+icon_paivakodit <- icons(iconUrl = 'icons/live/kinderkarten3.svg' , iconWidth = 45) # lisatty
+icon_kirjastot <- icons(iconUrl = 'icons/live/library.svg' , iconWidth = 45) # lisatty
+icon_terveysasemat <- icons(iconUrl = 'icons/live/health_center.svg' , iconWidth = 45) # lisatty
+icon_sairaalat <- icons(iconUrl = 'icons/live/hospital.svg' , iconWidth = 45) # lisatty
 
 ### asetukset tahan
 

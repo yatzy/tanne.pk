@@ -16,11 +16,16 @@ id palvelu
 26972 lukiot
 34194 ala_asteet
 34272 yla_asteet
+25004 sairaalat
 25002 terveysasemat
-25626 kirjastot') , sep =' ' , header = T)
+25624 kirjastot') , sep =' ' , header = T)
 
 get_palvelunumero = function(palvelu){
-  return(palvelutaulu[ palvelutaulu$palvelu == palvelu , 'id'  ])
+  palvelu = try(palvelutaulu[ palvelutaulu$palvelu == palvelu , 'id'  ])
+  if(class(palvelu) == 'try-error'){
+    stop('could not map palvelu to palvelunumero')
+  }
+  return(palvelu)
 }
 
 list_palvelut = function(){
