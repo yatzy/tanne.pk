@@ -5,7 +5,7 @@ library(dplyr)
 library(leaflet)
 library(ggmap)
 library(rCharts)
-# library(shinythemes)
+library(reshape2)
 library(RPostgreSQL)
 library(sp)
 

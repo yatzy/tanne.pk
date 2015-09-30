@@ -122,6 +122,7 @@ get_point_objects = function(lat , lon , radius){
   return( return_list )
 }
 
+
 # example
 # lat = 60.226516;lon= 24.890556;radius =  1
 # lat = 60.18288

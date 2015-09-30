@@ -138,22 +138,7 @@ shinyServer(function(input, output, session) {
           
           
           update_zip_objects(location_info , this_input,zip_objects)
-          #           if(!is.null(location_info$address$postcode)){
-          #             
-          #             koti_zip_objects <- try(get_zip_objects(location_info$address$postcode))
-          #             if(class(koti_zip_objects) != 'try-error'){
-          #               if(length(koti_zip_objects)>0){
-          #                 koti_zip_objects$asuntojen_hinnat$paikka = this_input
-          #                 koti_zip_objects$alue_info$paikka = this_input
-          #                 
-          #                 zip_objects$koti_zip_objects = koti_zip_objects
-          #                 
-          #                 print(str(zip_objects$koti_zip_objects))
-          #                 
-          #               }
-          #             }
-          #           }
-          
+
           #### lopuksi päivitetään osoite
           if(location_info$user_interaction_method == 'click'){
             new_address = try( address_from_listing(location_info ) )
@@ -258,22 +243,7 @@ shinyServer(function(input, output, session) {
           # hae zip-tason info
           
           update_zip_objects(location_info , this_input , zip_objects)
-          #           if(!is.null(location_info$address$postcode)){
-          #             
-          #             potentiaalinen_zip_objects <- try(get_zip_objects(location_info$address$postcode))
-          #             if(class(potentiaalinen_zip_objects) != 'try-error'){
-          #               if(length(potentiaalinen_zip_objects)>0){
-          #                 potentiaalinen_zip_objects$asuntojen_hinnat$paikka = this_input
-          #                 potentiaalinen_zip_objects$alue_info$paikka = this_input
-          #                 
-          #                 zip_objects$potentiaalinen_zip_objects = potentiaalinen_zip_objects
-          #                 
-          #                   print(str(zip_objects$potentiaalinen_zip_objects))
-          #                 
-          #               }
-          #             }
-          #           }
-          
+
           #### lopuksi päivitetään osoite
           if(location_info$user_interaction_method == 'click'){
             new_address = try( address_from_listing(location_info ) )
@@ -307,8 +277,9 @@ shinyServer(function(input, output, session) {
             # poista markkerrin liittyvät markerit
             leafletProxy("map_in_ui", session) %>% 
               clearGroup(this_input)
-            # removeMarker( marker_store[ grep('koti',marker_store ) ] )
-            marker_store <<- marker_store[ !grep('koti',marker_store ) ]
+
+            # poista markkeriin liittyvät zip-objektit
+            remove_zip_objects_for(this_input,zip_objects)
             
             # ... ja palauta tekstikenttä oletusasetuksiin  
             output$koti_valikko = renderUI({
@@ -332,8 +303,8 @@ shinyServer(function(input, output, session) {
             
             leafletProxy("map_in_ui", session) %>% 
               clearGroup(this_input)
-            # removeMarker( marker_store[ grep('potentiaalinen',marker_store ) ] )
-            # marker_store <<- marker_store[ !grep('potentiaalinen',marker_store ) ]
+
+            remove_zip_objects_for(this_input,zip_objects)
             
             output$potentiaalinen_valikko = renderUI({
               textInput("pontentiaalinen_osoite_from_ui", label = p(""), value = potentiaalinen_value_default) 
@@ -345,23 +316,49 @@ shinyServer(function(input, output, session) {
   })
   ##################### visut  #####################
   
+  # asuntojen hinnat
   output$asuntojen_hinnat_plot <- renderPlot({
     if(!is.null(zip_objects$asuntojen_hinnat)){
       
+      if(is.numeric(zip_objects$asuntojen_hinnat$Vuosi)){
+        
       maxvuosi = max(zip_objects$asuntojen_hinnat$Vuosi)
       minvuosi = min(zip_objects$asuntojen_hinnat$Vuosi)
       meanvuosi = floor(mean(c(maxvuosi,minvuosi)))
-      
-      
-      ggplot(zip_objects$asuntojen_hinnat , aes(x=Vuosi , y=Keskiarvo , group=paikka , color=paikka)) + 
+
+      ggplot(zip_objects$asuntojen_hinnat , aes(x=Vuosi , y=Keskiarvo , color=paikka)) + 
         geom_line( size = 2 ) + 
         scale_x_continuous('Vuosi' , breaks=c(minvuosi,meanvuosi,maxvuosi) ) + 
+        scale_color_manual( values = paletti ) + 
         ylab('Hinta (e/m^2)') + 
-        theme(legend.position = "bottom")
-      #     plot(zip_objects$asuntojen_hinnat$Vuosi
-      #          ,zip_objects$asuntojen_hinnat[,3]  )
+        theme(legend.position = "none") + 
+        ggtitle('Asuntojen hinnat')
+      }
     }
   })
+  
+  output$ikajakauma_plot <- renderPlot({
+    if(!is.null(zip_objects$alue_info)){
+      
+      data = melt(zip_objects$alue_info[ , c('paikka','x.0.15.vuotiaat','x.16.29.vuotiaat','x.30.59.vuotiaat','x.yli.60.vuotiaat')])
+      print(data)
+      print(str(data))
+      data$value = data$value*100
+      data$variable = as.character(data$variable) %>% gsub( 'x.','',.) %>% gsub('.','-',.)
+      print(str(data))
+      print(data)
+      
+      
+      ggplot(data , aes(x=Vuosi , y=Keskiarvo , color=paikka)) + 
+        geom_line( size = 2 ) + 
+        scale_x_continuous('Vuosi' , breaks=c(minvuosi,meanvuosi,maxvuosi) ) + 
+        scale_color_manual( values = paletti ) + 
+        ylab('Hinta (e/m^2)') + 
+        theme(legend.position = "none") + 
+        ggtitle('Asuntojen hinnat')
+    }
+  })
+  
   
   #   asuntojen_hinnat_plot = reactive({
   #     asuntojen_hinnat = try(rbind(koti_zip_objects$asuntojen_hinnat , potentiaalinen_zip_objects$asuntojen_hinnat))

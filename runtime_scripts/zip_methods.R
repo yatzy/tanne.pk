@@ -60,8 +60,8 @@ update_zip_objects = function(location_info , this_input , zip_objects){
         data$alue_info$paikka = this_input
         
         # poista vanhat paikkaan liittyvät havainnot
-        print(zip_objects$asuntojen_hinnat)
-        print(data$asuntojen_hinnat)
+        # print(zip_objects$asuntojen_hinnat)
+        # print(data$asuntojen_hinnat)
         
         if(!is.null(zip_objects$asuntojen_hinnat)){
           zip_objects$asuntojen_hinnat = subset(zip_objects$asuntojen_hinnat , zip_objects$asuntojen_hinnat$paikka != this_input)
@@ -75,9 +75,9 @@ update_zip_objects = function(location_info , this_input , zip_objects){
         if(!is.null(data$asuntojen_hinnat)){
           if(is.data.frame(data$asuntojen_hinnat)){
             if(ncol(data$asuntojen_hinnat)>0 && nrow(data$asuntojen_hinnat)>0){
-              print(dim(zip_objects$asuntojen_hinnat))
+              # print(dim(zip_objects$asuntojen_hinnat))
               zip_objects$asuntojen_hinnat = rbind(zip_objects$asuntojen_hinnat , data$asuntojen_hinnat )
-              print(dim(zip_objects$asuntojen_hinnat))
+              # print(dim(zip_objects$asuntojen_hinnat))
             }
           }
           if(!is.null(data$alue_info)){
@@ -87,13 +87,18 @@ update_zip_objects = function(location_info , this_input , zip_objects){
             }
           }
         }
-        print(zip_objects$asuntojen_hinnat)
-        print(str(zip_objects))
-        
       }
     }
   }
-  
+}
+
+remove_zip_objects_for = function(this_input,zip_objects){
+  if(!is.null(zip_objects$asuntojen_hinnat)){
+    zip_objects$asuntojen_hinnat = subset(zip_objects$asuntojen_hinnat , zip_objects$asuntojen_hinnat$paikka != this_input)
+  }
+  if(!is.null(zip_objects$alue_info)){
+    zip_objects$alue_info = subset(zip_objects$alue_info , zip_objects$alue_info$paikka != this_input)
+  }
 }
 
 # get_zip_objects('00250')

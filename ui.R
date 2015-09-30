@@ -19,6 +19,7 @@ shinyUI(
                             # , h5('Hyvin menee')
                             #, plotOutput( "koti_pic" )
                             , plotOutput("asuntojen_hinnat_plot"  )
+                            , plotOutput("ikajakauma_plot"  )
         )
       )
       , mainPanel(  
