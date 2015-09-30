@@ -13,6 +13,9 @@ shinyServer(function(input, output, session) {
     textInput("potentiaalinen_osoite_from_ui", label = p(""), value = potentiaalinen_value_default) 
   })
   
+  # zip_objects = reactiveValues(koti_zip_objects = NULL , potentiaalinen_zip_objects = NULL )
+  zip_objects = reactiveValues(asuntojen_hinnat = NULL , alue_info = NULL )
+  
   ### create map to ui
   
   output$map_in_ui <- renderLeaflet({
@@ -28,6 +31,8 @@ shinyServer(function(input, output, session) {
   # click_info() - functio palauttaa viimeisimmän karttaklikin leveys- ja pituuspiirit, sekä osoitetiedot
   
   click_info <<- eventReactive(input$map_in_ui_click , { 
+    click_count <<- click_count + 1
+    print(click_count)
     list(
       lat = as.numeric(input$map_in_ui_click$lat)
       , lon = as.numeric(input$map_in_ui_click$lng)
@@ -131,18 +136,23 @@ shinyServer(function(input, output, session) {
           }
           ### hae zip-tason info
           
-          if(!is.null(location_info$address$postcode)){
-            
-            koti_zip_objects <- try(get_zip_objects(location_info$address$postcode))
-            if(class(koti_zip_objects) != 'try-error'){
-              if(length(koti_zip_objects)>0){
-                print(str(koti_zip_objects))
-                koti_zip_objects$asuntojen_hinnat$paikka = this_input
-                koti_zip_objects$alue_info$paikka = this_input
-                koti_zip_objects <<- koti_zip_objects
-              }
-            }
-          }
+          
+          update_zip_objects(location_info , this_input,zip_objects)
+          #           if(!is.null(location_info$address$postcode)){
+          #             
+          #             koti_zip_objects <- try(get_zip_objects(location_info$address$postcode))
+          #             if(class(koti_zip_objects) != 'try-error'){
+          #               if(length(koti_zip_objects)>0){
+          #                 koti_zip_objects$asuntojen_hinnat$paikka = this_input
+          #                 koti_zip_objects$alue_info$paikka = this_input
+          #                 
+          #                 zip_objects$koti_zip_objects = koti_zip_objects
+          #                 
+          #                 print(str(zip_objects$koti_zip_objects))
+          #                 
+          #               }
+          #             }
+          #           }
           
           #### lopuksi päivitetään osoite
           if(location_info$user_interaction_method == 'click'){
@@ -218,8 +228,6 @@ shinyServer(function(input, output, session) {
           ### poista vanhat potentiaalinenin liityvät markkerit ###
           leafletProxy("map_in_ui", session) %>% 
             clearGroup(this_input)
-          # removeMarker( marker_store[ grep('potentiaalinen',marker_store ) ] )
-          # marker_store <<- marker_store[ !grep('potentiaalinen',marker_store ) ]
           
           ### hae koordinaattitason palvelut
           
@@ -235,7 +243,6 @@ shinyServer(function(input, output, session) {
                 
                 if(class(this_service) != 'try-error' ){
                   if(length(this_service$lon)>0){
-                    # these_ids = paste0(this_input , this_service$lon , this_service$lat ) 
                     icon_name = paste0( 'icon_' , this_name , sep=''  ) 
                     
                     leafletProxy("map_in_ui" , session) %>%
@@ -243,7 +250,6 @@ shinyServer(function(input, output, session) {
                                  , lat = this_service$lat
                                  , group = this_input
                                  , icon = eval(parse(text = icon_name)) ) 
-                    # marker_store <<- append(marker_store , these_ids )
                   }
                 }
               }
@@ -251,18 +257,22 @@ shinyServer(function(input, output, session) {
           }
           # hae zip-tason info
           
-          if(!is.null(location_info$address$postcode)){
-            
-            potentiaalinen_zip_objects <- try(get_zip_objects(location_info$address$postcode))
-            if(class(potentiaalinen_zip_objects) != 'try-error'){
-              if(length(potentiaalinen_zip_objects)>0){
-                print(str(potentiaalinen_zip_objects))
-                potentiaalinen_zip_objects$asuntojen_hinnat$paikka = this_input
-                potentiaalinen_zip_objects$alue_info$paikka = this_input
-                potentiaalinen_zip_objects <<- potentiaalinen_zip_objects
-              }
-            }
-          }
+          update_zip_objects(location_info , this_input , zip_objects)
+          #           if(!is.null(location_info$address$postcode)){
+          #             
+          #             potentiaalinen_zip_objects <- try(get_zip_objects(location_info$address$postcode))
+          #             if(class(potentiaalinen_zip_objects) != 'try-error'){
+          #               if(length(potentiaalinen_zip_objects)>0){
+          #                 potentiaalinen_zip_objects$asuntojen_hinnat$paikka = this_input
+          #                 potentiaalinen_zip_objects$alue_info$paikka = this_input
+          #                 
+          #                 zip_objects$potentiaalinen_zip_objects = potentiaalinen_zip_objects
+          #                 
+          #                   print(str(zip_objects$potentiaalinen_zip_objects))
+          #                 
+          #               }
+          #             }
+          #           }
           
           #### lopuksi päivitetään osoite
           if(location_info$user_interaction_method == 'click'){
@@ -335,29 +345,57 @@ shinyServer(function(input, output, session) {
   })
   ##################### visut  #####################
   
-  asuntojen_hinnat = reactive({
-    asuntojen_hinnat = try(merge(koti_zip_objects$asuntojen_hinnat , potentiaalinen_zip_objects$asuntojen_hinnat , by='Vuosi'))
-    
-    if(class(asuntojen_hinnat) == 'try-error'){
-      if(is.null(koti_zip_objects$asuntojen_hinnat)){
-        cat('koti_zip_objects$asuntojen_hinnat not found')
-        asuntojen_hinnat = potentiaalinen_zip_objects$asuntojen_hinnat
-      } else if(is.null(potentiaalinen_zip_objects$asuntojen_hinnat)){
-        cat('potentiaalinen_zip_objects$asuntojen_hinnat not found')
-        asuntojen_hinnat = potentiaalinen_zip_objects$asuntojen_hinnat
-      } 
+  output$asuntojen_hinnat_plot <- renderPlot({
+    if(!is.null(zip_objects$asuntojen_hinnat)){
+      
+      maxvuosi = max(zip_objects$asuntojen_hinnat$Vuosi)
+      minvuosi = min(zip_objects$asuntojen_hinnat$Vuosi)
+      meanvuosi = floor(mean(c(maxvuosi,minvuosi)))
+      
+      
+      ggplot(zip_objects$asuntojen_hinnat , aes(x=Vuosi , y=Keskiarvo , group=paikka , color=paikka)) + 
+        geom_line( size = 2 ) + 
+        scale_x_continuous('Vuosi' , breaks=c(minvuosi,meanvuosi,maxvuosi) ) + 
+        ylab('Hinta (e/m^2)') + 
+        theme(legend.position = "bottom")
+      #     plot(zip_objects$asuntojen_hinnat$Vuosi
+      #          ,zip_objects$asuntojen_hinnat[,3]  )
     }
-    return(asuntojen_hinnat)
   })
   
-  output$asuntojen_hinta_time_series_plot <- renderChart({
-    
-    print( 'asuntojen_hinnat:',asuntojen_hinnat() )
-    n <- nPlot(Keskiarvo.x ~ Vuosi, data=asuntojen_hinnat(), type = "lineChart" , group="paikka")
-    n$chart(useInteractiveGuideline=TRUE)
-    n$set(dom = 'test_data_time_series_plot', width = 330 , height=280)
-    n
-  })
+  #   asuntojen_hinnat_plot = reactive({
+  #     asuntojen_hinnat = try(rbind(koti_zip_objects$asuntojen_hinnat , potentiaalinen_zip_objects$asuntojen_hinnat))
+  #     print(asuntojen_hinnat)
+  #     
+  #     if(class(asuntojen_hinnat) == 'try-error'){
+  #       if(is.null(koti_zip_objects$asuntojen_hinnat)){
+  #         cat('koti_zip_objects$asuntojen_hinnat not found')
+  #         asuntojen_hinnat = potentiaalinen_zip_objects$asuntojen_hinnat
+  #       } else if(is.null(potentiaalinen_zip_objects$asuntojen_hinnat)){
+  #         cat('potentiaalinen_zip_objects$asuntojen_hinnat not found')
+  #         asuntojen_hinnat = koti_zip_object$sasuntojen_hinnat
+  #       } 
+  #     }
+  #     asuntojen_hinnat_plot = ggplot(asuntojen_hinnat , aes(x=Vuosi , y=Keskirarvo , group=Paikka)) + 
+  #       geom_line()
+  #     return(print(asuntojen_hinnat_plot))
+  #   })
+  
+  #   asuntojen_hinta_data = reactive({
+  #     if(is.null(koti_zip_objects$asuntojen_hinnat)){
+  #       koti_zip_objects$asuntojen_hinnat
+  #     }
+  #     koti_zip_objects$asuntojen_hinnat
+  #     
+  #   })
+  
+  #   output$asuntojen_hinnat_plot <- renderPlot({
+  #     ggplot(asuntojen_hinta_data() , aes(x=Vuosi , y = Keskiarvo , group=paikka)) + 
+  #       geom_line()
+  #   })
+  #   output$asuntojen_hinnat_plot <- renderPlot({
+  #     asuntojen_hinnat_plot()
+  #   })
   
   
   ##################### HAUT   ##################### 
@@ -409,68 +447,69 @@ shinyServer(function(input, output, session) {
   
   ################################## DEBUGGAUS ##################################
   
-  test_data_time_series = data.frame(  value = c(cumsum(rnorm( 16,0,1 ) ) , cumsum(rnorm( 16,0,1 ) ) )
-                                       , paikka = rep( c('koti','muutto') , each=16 )
-                                       , vuosi = 2000:2015)
-  
-  output$test_data_time_series_plot <- renderChart({
-    n <- nPlot(value ~ vuosi, data=test_data_time_series, type = "lineChart" , group="paikka")
-    #     n$xAxis(tickFormat ="#!function (d) {return d3.time.format('%m/%Y')(new Date(d * 86400000 ));}!#",showMaxMin=FALSE)
-    #     n$yAxis(tickFormat ="#!function (d) {return d3.format('.1f')(d);}!#",showMaxMin = FALSE)
-    n$chart(useInteractiveGuideline=TRUE)
-    n$set(dom = 'test_data_time_series_plot', width = 330 , height=280)
-    n
-  })
-  
-  # example placeholder for texst
-  output$kotiosoite <- renderText({ paste( input$koti_osoite_from_ui ) })
-  output$muutto_osoite <- renderPrint({ cat(input$muutto_osoite_from_ui) })
-  # example placeholder for pictures  
-  output$koti_pic = renderPlot( plot(1:10) )
-  output$muutto_pic = renderPlot( plot(10:1) )
-  
-  
-  # output$click_... - textit debuggausta varten
-  output$click_latlon = renderText( paste( 'click lon lat: ' , click_info()$rounded[1] , click_info()$rounded[2]  ))
-  output$click_address = renderText( paste( 'address: ' 
-                                            , reverse_geocode_nominatim(lat = click_info()$value[2] 
-                                                                        , lon = click_info()$value[1]  )))
-  # palauttaa kaiken click_info()-funktion antaman infon yhtenä pötkönä
-  output$click_all_info = renderText(
-    paste( reverse_geocode_nominatim(lat = click_info()$value[2] 
-                                     , lon = click_info()$value[1] 
-                                     , get = 'listing' ) )
-  )
-  
-  # testitaulukko
-  test_table_head = reactive({
-    test_table_head =head(
-      get_nearest( conn , 'coord' , click_info()$value[2] , click_info()$value[1] , 2 , 'Ruokakaupat' , 100 ) 
-      , 2 )
-    #print(test_table_head)
-    return(test_table_head)
-  })
-  output$test_table <- renderDataTable({ test_table_head() })
-  #   # testitaulukko2
-  #   test_table_head2 = reactive({
-  #     test_table_head2 =head(
-  #       get_palvelu('ala_asteet' , lat = click_info()$value[2] , lon = click_info()$value[2],distance=10 )      
-  #       , 2 )
-  #     print(test_table_head2)
-  #     return(test_table_head2)
-  #   })
-  # output$test_table2 <- renderDataTable({ test_table_head2() })
-  
-  #   output$asuntojen_hinta_time_series_plot <- renderChart({
-  #     if(!is.null(home_zip_objects$asuntojen_hinnat)){
-  #       if(ncol(home_zip_objects$asuntojen_hinnat)){
-  #         n <- nPlot(Keskiarvo ~ Vuosi, data=home_zip_objects$asuntojen_hinnat
-  #                    , type = "lineChart" , group="paikka")
-  #         n$chart(useInteractiveGuideline=TRUE)
-  #         n$set(dom = 'asuntojen_hinta_time_series_plot', width = 330 , height=280)
-  #         n
-  #       }
-  #     }
-  #   })
-  
+  if(DEBUG){
+    test_data_time_series = data.frame(  value = c(cumsum(rnorm( 16,0,1 ) ) , cumsum(rnorm( 16,0,1 ) ) )
+                                         , paikka = rep( c('koti','muutto') , each=16 )
+                                         , vuosi = 2000:2015)
+    
+    output$test_data_time_series_plot <- renderChart({
+      n <- nPlot(value ~ vuosi, data=test_data_time_series, type = "lineChart" , group="paikka")
+      #     n$xAxis(tickFormat ="#!function (d) {return d3.time.format('%m/%Y')(new Date(d * 86400000 ));}!#",showMaxMin=FALSE)
+      #     n$yAxis(tickFormat ="#!function (d) {return d3.format('.1f')(d);}!#",showMaxMin = FALSE)
+      n$chart(useInteractiveGuideline=TRUE)
+      n$set(dom = 'test_data_time_series_plot', width = 330 , height=280)
+      n
+    })
+    
+    # example placeholder for texst
+    output$kotiosoite <- renderText({ paste( input$koti_osoite_from_ui ) })
+    output$muutto_osoite <- renderPrint({ cat(input$muutto_osoite_from_ui) })
+    # example placeholder for pictures  
+    output$koti_pic = renderPlot( plot(1:10) )
+    output$muutto_pic = renderPlot( plot(10:1) )
+    
+    
+    # output$click_... - textit debuggausta varten
+    output$click_latlon = renderText( paste( 'click lon lat: ' , click_info()$rounded[1] , click_info()$rounded[2]  ))
+    output$click_address = renderText( paste( 'address: ' 
+                                              , reverse_geocode_nominatim(lat = click_info()$value[2] 
+                                                                          , lon = click_info()$value[1]  )))
+    # palauttaa kaiken click_info()-funktion antaman infon yhtenä pötkönä
+    output$click_all_info = renderText(
+      paste( reverse_geocode_nominatim(lat = click_info()$value[2] 
+                                       , lon = click_info()$value[1] 
+                                       , get = 'listing' ) )
+    )
+    
+    # testitaulukko
+    test_table_head = reactive({
+      test_table_head =head(
+        get_nearest( conn , 'coord' , click_info()$value[2] , click_info()$value[1] , 2 , 'Ruokakaupat' , 100 ) 
+        , 2 )
+      #print(test_table_head)
+      return(test_table_head)
+    })
+    output$test_table <- renderDataTable({ test_table_head() })
+    #   # testitaulukko2
+    #   test_table_head2 = reactive({
+    #     test_table_head2 =head(
+    #       get_palvelu('ala_asteet' , lat = click_info()$value[2] , lon = click_info()$value[2],distance=10 )      
+    #       , 2 )
+    #     print(test_table_head2)
+    #     return(test_table_head2)
+    #   })
+    # output$test_table2 <- renderDataTable({ test_table_head2() })
+    
+    #   output$asuntojen_hinta_time_series_plot <- renderChart({
+    #     if(!is.null(home_zip_objects$asuntojen_hinnat)){
+    #       if(ncol(home_zip_objects$asuntojen_hinnat)){
+    #         n <- nPlot(Keskiarvo ~ Vuosi, data=home_zip_objects$asuntojen_hinnat
+    #                    , type = "lineChart" , group="paikka")
+    #         n$chart(useInteractiveGuideline=TRUE)
+    #         n$set(dom = 'asuntojen_hinta_time_series_plot', width = 330 , height=280)
+    #         n
+    #       }
+    #     }
+    #   })
+  } # debug loppuu
 })

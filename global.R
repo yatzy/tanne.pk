@@ -43,12 +43,20 @@ icon_kirjastot <- icons(iconUrl = 'icons/live/library.svg' , iconWidth = 45) # l
 icon_terveysasemat <- icons(iconUrl = 'icons/live/health_center.svg' , iconWidth = 45) # lisatty
 icon_sairaalat <- icons(iconUrl = 'icons/live/hospital.svg' , iconWidth = 45) # lisatty
 
+### varit
+koti_vari = rgb( 0,92,148 ,maxColorValue = 255 )
+potentiaalinen_vari = rgb( 108,220,250 ,maxColorValue = 255 )
+paletti = c(koti_vari , potentiaalinen_vari)
+
 ### asetukset tahan
 
-DEBUG = T
+DEBUG = F
 radius = 1
+click_count = 0
 init_ready = F
 ui_interaction_lag = 5 # seconds
 koti_value_default = "Kotiosoite"
 tyo_value_default = "Työosoite"
 potentiaalinen_value_default = "Potentiaalinen osoite"
+
+theme_set(theme_bw())

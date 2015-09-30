@@ -13,12 +13,12 @@ shinyUI(
         , uiOutput("koti_valikko")
         , uiOutput("tyo_valikko")
         , uiOutput("potentiaalinen_valikko")
-        , actionButton("reset_button", "Nollaa osoitteet")
+        # , actionButton("reset_button", "Nollaa osoitteet")
         
         , conditionalPanel( condition = "input.kotiosoite_from_ui != 'Kotiosoite'"
-                            , h5('Hyvin menee')
+                            # , h5('Hyvin menee')
                             #, plotOutput( "koti_pic" )
-                            , showOutput("asuntojen_hinta_time_series_plot" , 'polycharts' )
+                            , plotOutput("asuntojen_hinnat_plot"  )
         )
       )
       , mainPanel(  
