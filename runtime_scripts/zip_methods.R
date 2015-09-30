@@ -49,6 +49,7 @@ get_zip_objects = function(zip){
 }
 
 update_zip_objects = function(location_info , this_input , zip_objects){
+  
   if(!is.null(location_info$address$postcode)){
     
     data <- try(get_zip_objects(location_info$address$postcode))
@@ -59,34 +60,30 @@ update_zip_objects = function(location_info , this_input , zip_objects){
         data$asuntojen_hinnat$paikka = this_input
         data$alue_info$paikka = this_input
         
-        # poista vanhat paikkaan liittyvät havainnot
-        # print(zip_objects$asuntojen_hinnat)
-        # print(data$asuntojen_hinnat)
         
-        if(!is.null(zip_objects$asuntojen_hinnat)){
-          zip_objects$asuntojen_hinnat = subset(zip_objects$asuntojen_hinnat , zip_objects$asuntojen_hinnat$paikka != this_input)
-        }
-        if(!is.null(zip_objects$alue_info)){
-          zip_objects$alue_info = subset(zip_objects$alue_info , zip_objects$alue_info$paikka != this_input)
-        }
-        
+        # if(!is.null(zip_objects$asuntojen_hinnat)){
         # paivita paiikaan liittyva info
+        zip_objects$asuntojen_hinnat = subset(zip_objects$asuntojen_hinnat , zip_objects$asuntojen_hinnat$paikka != this_input)
         
-        if(!is.null(data$asuntojen_hinnat)){
-          if(is.data.frame(data$asuntojen_hinnat)){
-            if(ncol(data$asuntojen_hinnat)>0 && nrow(data$asuntojen_hinnat)>0){
-              # print(dim(zip_objects$asuntojen_hinnat))
-              zip_objects$asuntojen_hinnat = rbind(zip_objects$asuntojen_hinnat , data$asuntojen_hinnat )
-              # print(dim(zip_objects$asuntojen_hinnat))
-            }
-          }
-          if(!is.null(data$alue_info)){
-            if(is.data.frame(data$alue_info)){
-              if(ncol(data$alue_info)>0 && nrow(data$alue_info)>0)
-                zip_objects$alue_info = rbind(zip_objects$alue_info , data$alue_info )
-            }
+        if(is.data.frame(data$asuntojen_hinnat)){
+          if(ncol(data$asuntojen_hinnat)>0 && nrow(data$asuntojen_hinnat)>0){
+            # poista vanhat paikkaan liittyvät havainnot
+            zip_objects$asuntojen_hinnat = rbind(zip_objects$asuntojen_hinnat , data$asuntojen_hinnat )
+            # print(dim(zip_objects$asuntojen_hinnat))
           }
         }
+        # }
+        # if(!is.null(zip_objects$alue_info)){
+        # paivita paiikaan liittyva info
+        zip_objects$alue_info = subset(zip_objects$alue_info , zip_objects$alue_info$paikka != this_input)
+        if(!is.null(data$alue_info)){
+          if(is.data.frame(data$alue_info)){
+            if(ncol(data$alue_info)>0 && nrow(data$alue_info)>0)
+              # paivita paiikaan liittyva info
+              zip_objects$alue_info = rbind(zip_objects$alue_info , data$alue_info )
+          }
+        }
+        # }
       }
     }
   }

@@ -1,32 +1,49 @@
 
 shinyUI(
   fluidPage(
-#     theme = shinytheme("cerulean") ,
-     sidebarLayout(
+    #     theme = shinytheme("cerulean") ,
+    sidebarLayout(fluid = F
       
       ### vasemman puolen paneeeli
       
-      sidebarPanel(  style = "background-color: #ffffff;"
-        , width = 3               
-        , h3("Osoitteet")
-        # , textInput("kotiosoite_from_ui", label = p(""), value = "Kotiosoite") 
-        , uiOutput("koti_valikko")
-        , uiOutput("tyo_valikko")
-        , uiOutput("potentiaalinen_valikko")
-        # , actionButton("reset_button", "Nollaa osoitteet")
-        
-        , conditionalPanel( condition = "input.kotiosoite_from_ui != 'Kotiosoite'"
-                            # , h5('Hyvin menee')
-                            #, plotOutput( "koti_pic" )
-                            , plotOutput("asuntojen_hinnat_plot"  )
-                            , plotOutput("ikajakauma_plot"  )
-        )
+     , sidebarPanel(  style = "background-color: #ffffff;"
+                      ,tags$style(type="text/css", ".tab-content { overflow: visible; }")
+                     , width = 3               
+                     
+#                      ,   tags$head(
+#                        # Include our custom CSS
+#                        includeCSS("styles.css")
+#                        #, includeScript("gomap.js")
+#                      )             
+                     
+                     , h3("Osoitteet")
+                     
+                     , uiOutput("koti_valikko")
+                     , uiOutput("tyo_valikko")
+                     , uiOutput("potentiaalinen_valikko")
+                     
+                     , plotOutput("asuntojen_hinnat_plot" , height = "250px" )
+                     , plotOutput("talojakauma_plot" , height = "150px"   )
+                     , plotOutput("koulutusjakauma_plot" , height = "200px"   )
+                     , plotOutput("toimintajakauma_plot" , height = "250px"   )
+                     , plotOutput("ikajakauma_plot" , height = "250px"   )
+                     #         , conditionalPanel( condition = "input.kotiosoite_from_ui != 'Kotiosoite'"
+                     #                             , plotOutput("asuntojen_hinnat_plot" , height = "250px" )
+                     #                             , plotOutput("talojakauma_plot" , height = "150px"   )
+                     #                             , plotOutput("koulutusjakauma_plot" , height = "200px"   )
+                     #                             , plotOutput("toimintajakauma_plot" , height = "250px"   )
+                     #                             , plotOutput("ikajakauma_plot" , height = "250px"   )
+                     #         )
       )
+      
+      # pääpaneeli
+      
       , mainPanel(  
+        # tags$style(type = "text/css", "html, body {width:100%;height:100%}")
         width = 9
         # render map created in server.r
-        #, leafletOutput("map_in_ui" , width = "0", height = "0")
-        , leafletOutput("map_in_ui" , width = "100%", height = "1800")
+        , leafletOutput("map_in_ui" , width = "100%", height = "1000px")
+        # , leafletOutput("map_in_ui" , width = "100%", height = "100%" )
       )
     )
     

@@ -13,7 +13,7 @@ shinyServer(function(input, output, session) {
     textInput("potentiaalinen_osoite_from_ui", label = p(""), value = potentiaalinen_value_default) 
   })
   
-  # zip_objects = reactiveValues(koti_zip_objects = NULL , potentiaalinen_zip_objects = NULL )
+  # inittaa postikoodille kerättävät objektit
   zip_objects = reactiveValues(asuntojen_hinnat = NULL , alue_info = NULL )
   
   ### create map to ui
@@ -138,7 +138,7 @@ shinyServer(function(input, output, session) {
           
           
           update_zip_objects(location_info , this_input,zip_objects)
-
+          
           #### lopuksi päivitetään osoite
           if(location_info$user_interaction_method == 'click'){
             new_address = try( address_from_listing(location_info ) )
@@ -243,7 +243,7 @@ shinyServer(function(input, output, session) {
           # hae zip-tason info
           
           update_zip_objects(location_info , this_input , zip_objects)
-
+          
           #### lopuksi päivitetään osoite
           if(location_info$user_interaction_method == 'click'){
             new_address = try( address_from_listing(location_info ) )
@@ -277,7 +277,7 @@ shinyServer(function(input, output, session) {
             # poista markkerrin liittyvät markerit
             leafletProxy("map_in_ui", session) %>% 
               clearGroup(this_input)
-
+            
             # poista markkeriin liittyvät zip-objektit
             remove_zip_objects_for(this_input,zip_objects)
             
@@ -303,7 +303,7 @@ shinyServer(function(input, output, session) {
             
             leafletProxy("map_in_ui", session) %>% 
               clearGroup(this_input)
-
+            
             remove_zip_objects_for(this_input,zip_objects)
             
             output$potentiaalinen_valikko = renderUI({
@@ -320,19 +320,31 @@ shinyServer(function(input, output, session) {
   output$asuntojen_hinnat_plot <- renderPlot({
     if(!is.null(zip_objects$asuntojen_hinnat)){
       
+      # print(zip_objects$asuntojen_hinnat)
+      
       if(is.numeric(zip_objects$asuntojen_hinnat$Vuosi)){
         
-      maxvuosi = max(zip_objects$asuntojen_hinnat$Vuosi)
-      minvuosi = min(zip_objects$asuntojen_hinnat$Vuosi)
-      meanvuosi = floor(mean(c(maxvuosi,minvuosi)))
-
-      ggplot(zip_objects$asuntojen_hinnat , aes(x=Vuosi , y=Keskiarvo , color=paikka)) + 
-        geom_line( size = 2 ) + 
-        scale_x_continuous('Vuosi' , breaks=c(minvuosi,meanvuosi,maxvuosi) ) + 
-        scale_color_manual( values = paletti ) + 
-        ylab('Hinta (e/m^2)') + 
-        theme(legend.position = "none") + 
-        ggtitle('Asuntojen hinnat')
+        maxvuosi = max(zip_objects$asuntojen_hinnat$Vuosi)
+        minvuosi = min(zip_objects$asuntojen_hinnat$Vuosi)
+        meanvuosi = floor(mean(c(maxvuosi,minvuosi)))
+        
+        # paletti
+        pal = paletti
+        if(length(unique(zip_objects$asuntojen_hinnat$paikka)) == 1 ){
+          if( unique(zip_objects$asuntojen_hinnat$paikka) == 'koti'  ){
+            pal = paletti[1]
+          } else{
+            pal = paletti[2]
+          }
+        }
+        
+        ggplot(zip_objects$asuntojen_hinnat , aes(x=Vuosi , y=Keskiarvo , color=paikka)) + 
+          geom_line( size = 2 ) + 
+          scale_x_continuous('Vuosi' , breaks=c(minvuosi,meanvuosi,maxvuosi) ) + 
+          scale_color_manual( values = pal ) + 
+          ylab('Hinta (e/m^2)') + 
+          theme(legend.position = "none") + 
+          ggtitle('Asuntojen hinnat')
       }
     }
   })
@@ -340,59 +352,116 @@ shinyServer(function(input, output, session) {
   output$ikajakauma_plot <- renderPlot({
     if(!is.null(zip_objects$alue_info)){
       
-      data = melt(zip_objects$alue_info[ , c('paikka','x.0.15.vuotiaat','x.16.29.vuotiaat','x.30.59.vuotiaat','x.yli.60.vuotiaat')])
-      print(data)
-      print(str(data))
+      data = zip_objects$alue_info[ , c('paikka','x.0.15.vuotiaat','x.16.29.vuotiaat','x.30.59.vuotiaat','x.yli.60.vuotiaat')]
+      data = melt( data ,factorsAsStrings = T)
       data$value = data$value*100
-      data$variable = as.character(data$variable) %>% gsub( 'x.','',.) %>% gsub('.','-',.)
-      print(str(data))
-      print(data)
+      data$variable = str_replace(data$variable,'x.','')
+      data$variable = gsub('.','-',data$variable,fixed =T)
+
+      # paletti
+      pal = paletti
+      if(length(unique(data$paikka)) == 1 ){
+        if( unique(data$paikka) == 'koti'  ){
+          pal = paletti[1]
+        } else{
+          pal = paletti[2]
+        }
+      }
       
-      
-      ggplot(data , aes(x=Vuosi , y=Keskiarvo , color=paikka)) + 
-        geom_line( size = 2 ) + 
-        scale_x_continuous('Vuosi' , breaks=c(minvuosi,meanvuosi,maxvuosi) ) + 
-        scale_color_manual( values = paletti ) + 
-        ylab('Hinta (e/m^2)') + 
+      ggplot(data , aes(x=variable , y=value , fill=paikka)) + 
+        geom_bar(stat="identity" , position=position_dodge() ) + 
+        scale_fill_manual( values = pal ) + 
+        xlab('') + 
+        scale_y_continuous("") +
+        coord_flip() + 
         theme(legend.position = "none") + 
-        ggtitle('Asuntojen hinnat')
+        ggtitle('Ikäjakauma (% asukkaista)')
     }
   })
   
+  output$talojakauma_plot <- renderPlot({
+    if(!is.null(zip_objects$alue_info)){
+      
+      data = zip_objects$alue_info[ , c('paikka','pientaloja','kerrostaloja')]
+      data = melt( data ,factorsAsStrings = T)
+      data$value = data$value*100
+      
+      # paletti
+      pal = paletti
+      if(length(unique(data$paikka)) == 1 ){
+        if( unique(data$paikka) == 'koti'  ){
+          pal = paletti[1]
+        } else{
+          pal = paletti[2]
+        }
+      }
+      
+      ggplot(data , aes(x=variable , y=value , fill=paikka)) + 
+        geom_bar(stat="identity" , position=position_dodge() ) + 
+        scale_fill_manual( values = pal ) + 
+        xlab('') + 
+        scale_y_continuous("") +
+        coord_flip() + 
+        theme(legend.position = "none") + 
+        ggtitle('Asunnot (% asukkaista)')
+    }
+  })
   
-  #   asuntojen_hinnat_plot = reactive({
-  #     asuntojen_hinnat = try(rbind(koti_zip_objects$asuntojen_hinnat , potentiaalinen_zip_objects$asuntojen_hinnat))
-  #     print(asuntojen_hinnat)
-  #     
-  #     if(class(asuntojen_hinnat) == 'try-error'){
-  #       if(is.null(koti_zip_objects$asuntojen_hinnat)){
-  #         cat('koti_zip_objects$asuntojen_hinnat not found')
-  #         asuntojen_hinnat = potentiaalinen_zip_objects$asuntojen_hinnat
-  #       } else if(is.null(potentiaalinen_zip_objects$asuntojen_hinnat)){
-  #         cat('potentiaalinen_zip_objects$asuntojen_hinnat not found')
-  #         asuntojen_hinnat = koti_zip_object$sasuntojen_hinnat
-  #       } 
-  #     }
-  #     asuntojen_hinnat_plot = ggplot(asuntojen_hinnat , aes(x=Vuosi , y=Keskirarvo , group=Paikka)) + 
-  #       geom_line()
-  #     return(print(asuntojen_hinnat_plot))
-  #   })
+  output$koulutusjakauma_plot <- renderPlot({
+    if(!is.null(zip_objects$alue_info)){
+      
+      data = zip_objects$alue_info[ , c('paikka','perusasteen_koulutus','toisen_asteen_koulutus','korkeakoulutus')]
+      data = melt( data ,factorsAsStrings = T)
+      data$value = data$value*100
+      
+      # paletti
+      pal = paletti
+      if(length(unique(data$paikka)) == 1 ){
+        if( unique(data$paikka) == 'koti'  ){
+          pal = paletti[1]
+        } else{
+          pal = paletti[2]
+        }
+      }
+      
+      ggplot(data , aes(x=variable , y=value , fill=paikka)) + 
+        geom_bar(stat="identity" , position=position_dodge() ) + 
+        scale_fill_manual( values = pal ) + 
+        xlab('') + 
+        scale_y_continuous("") +
+        coord_flip() + 
+        theme(legend.position = "none") + 
+        ggtitle('Korkein koulutusaste (% asukkaista)')
+    }
+  })
   
-  #   asuntojen_hinta_data = reactive({
-  #     if(is.null(koti_zip_objects$asuntojen_hinnat)){
-  #       koti_zip_objects$asuntojen_hinnat
-  #     }
-  #     koti_zip_objects$asuntojen_hinnat
-  #     
-  #   })
-  
-  #   output$asuntojen_hinnat_plot <- renderPlot({
-  #     ggplot(asuntojen_hinta_data() , aes(x=Vuosi , y = Keskiarvo , group=paikka)) + 
-  #       geom_line()
-  #   })
-  #   output$asuntojen_hinnat_plot <- renderPlot({
-  #     asuntojen_hinnat_plot()
-  #   })
+  output$toimintajakauma_plot <- renderPlot({
+    if(!is.null(zip_objects$alue_info)){
+      
+      data = zip_objects$alue_info[ , c('paikka','tyolliset', 'tyottomat' , 'lapset',  'opiskelijat')]
+      data = melt( data ,factorsAsStrings = T)
+      data$value = data$value*100
+      
+      # paletti
+      pal = paletti
+      if(length(unique(data$paikka)) == 1 ){
+        if( unique(data$paikka) == 'koti'  ){
+          pal = paletti[1]
+        } else{
+          pal = paletti[2]
+        }
+      }
+      
+      ggplot(data , aes(x=variable , y=value , fill=paikka)) + 
+        geom_bar(stat="identity" , position=position_dodge() ) + 
+        scale_fill_manual( values = pal ) + 
+        xlab('') + 
+        scale_y_continuous("") +
+        coord_flip() + 
+        theme(legend.position = "none") + 
+        ggtitle('Pääasiallinen toiminta (% asukkaista)')
+    }
+  })
   
   
   ##################### HAUT   ##################### 

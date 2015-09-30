@@ -5,9 +5,13 @@ library(dplyr)
 library(leaflet)
 library(ggmap)
 library(rCharts)
+library(stringr)
 library(reshape2)
 library(RPostgreSQL)
-library(sp)
+library(ggplot2)
+theme_set(theme_bw())
+
+# avainmet
 
 ei_mitaan = read_file('/home/juha/.salasana') %>% gsub('\n','',.)
 mapquest_key = read_file('/home/juha/.mapquest') %>% gsub('\n','',.)
@@ -59,4 +63,3 @@ koti_value_default = "Kotiosoite"
 tyo_value_default = "Työosoite"
 potentiaalinen_value_default = "Potentiaalinen osoite"
 
-theme_set(theme_bw())
