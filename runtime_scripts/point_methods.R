@@ -89,6 +89,10 @@ get_ruokakaupat = function(lat, lon , radius){
   if(class(ruokakaupat) == 'try-error' ){
     stop('could not retrieve ruokakaupat')
   }
+  if(ncol(ruokakaupat) == 0 || nrow(ruokakaupat) == 0 ){
+    stop('no data found')
+  }
+  
   return(ruokakaupat)
 }
 

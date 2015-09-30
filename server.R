@@ -133,12 +133,13 @@ shinyServer(function(input, output, session) {
           
           if(!is.null(location_info$address$postcode)){
             
-            potentiaalinen_zip_objects <- try(get_zip_objects(location_info$address$postcode))
-            if(class(potentiaalinen_zip_objects) != 'try-error'){
-              if(length(potentiaalinen_zip_objects)>0){
-                print(str(potentiaalinen_zip_objects))
-                potentiaalinen_zip_objects <<- potentiaalinen_zip_objects
-                potentiaalinen_zip_objects$asuntojen_hinnat$paikka = this_input
+            koti_zip_objects <- try(get_zip_objects(location_info$address$postcode))
+            if(class(koti_zip_objects) != 'try-error'){
+              if(length(koti_zip_objects)>0){
+                print(str(koti_zip_objects))
+                koti_zip_objects$asuntojen_hinnat$paikka = this_input
+                koti_zip_objects$alue_info$paikka = this_input
+                koti_zip_objects <<- koti_zip_objects
               }
             }
           }
@@ -252,12 +253,13 @@ shinyServer(function(input, output, session) {
           
           if(!is.null(location_info$address$postcode)){
             
-            koti_zip_objects <- try(get_zip_objects(location_info$address$postcode))
-            if(class(koti_zip_objects) != 'try-error'){
-              if(length(koti_zip_objects)>0){
-                print(str(koti_zip_objects))
-                koti_zip_objects <<- koti_zip_objects
-                koti_zip_objects$asuntojen_hinnat$paikka = this_input
+            potentiaalinen_zip_objects <- try(get_zip_objects(location_info$address$postcode))
+            if(class(potentiaalinen_zip_objects) != 'try-error'){
+              if(length(potentiaalinen_zip_objects)>0){
+                print(str(potentiaalinen_zip_objects))
+                potentiaalinen_zip_objects$asuntojen_hinnat$paikka = this_input
+                potentiaalinen_zip_objects$alue_info$paikka = this_input
+                potentiaalinen_zip_objects <<- potentiaalinen_zip_objects
               }
             }
           }
@@ -330,6 +332,31 @@ shinyServer(function(input, output, session) {
         }
       }
     }
+  })
+  ##################### visut  #####################
+  
+  asuntojen_hinnat = reactive({
+    asuntojen_hinnat = try(merge(koti_zip_objects$asuntojen_hinnat , potentiaalinen_zip_objects$asuntojen_hinnat , by='Vuosi'))
+    
+    if(class(asuntojen_hinnat) == 'try-error'){
+      if(is.null(koti_zip_objects$asuntojen_hinnat)){
+        cat('koti_zip_objects$asuntojen_hinnat not found')
+        asuntojen_hinnat = potentiaalinen_zip_objects$asuntojen_hinnat
+      } else if(is.null(potentiaalinen_zip_objects$asuntojen_hinnat)){
+        cat('potentiaalinen_zip_objects$asuntojen_hinnat not found')
+        asuntojen_hinnat = potentiaalinen_zip_objects$asuntojen_hinnat
+      } 
+    }
+    return(asuntojen_hinnat)
+  })
+  
+  output$asuntojen_hinta_time_series_plot <- renderChart({
+    
+    print( 'asuntojen_hinnat:',asuntojen_hinnat() )
+    n <- nPlot(Keskiarvo.x ~ Vuosi, data=asuntojen_hinnat(), type = "lineChart" , group="paikka")
+    n$chart(useInteractiveGuideline=TRUE)
+    n$set(dom = 'test_data_time_series_plot', width = 330 , height=280)
+    n
   })
   
   
