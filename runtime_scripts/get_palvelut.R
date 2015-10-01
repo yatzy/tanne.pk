@@ -46,7 +46,7 @@ get_palvelu = function(palvelu , lat , lon , radius = 10){
   base_url = 'http://www.hel.fi/palvelukarttaws/rest/v2/unit/?service=%d&lat=%2.5f&lon=%2.5f&distance=%d'
   query_url = sprintf(base_url , palvelunro , lat , lon , radius )
   
-  res = try(fromJSON(query_url) )
+  res = try(jsonlite::fromJSON(query_url) )
   wanted_columns = c('name_fi' , 'street_address_fi' , 'latitude' , 'longitude' , 'address_zip' , 'www_fi','address_city_fi')
   
   if(class(res) == 'try-error'){
@@ -56,7 +56,7 @@ get_palvelu = function(palvelu , lat , lon , radius = 10){
     stop('not all information retrieved')
   }
   # print('no errors found')
-  drops = sapply( res , is.list ) 
+  # drops = sapply( res , is.list ) 
   res = res[ , wanted_columns ]
   
   mypoint = c(lon , lat)
@@ -69,12 +69,14 @@ get_palvelu = function(palvelu , lat , lon , radius = 10){
   return(res)
 }
 
-
+# 
 # palvelu = 'ala_asteet'
 # lat = 60.18288
 # lon = 24.92204
 # radius = 6
 # asdf = get_palvelu(palvelu , lat , lon , radius )
-# colnames(asdf)
-
-
+# # colnames(asdf)
+# asdf[[1]]$latitude
+# str(res[1:10])
+# res[[1]]$latitude
+# bind_rows(res)

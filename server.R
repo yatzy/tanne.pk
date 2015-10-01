@@ -414,6 +414,13 @@ shinyServer(function(input, output, session) {
       data = melt( data ,factorsAsStrings = T)
       data$value = data$value*100
       
+      data$variable = as.character(data$variable)
+      data$variable = ifelse(data$variable == 'perusasteen_koulutus' , 'perusaste' , data$variable )
+      data$variable = ifelse(data$variable == 'toisen_asteen_koulutus' , 'toinen_aste' , data$variable )
+
+      data$variable = as.factor(data$variable)
+      data$variable <- ordered(data$variable, levels = c("perusaste", "toinen_aste", "korkeakoulutus"))
+      
       # paletti
       pal = paletti
       if(length(unique(data$paikka)) == 1 ){
