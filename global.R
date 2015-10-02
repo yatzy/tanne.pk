@@ -21,8 +21,11 @@ mapquest_key = read_file('/home/juha/.mapquest') %>% gsub('\n','',.)
 this_dir <- dirname(parent.frame(2)$ofile)
 setwd(this_dir)
 
-### omat kirjastot
+### postinumeroaineisto
+# latataa objektin pk_postinumerot
+load(file = '/home/juha/tanne.pk/Data/pk_postinumerot.rda')
 
+### omat kirjastot
 
 source('runtime_scripts/utilities.R')
 source('runtime_scripts/zippify.R')

@@ -9,7 +9,7 @@ shinyUI(
       sidebarPanel(      
 
         style = "height:100vh;background-color: #ffffff;overflow-y: auto; }"
-        , width = 3               
+        , width = 4             
         , h3("Osoitteet")
         
         , uiOutput("koti_valikko")
@@ -26,7 +26,7 @@ shinyUI(
       # pääpaneeli
       
       , mainPanel(  style = "height:100vh;background-color: #ffffff;"
-                    , width = 9
+                    , width = 8
                     , leafletOutput("map_in_ui" , width = "100%", height = "100%")
       )
     )

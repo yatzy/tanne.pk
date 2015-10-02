@@ -13,10 +13,10 @@ get_asuntojen_hinnat = function( zip ){
 get_alue_info = function(zip){
   conn <- try(dbConnect(PostgreSQL(), host="localhost", 
                         user= "postgres", password = ei_mitaan , dbname="karttasovellus"))
+  on.exit(dbDisconnect(conn), add=TRUE)
   if(class(conn) =='try-error'){
     stop('alue-info query failed')
   }
-  on.exit(dbDisconnect(conn), add=TRUE)
   query = paste("select * from paavo where \"zip\" = '" , zip,"'" , sep='')
   res = dbGetQuery(conn , query)
   if(class(res) =='try-error'){
@@ -27,8 +27,47 @@ get_alue_info = function(zip){
   return(res)
 }
 
+get_alue_recommendations = function(zip){
+  zip = as.character(zip)
+  conn <- try(dbConnect(PostgreSQL(), host="localhost", 
+                        user= "postgres", password = ei_mitaan , dbname="karttasovellus"))
+  on.exit(dbDisconnect(conn), add=TRUE)
+  if(class(conn) =='try-error'){
+    stop('alue_recommendations connection failed')
+  }
+  query_base = paste("select nearest1 , nearest2,nearest3 from paavo_nearest where area = '%s'")
+  query = sprintf(query_base , zip)
+  res = dbGetQuery(conn , query)
+  if(class(res) =='try-error'){
+    stop('alue_recommendations query failed')
+  }
+  res = as.vector(t(res))
+  if( zip %in% res  ){
+    res = res[ res != zip ]
+  } else{
+    res = res[1:2]
+  }
+  return(res)
+}
+
+#### lisää suosittelukerroksen kartalle
+
+add_recommendation_layer = function(recommendation_vector , this_input , session){
+  print(recommendation_vector)
+  # valitse vari
+  vari = ifelse(this_input == 'koti' , paletti[1] , paletti[2])
+  
+  for( recommendation in recommendation_vector ){
+    print(recommendation)
+    leafletProxy("map_in_ui" , session) %>%
+      addPolygons(data=subset(pk_postinumerot, pnro == recommendation )
+                  , weight=1 , fillColor = vari, group = this_input)
+  }
+  
+}
+
 get_zip_objects = function(zip){
-  calls = c('asuntojen_hinnat' , 'alue_info')
+  calls = c('asuntojen_hinnat' , 'alue_info','alue_recommendations')
   
   return_list = lapply( calls , function(call){
     try(get_zip_call_object(call, zip )  ) 
@@ -48,7 +87,7 @@ get_zip_objects = function(zip){
   return( return_list )
 }
 
-update_zip_objects = function(location_info , this_input , zip_objects){
+update_zip_objects = function(location_info , this_input , zip_objects,session){
   
   if(!is.null(location_info$address$postcode)){
     
@@ -56,13 +95,11 @@ update_zip_objects = function(location_info , this_input , zip_objects){
     if(class(data) != 'try-error'){
       if(length(data)>0){
         
-        #sido paikka
+        ### sido paikka
         data$asuntojen_hinnat$paikka = this_input
         data$alue_info$paikka = this_input
         
-        
-        # if(!is.null(zip_objects$asuntojen_hinnat)){
-        # paivita paiikaan liittyva info
+        ### paivita paiikaan liittyva info
         zip_objects$asuntojen_hinnat = subset(zip_objects$asuntojen_hinnat , zip_objects$asuntojen_hinnat$paikka != this_input)
         
         if(is.data.frame(data$asuntojen_hinnat)){
@@ -72,9 +109,8 @@ update_zip_objects = function(location_info , this_input , zip_objects){
             # print(dim(zip_objects$asuntojen_hinnat))
           }
         }
-        # }
-        # if(!is.null(zip_objects$alue_info)){
-        # paivita paiikaan liittyva info
+        
+        ### paivita paiikaan liittyva info
         zip_objects$alue_info = subset(zip_objects$alue_info , zip_objects$alue_info$paikka != this_input)
         if(!is.null(data$alue_info)){
           if(is.data.frame(data$alue_info)){
@@ -83,7 +119,10 @@ update_zip_objects = function(location_info , this_input , zip_objects){
               zip_objects$alue_info = rbind(zip_objects$alue_info , data$alue_info )
           }
         }
-        # }
+        
+        ### lisää suosittelukerros
+        add_recommendation_layer(data$alue_recommendations , this_input , session)
+        
       }
     }
   }

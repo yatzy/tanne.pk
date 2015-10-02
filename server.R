@@ -137,7 +137,7 @@ shinyServer(function(input, output, session) {
           ### hae zip-tason info
           
           
-          update_zip_objects(location_info , this_input,zip_objects)
+          update_zip_objects(location_info , this_input,zip_objects,session)
           
           #### lopuksi päivitetään osoite
           if(location_info$user_interaction_method == 'click'){
@@ -242,7 +242,7 @@ shinyServer(function(input, output, session) {
           }
           # hae zip-tason info
           
-          update_zip_objects(location_info , this_input , zip_objects)
+          update_zip_objects(location_info , this_input , zip_objects,session)
           
           #### lopuksi päivitetään osoite
           if(location_info$user_interaction_method == 'click'){
