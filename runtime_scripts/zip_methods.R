@@ -23,8 +23,14 @@ get_alue_info = function(zip){
     stop('alue-info query failed')
   }
   nums = sapply(res , is.numeric)
-  res[nums] = round(res[nums],3)
-  return(res)
+  # print(is(nums))
+  if(is.logical(nums)){
+    res[nums] = round(res[nums],3)
+    return(res)
+  } else{
+    stop('problem with getting alue info')
+  }
+  
 }
 
 get_alue_recommendations = function(zip){
@@ -53,15 +59,21 @@ get_alue_recommendations = function(zip){
 #### lisää suosittelukerroksen kartalle
 
 add_recommendation_layer = function(recommendation_vector , this_input , session){
-  print(recommendation_vector)
+  
+  # label alueen paalle
+  labeli = ifelse(this_input == 'koti' 
+                  , 'Suositus kodin sijainnin perusteella'
+                  , 'Vaihtoehto muuttosijainnille' )
+  
   # valitse vari
   vari = ifelse(this_input == 'koti' , paletti[1] , paletti[2])
   
   for( recommendation in recommendation_vector ){
-    print(recommendation)
+    
     leafletProxy("map_in_ui" , session) %>%
       addPolygons(data=subset(pk_postinumerot, pnro == recommendation )
-                  , weight=1 , fillColor = vari, group = this_input)
+                  , weight=1 , fillColor = vari, group = this_input
+                  , label = labeli)
   }
   
 }
@@ -77,6 +89,7 @@ get_zip_objects = function(zip){
   error_ind = sapply(return_list , function(x){
     class(x) == 'try-error'
   })
+  names(return_list) = names(return_list)[!error_ind]
   return_list = return_list[!error_ind]
   
   if(length(return_list) == 0){

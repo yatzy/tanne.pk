@@ -38,9 +38,9 @@ source('runtime_scripts/zip_methods.R')
 
 ### iconit
 
-icon_koti <- icons(iconUrl = 'icons/live/home.svg' , iconWidth = 60)
-icon_potentiaalinen <- icons(iconUrl = 'icons/live/potential.svg' , iconWidth = 60)
-icon_tyo <- icons(iconUrl = 'icons/live/work.svg' , iconWidth = 60)
+icon_koti <- icons(iconUrl = 'icons/live/home.svg' , iconWidth = 70)
+icon_potentiaalinen <- icons(iconUrl = 'icons/live/potential.svg' , iconWidth = 70)
+icon_tyo <- icons(iconUrl = 'icons/live/work.svg' , iconWidth = 70)
 
 icon_ruokakaupat <- icons(iconUrl = 'icons/live/shop.svg' , iconWidth = 45) # lisatty
 icon_ala_asteet <- icons(iconUrl = 'icons/live/school.svg' , iconWidth = 45) # lisatty
