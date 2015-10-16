@@ -33,6 +33,23 @@ shinyUI(
       )
     )
     
+    , absolutePanel(  
+      style = "background-color: #ffffff;"
+      , fixed = F
+      , draggable = F
+      
+      , top = 0
+      #, left = "auto"
+      , right = 0
+      , bottom = "auto"
+      , width = 100
+      , height = "auto"
+      , h5("DEBUG")
+      
+      , actionButton("alkuun_nappi", "Palaa alkuun")
+      
+    )
+    
     
     ### oikean puolen debug-paneeeli
     , if(DEBUG){

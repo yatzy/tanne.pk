@@ -47,6 +47,7 @@ get_kirjastot = function(lat , lon  , radius ){
   if(class(kirjastot) == 'try-error' ){
     stop('could not retrieve kirjastot')
   }
+  print(kirjastot)
   return(kirjastot)
 }
 
