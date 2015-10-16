@@ -18,7 +18,7 @@ id palvelu
 34272 yla_asteet
 25004 sairaalat
 25002 terveysasemat
-25624 kirjastot') , sep =' ' , header = T)
+25626 kirjastot') , sep =' ' , header = T)
 
 get_palvelunumero = function(palvelu){
   palvelu = try(palvelutaulu[ palvelutaulu$palvelu == palvelu , 'id'  ])
