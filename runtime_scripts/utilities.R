@@ -24,6 +24,11 @@ nth_max <- function(x, N=1){
   res = names(res[1])
 }
 
+is_empty <- function(x) {
+  return(identical(x, numeric(0)))
+}
+
+
 ###################### paskaa
 
 # strongify <- function(func){
