@@ -9,6 +9,7 @@ library(stringr)
 library(reshape2)
 library(RPostgreSQL)
 library(ggplot2)
+library(sp)
 theme_set(theme_bw())
 
 # avainmet
