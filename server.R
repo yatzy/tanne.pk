@@ -13,6 +13,20 @@ shinyServer(function(input, output, session) {
     textInput("potentiaalinen_osoite_from_ui", label = p(""), value = potentiaalinen_value_default) 
   })
   
+  # Palvelut
+  output$palvelut_box = renderUI({
+    checkboxInput('palvelut', 'Palvelut', TRUE)
+  })
+  
+  output$palvelut_extra_box = renderUI({
+    checkboxInput('palvelut_extra_auki', 'Lisää vaihtoehtoja', FALSE)
+  })
+  
+  output$palvelut_extra_group = renderUI({
+    conditionalPanel(condition = 'input.palvelut_extra_auki == true',
+                     checkboxGroupInput('palvelut_extra_group',NULL,palvelut_nimet,selected=palvelut_nimet))
+  })
+  
   # inittaa postikoodille kerättävät objektit
   zip_objects = reactiveValues(asuntojen_hinnat = NULL , alue_info = NULL )
   
@@ -77,6 +91,20 @@ shinyServer(function(input, output, session) {
       })
     }
   })
+  
+  ## palveluihin littyvät eventit
+  
+  click_palvelu <<- eventReactive(input$palvelut_extra_group ,
+                                  {
+                                  print(output$palvelut_extra_group)
+                                  }
+                                  )
+  
+  observeEvent(input$palvelut_extra_group,
+                              {
+                              print(input$palvelut_extra_group)
+                              }
+  )
   
   ### markkerien päivitys osoitekentän kautta ###
   ### kotiosoite ###
@@ -226,7 +254,6 @@ shinyServer(function(input, output, session) {
               if(!is.null(location_info$lon)){
                 if(length(location_info)>0){  
                   
-                  
                   ### lisää kodille markkeri ###  
                   leafletProxy("map_in_ui" , session) %>%
                     addMarkers(lng = location_info$lon
@@ -244,6 +271,7 @@ shinyServer(function(input, output, session) {
                   
                   ### lisää uudet potentiaalinenin liittyvät markkerit ###         
                   if(class(services) != 'try-error'){
+                    #print(services$tyyppi)
                     if(length(services) > 0 ){
                       for( i in 1:length(services)){
                         

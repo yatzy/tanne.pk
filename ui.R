@@ -15,7 +15,9 @@ shinyUI(
         , uiOutput("koti_valikko")
         , uiOutput("tyo_valikko")
         , uiOutput("potentiaalinen_valikko")
-        
+        , uiOutput("palvelut_box")
+        , uiOutput("palvelut_extra_box")
+        , uiOutput("palvelut_extra_group")
         , plotOutput("asuntojen_hinnat_plot" , height = "250px" )
         , plotOutput("talojakauma_plot" , height = "150px"   )
         , plotOutput("koulutusjakauma_plot" , height = "200px"   )

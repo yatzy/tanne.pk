@@ -66,3 +66,16 @@ koti_value_default = "Kotiosoite"
 tyo_value_default = "Työosoite"
 potentiaalinen_value_default = "Potentiaalinen osoite"
 
+palvelut_nimet = c('Ala-asteet' , 'Yläasteet' , 'Ruokakaupat' 
+             , 'Kirjastot' , 'Sairaalat' , 'Terveysasemat','Päiväkodit')
+
+palvelut  = c('ala_asteet' , 'yla_asteet' , 'ruokakaupat' 
+  , 'kirjastot' , 'sairaalat' , 'terveysasemat','paivakodit')
+
+palvelu_df = data.frame(palvelut_nimet,palvelut,T)
+palvelu_df[,2]
+palvelu_df[,3]
+#suljettuikoni = icon('arrow-right',lib='font-awesome')
+#avattuikoni   = icon('arrow-down',lib='font-awesome')
+#palvelut_extra_kiinninappi = actionButton('palvelut_extra_kiinni','',icon=suljettuikoni)
+#palvelut_extra_aukinappi   = actionButton('palvelut_extra_auki','',icon=avattuikoni)
