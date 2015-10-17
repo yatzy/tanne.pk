@@ -117,8 +117,11 @@ shinyServer(function(input, output, session) {
         removeMarker('koti')
       
       # poista markkeriin liittyvät markerit
+      #sapply(kotigroups, leafletProxy("map_in_ui", session) %>% 
+      #  clearGroup)
       leafletProxy("map_in_ui", session) %>% 
-        clearGroup('koti')
+        clearGroup(kotigroups)
+        
       
       # poista markkeriin liittyvät zip-objektit
       remove_zip_objects_for('koti',zip_objects)
@@ -154,7 +157,7 @@ shinyServer(function(input, output, session) {
                   
                   ### poista vanhat kotiin liityvät markkerit ###
                   leafletProxy("map_in_ui", session) %>% 
-                    clearGroup(this_input)
+                    clearGroup(kotigroups)
                   
                   ### hae koordinaattitason palvelut
                   
@@ -176,7 +179,7 @@ shinyServer(function(input, output, session) {
                             leafletProxy("map_in_ui" , session) %>%
                               addMarkers(lng = this_service$lon
                                          , lat = this_service$lat
-                                         , group = this_input
+                                         , group = sprintf("%s_%s",this_input,this_service$tyyppi)
                                          , icon = eval(parse(text = icon_name)) ) 
                             # marker_store <<- append(marker_store , these_ids )
                           }
@@ -260,7 +263,7 @@ shinyServer(function(input, output, session) {
         
         # poista markkeriin liittyvät markerit
         leafletProxy("map_in_ui", session) %>% 
-          clearGroup('potentiaalinen')
+          clearGroup(potentiaalinengroups)
         
         # poista markkeriin liittyvät zip-objektit
         remove_zip_objects_for('potentiaalinen',zip_objects)
@@ -294,7 +297,7 @@ shinyServer(function(input, output, session) {
                   
                   ### poista vanhat potentiaalinenin liityvät markkerit ###
                   leafletProxy("map_in_ui", session) %>% 
-                    clearGroup(this_input)
+                    clearGroup(potentiaalinengroups)
                   
                   ### hae koordinaattitason palvelut
                   
@@ -316,7 +319,7 @@ shinyServer(function(input, output, session) {
                             leafletProxy("map_in_ui" , session) %>%
                               addMarkers(lng = this_service$lon
                                          , lat = this_service$lat
-                                         , group = this_input
+                                         , group = sprintf("%s_%s",this_input,this_service$tyyppi)
                                          , icon = eval(parse(text = icon_name)) ) 
                           }
                         }
@@ -376,7 +379,7 @@ shinyServer(function(input, output, session) {
             
             # poista markkerrin liittyvät markerit
             leafletProxy("map_in_ui", session) %>% 
-              clearGroup(this_input)
+              clearGroup(kotigroups)
             
             # poista markkeriin liittyvät zip-objektit
             remove_zip_objects_for(this_input,zip_objects)
@@ -402,7 +405,7 @@ shinyServer(function(input, output, session) {
               removeMarker(this_input)
             
             leafletProxy("map_in_ui", session) %>% 
-              clearGroup(this_input)
+              clearGroup(potentiaalinengroups)
             
             remove_zip_objects_for(this_input,zip_objects)
             

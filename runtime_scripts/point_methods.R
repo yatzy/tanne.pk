@@ -94,6 +94,8 @@ get_ruokakaupat = function(lat, lon , radius){
     stop('no data found')
   }
   
+  ruokakaupat$tyyppi = 'ruokakaupat'
+  
   return(ruokakaupat)
 }
 

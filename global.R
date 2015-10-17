@@ -73,9 +73,12 @@ palvelut_nimet = c('Ala-asteet' , 'Yläasteet' , 'Ruokakaupat'
 palvelut  = c('ala_asteet' , 'yla_asteet' , 'ruokakaupat' 
   , 'kirjastot' , 'sairaalat' , 'terveysasemat','paivakodit')
 
-palvelu_df = data.frame(palvelut_nimet,palvelut,T)
-palvelu_df[,2]
-palvelu_df[,3]
+palvelu_df <<- data.frame(palvelut_nimet,palvelut,T)
+
+kotigroups <<- sapply(unique(palvelu_df[,2]),function(x){sprintf("%s_%s", 'koti',x)})
+potentiaalinengroups <<- sapply(unique(palvelu_df[,2]),function(x){sprintf("%s_%s", 'potentiaalinen',x)})
+
+
 #suljettuikoni = icon('arrow-right',lib='font-awesome')
 #avattuikoni   = icon('arrow-down',lib='font-awesome')
 #palvelut_extra_kiinninappi = actionButton('palvelut_extra_kiinni','',icon=suljettuikoni)
