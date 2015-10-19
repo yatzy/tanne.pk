@@ -13,6 +13,20 @@ shinyServer(function(input, output, session) {
     textInput("potentiaalinen_osoite_from_ui", label = p(""), value = potentiaalinen_value_default) 
   })
   
+  # Palvelut
+  output$palvelut_box = renderUI({
+    checkboxInput('palvelut', 'Palvelut', TRUE)
+  })
+  
+  output$palvelut_extra_box = renderUI({
+    checkboxInput('palvelut_extra_auki', 'Lisää vaihtoehtoja', FALSE)
+  })
+  
+  output$palvelut_extra_group = renderUI({
+    conditionalPanel(condition = 'input.palvelut_extra_auki == true',
+                     checkboxGroupInput('palvelut_extra_group',NULL,palvelut_nimet,selected=palvelut_nimet))
+  })
+  
   # inittaa postikoodille kerättävät objektit
   zip_objects = reactiveValues(asuntojen_hinnat = NULL , alue_info = NULL )
   
@@ -80,10 +94,35 @@ shinyServer(function(input, output, session) {
     }
   })
   
+  ## palveluihin littyvät eventit
+  
+  click_palvelu <<- eventReactive(input$palvelut_extra_group ,{
+                                  print(output$palvelut_extra_group) })
+  
+  observeEvent(input$palvelut_extra_group,{
+                              print(input$palvelut_extra_group)})
+  
   ### markkerien päivitys osoitekentän kautta ###
   ### kotiosoite ###
   
   observeEvent(input$koti_osoite_from_ui , {
+    if(input$koti_osoite_from_ui == koti_value_default  || str_trim(input$koti_osoite_from_ui)== "") {
+      
+      # poista itse markkeri
+      leafletProxy("map_in_ui", session) %>% 
+        removeMarker('koti')
+      
+      # poista markkeriin liittyvät markerit
+      #sapply(kotigroups, leafletProxy("map_in_ui", session) %>% 
+      #  clearGroup)
+      leafletProxy("map_in_ui", session) %>% 
+        clearGroup(kotigroups)
+        
+      
+      # poista markkeriin liittyvät zip-objektit
+      remove_zip_objects_for('koti',zip_objects)
+      
+    }
     if(nchar(input$koti_osoite_from_ui)>0){
       if(is.vector(input$koti_osoite_from_ui)){
         if(input$koti_osoite_from_ui != koti_value_default  ){
@@ -141,7 +180,7 @@ shinyServer(function(input, output, session) {
                   
                   ### poista vanhat kotiin liityvät markkerit ###
                   leafletProxy("map_in_ui", session) %>% 
-                    clearGroup(this_input)
+                    clearGroup(kotigroups)
                   
                   ### hae koordinaattitason palvelut
                   
@@ -163,7 +202,7 @@ shinyServer(function(input, output, session) {
                             leafletProxy("map_in_ui" , session) %>%
                               addMarkers(lng = this_service$lon
                                          , lat = this_service$lat
-                                         , group = this_input
+                                         , group = sprintf("%s_%s",this_input,this_service$tyyppi)
                                          , icon = eval(parse(text = icon_name)) ) 
                             # marker_store <<- append(marker_store , these_ids )
                           }
@@ -173,10 +212,10 @@ shinyServer(function(input, output, session) {
                   }
                 }
               }
+              
               ### hae zip-tason info
-              
               update_zip_objects(location_info , this_input,zip_objects,session)
-              
+              print('zip metodi päivitetty')
               #### lopuksi päivitetään osoite
               if(location_info$user_interaction_method == 'click'){
                 new_address = try( address_from_listing(location_info ) )
@@ -196,6 +235,10 @@ shinyServer(function(input, output, session) {
   ### tyoosoite ### 
   
   observeEvent(input$tyo_osoite_from_ui , {
+    if(input$potentiaalinen_osoite_from_ui == potentiaalinen_value_default || str_trim(input$potentiaalinen_osoite_from_ui)== "") {
+      leafletProxy("map_in_ui", session) %>% 
+        removeMarker('tyo')
+    }
     if(input$tyo_osoite_from_ui != tyo_value_default ){
       if(nchar(input$tyo_osoite_from_ui)>0){
         if(is.vector(input$tyo_osoite_from_ui)){
@@ -268,6 +311,20 @@ shinyServer(function(input, output, session) {
     print('muutos potentiaalisessa')
     print(input$potentiaalinen_osoite_from_ui)
     if(is.vector(input$potentiaalinen_osoite_from_ui)){
+      if(input$potentiaalinen_osoite_from_ui == potentiaalinen_value_default || str_trim(input$potentiaalinen_osoite_from_ui)== "") {
+        
+        # poista itse markkeri
+        leafletProxy("map_in_ui", session) %>% 
+          removeMarker('potentiaalinen')
+        
+        # poista markkeriin liittyvät markerit
+        leafletProxy("map_in_ui", session) %>% 
+          clearGroup(potentiaalinengroups)
+        
+        # poista markkeriin liittyvät zip-objektit
+        remove_zip_objects_for('potentiaalinen',zip_objects)
+        
+      }
       if(nchar(input$potentiaalinen_osoite_from_ui)>0){
         if(input$potentiaalinen_osoite_from_ui != potentiaalinen_value_default ){
           osoite = input$potentiaalinen_osoite_from_ui
@@ -321,7 +378,7 @@ shinyServer(function(input, output, session) {
                   
                   ### poista vanhat potentiaalinenin liityvät markkerit ###
                   leafletProxy("map_in_ui", session) %>% 
-                    clearGroup(this_input)
+                    clearGroup(potentiaalinengroups)
                   
                   ### hae koordinaattitason palvelut
                   
@@ -329,6 +386,7 @@ shinyServer(function(input, output, session) {
                   
                   ### lisää uudet potentiaalinenin liittyvät markkerit ###         
                   if(class(services) != 'try-error'){
+                    #print(services$tyyppi)
                     if(length(services) > 0 ){
                       for( i in 1:length(services)){
                         
@@ -342,7 +400,7 @@ shinyServer(function(input, output, session) {
                             leafletProxy("map_in_ui" , session) %>%
                               addMarkers(lng = this_service$lon
                                          , lat = this_service$lat
-                                         , group = this_input
+                                         , group = sprintf("%s_%s",this_input,this_service$tyyppi)
                                          , icon = eval(parse(text = icon_name)) ) 
                           }
                         }
@@ -372,6 +430,19 @@ shinyServer(function(input, output, session) {
     }
   })
   
+  ### alkuun näppäin
+  
+  observeEvent(input$alkuun_nappi, {
+    output$koti_valikko = renderUI({
+      textInput("koti_osoite_from_ui", label = p(""), value = koti_value_default) 
+    })
+    output$tyo_valikko = renderUI({
+      textInput("tyo_osoite_from_ui", label = p(""), value = tyo_value_default) 
+    })
+    output$potentiaalinen_valikko = renderUI({
+      textInput("potentiaalinen_osoite_from_ui", label = p(""), value = potentiaalinen_value_default) 
+    })
+  })
   
   ### removing existing markers by clicking
   
@@ -389,7 +460,7 @@ shinyServer(function(input, output, session) {
             
             # poista markkerrin liittyvät markerit
             leafletProxy("map_in_ui", session) %>% 
-              clearGroup(this_input)
+              clearGroup(kotigroups)
             
             # poista markkeriin liittyvät zip-objektit
             remove_zip_objects_for(this_input,zip_objects)
@@ -415,7 +486,7 @@ shinyServer(function(input, output, session) {
               removeMarker(this_input)
             
             leafletProxy("map_in_ui", session) %>% 
-              clearGroup(this_input)
+              clearGroup(potentiaalinengroups)
             
             remove_zip_objects_for(this_input,zip_objects)
             

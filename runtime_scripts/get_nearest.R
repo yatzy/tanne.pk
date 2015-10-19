@@ -16,6 +16,7 @@ get_nearest = function( conn , tablename , lat , lon , radius , tyyppi  , count 
   SELECT 
   nimi , 
   tyyppi , 
+  osoite ,
   lat , 
   lon ,  
   distance
@@ -23,6 +24,7 @@ get_nearest = function( conn , tablename , lat , lon , radius , tyyppi  , count 
   SELECT basetable.nimi ,
   basetable.lat , 
   basetable.lon ,
+  basetable.osoite ,
   basetable.tyyppi , 
   helptable.radius ,
   helptable.distance_unit
@@ -89,7 +91,7 @@ get_nearest = function( conn , tablename , lat , lon , radius , tyyppi  , count 
   if(nrow(res_df) == 0){
     stop('No data found')
   }
-  
+  print(res_df)
   return(res_df)
 }
 

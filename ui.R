@@ -15,12 +15,15 @@ shinyUI(
         , uiOutput("koti_valikko")
         , uiOutput("tyo_valikko")
         , uiOutput("potentiaalinen_valikko")
-        
+
         , textOutput('koti_to_tyo_text')
         , textOutput('koti_to_center_text')
         , textOutput('potentiaalinen_to_tyo_text')
         , textOutput('potentiaalinen_to_center_text')
         
+        , uiOutput("palvelut_box")
+        , uiOutput("palvelut_extra_box")
+        , uiOutput("palvelut_extra_group")
         , plotOutput("asuntojen_hinnat_plot" , height = "250px" )
         , plotOutput("talojakauma_plot" , height = "150px"   )
         , plotOutput("koulutusjakauma_plot" , height = "200px"   )
@@ -34,6 +37,23 @@ shinyUI(
                     , width = 8
                     , leafletOutput("map_in_ui" , width = "100%", height = "100%")
       )
+    )
+    
+    , absolutePanel(  
+      style = "background-color: #ffffff;"
+      , fixed = F
+      , draggable = F
+      
+      , top = 0
+      #, left = "auto"
+      , right = 0
+      , bottom = "auto"
+      , width = 100
+      , height = "auto"
+      , h5("DEBUG")
+      
+      , actionButton("alkuun_nappi", "Palaa alkuun")
+      
     )
     
     

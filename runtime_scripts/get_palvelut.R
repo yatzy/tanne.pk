@@ -66,6 +66,7 @@ get_palvelu = function(palvelu , lat , lon , radius = 10){
   colnames(res)[tolower(colnames(res)) %in% c('lng','long' , 'longitude')] = 'lon'
   colnames(res)[tolower(colnames(res)) == 'latitude'] = 'lat'
   res = res[ order(res$distance), ]
+  res$tyyppi = palvelu
   return(res)
 }
 

@@ -65,10 +65,14 @@ add_recommendation_layer = function(recommendation_vector , this_input , session
                   , 'Suositus kodin sijainnin perusteella'
                   , 'Vaihtoehto muuttosijainnille' )
   
+  print(labeli)
+  print(class(labeli))
   # valitse vari
   vari = ifelse(this_input == 'koti' , paletti[1] , paletti[2])
   
   for( recommendation in recommendation_vector ){
+    
+    cat('adding polygon for' , recommendation)
     
     leafletProxy("map_in_ui" , session) %>%
       addPolygons(data=subset(pk_postinumerot, pnro == recommendation )
@@ -134,6 +138,9 @@ update_zip_objects = function(location_info , this_input , zip_objects,session){
         }
         
         ### lisää suosittelukerros
+        print(data$alue_recommendations)
+        print(this_input)
+        print(class(session))
         add_recommendation_layer(data$alue_recommendations , this_input , session)
         
       }

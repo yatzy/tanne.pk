@@ -47,6 +47,7 @@ get_kirjastot = function(lat , lon  , radius ){
   if(class(kirjastot) == 'try-error' ){
     stop('could not retrieve kirjastot')
   }
+  print(kirjastot)
   return(kirjastot)
 }
 
@@ -92,6 +93,8 @@ get_ruokakaupat = function(lat, lon , radius){
   if(ncol(ruokakaupat) == 0 || nrow(ruokakaupat) == 0 ){
     stop('no data found')
   }
+  
+  ruokakaupat$tyyppi = 'ruokakaupat'
   
   return(ruokakaupat)
 }
