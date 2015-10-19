@@ -16,6 +16,11 @@ shinyUI(
         , uiOutput("tyo_valikko")
         , uiOutput("potentiaalinen_valikko")
         
+        , textOutput('koti_to_tyo_text')
+        , textOutput('koti_to_center_text')
+        , textOutput('potentiaalinen_to_tyo_text')
+        , textOutput('potentiaalinen_to_center_text')
+        
         , plotOutput("asuntojen_hinnat_plot" , height = "250px" )
         , plotOutput("talojakauma_plot" , height = "150px"   )
         , plotOutput("koulutusjakauma_plot" , height = "200px"   )
