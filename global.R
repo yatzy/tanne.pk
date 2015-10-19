@@ -9,6 +9,8 @@ library(stringr)
 library(reshape2)
 library(RPostgreSQL)
 library(ggplot2)
+library(tidyr)
+library(sp)
 
 theme_set(theme_bw())
 
@@ -70,21 +72,27 @@ potentiaalinen_value_default = "Potentiaalinen osoite"
 
 ### location informations
 
+# boundaries
+
 city_center_location = list(lat = 60.173700, lon =  24.940179)
 boundary_north_lon = 60.459124
 boundary_south_lon = 60.091627
 boundary_west_lat = 24.326203
 boundary_east_lat = 25.524120
 
-koti_to_tyo_durations = NULL
-koti_to_center_durations = NULL
+# durations
 
-potentiaalinen_to_tyo_durations = NULL
-potentiaalinen_to_center_durations = NULL
+durations = reactiveValues()
+durations$koti_to_tyo_durations = NULL
+durations$koti_to_center_durations = NULL
+durations$potentiaalinen_to_tyo_durations  = NULL
+durations$potentiaalinen_to_center_durations  = NULL
 
-koti_location_information = NULL
-tyo_location_information = NULL
-potentiaalinen_location_information = NULL
+# location information
+
+# koti_location_information = NULL
+# tyo_location_information = NULL
+# potentiaalinen_location_information = NULL
 
 palvelut_nimet = c('Ala-asteet' , 'Yläasteet' , 'Ruokakaupat' 
              , 'Kirjastot' , 'Sairaalat' , 'Terveysasemat','Päiväkodit')
@@ -93,12 +101,5 @@ palvelut  = c('ala_asteet' , 'yla_asteet' , 'ruokakaupat'
   , 'kirjastot' , 'sairaalat' , 'terveysasemat','paivakodit')
 
 palvelu_df <<- data.frame(palvelut_nimet,palvelut,T)
-
 kotigroups <<- sapply(unique(palvelu_df[,2]),function(x){sprintf("%s_%s", 'koti',x)})
 potentiaalinengroups <<- sapply(unique(palvelu_df[,2]),function(x){sprintf("%s_%s", 'potentiaalinen',x)})
-
-
-#suljettuikoni = icon('arrow-right',lib='font-awesome')
-#avattuikoni   = icon('arrow-down',lib='font-awesome')
-#palvelut_extra_kiinninappi = actionButton('palvelut_extra_kiinni','',icon=suljettuikoni)
-#palvelut_extra_aukinappi   = actionButton('palvelut_extra_auki','',icon=avattuikoni)

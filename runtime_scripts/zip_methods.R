@@ -140,7 +140,6 @@ update_zip_objects = function(location_info , this_input , zip_objects,session){
         ### lisää suosittelukerros
         print(data$alue_recommendations)
         print(this_input)
-        print(class(session))
         add_recommendation_layer(data$alue_recommendations , this_input , session)
         
       }

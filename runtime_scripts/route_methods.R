@@ -77,6 +77,8 @@ get_route_durations = function(from_lat , from_lon , to_lat , to_lon ){
   }
   
   names(duration_list) = c('morning' , 'evening')
+  cat( 'duration_list\n')
+  print( duration_list)
   return(duration_list )
   
 }
@@ -88,7 +90,8 @@ base_ceiling <- function(x,base){
   base*ceiling(x/base) 
 }
 duration_min_and_max = function( duration_vec ){
-  min_max = list( min = base_floor(min(duration_vec) , 5) , max = base_ceiling(max(duration_vec) , 5 ) )
+  min_max = list( min = min(duration_vec) , max = max(duration_vec)  )
+  # min_max = list( min = base_floor(min(duration_vec) , 5) , max = base_ceiling(max(duration_vec) , 5 ) )
   return(min_max)
 }
 

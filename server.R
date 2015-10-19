@@ -39,7 +39,7 @@ shinyServer(function(input, output, session) {
       addTiles('//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png'
                , attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>' ) %>% 
       # set initial boundaries to centre of Helsinki
-      setView( lng=24.95 , lat=60.21 , zoom = 11) %>%
+      setView( lng=city_center_location$lon , lat=city_center_location$lat , zoom = 11) %>%
       setMaxBounds(lng1=boundary_west_lat, lat1=boundary_south_lon, lng2=boundary_east_lat, lat2=boundary_north_lon)
     
   }) 
@@ -97,10 +97,12 @@ shinyServer(function(input, output, session) {
   ## palveluihin littyvät eventit
   
   click_palvelu <<- eventReactive(input$palvelut_extra_group ,{
-    print(output$palvelut_extra_group) })
+    print(output$palvelut_extra_group) 
+  })
   
   observeEvent(input$palvelut_extra_group,{
-    print(input$palvelut_extra_group)})
+    print(input$palvelut_extra_group)
+  })
   
   ### markkerien päivitys osoitekentän kautta ###
   ### kotiosoite ###
@@ -156,7 +158,8 @@ shinyServer(function(input, output, session) {
                                                                    , to_lat=city_center_location$lat , to_lon=city_center_location$lon)
                   )
                   if(class(koti_center_durations) != 'try-error'){
-                    koti_to_center_durations <<- lapply(koti_center_durations, duration_min_and_max)
+                    durations$koti_to_center_durations = lapply(koti_center_durations, duration_min_and_max)
+                    # koti_to_center_durations <<- lapply(koti_center_durations, duration_min_and_max)
                     cat('\nkoti_to_center_durations\n')
                     print(koti_to_center_durations)
                   }
@@ -165,7 +168,8 @@ shinyServer(function(input, output, session) {
                                                                 , to_lat=tyo_location_information$lat , to_lon=tyo_location_information$lon)
                   )
                   if(class(koti_tyo_durations) != 'try-error'){
-                    koti_to_tyo_durations <<- lapply(koti_tyo_durations, duration_min_and_max)
+                    durations$koti_to_tyo_durations = lapply(koti_tyo_durations, duration_min_and_max)
+                    # koti_to_tyo_durations <<- lapply(koti_tyo_durations, duration_min_and_max)
                     cat('\nkoti_to_tyo_durations\n')
                     print(koti_to_tyo_durations)
                     
@@ -265,7 +269,8 @@ shinyServer(function(input, output, session) {
                                                                   , to_lat=koti_location_information$lat , to_lon=koti_location_information$lon)
                     )
                     if(class(koti_tyo_durations) != 'try-error'){
-                      koti_to_tyo_durations <<- lapply(koti_tyo_durations, duration_min_and_max)
+                      # koti_to_tyo_durations <<- lapply(koti_tyo_durations, duration_min_and_max)
+                      durations$koti_to_tyo_durations = lapply(koti_tyo_durations, duration_min_and_max)
                       cat('\nkoti_to_tyo_durations\n')
                       print(koti_to_tyo_durations)
                     }
@@ -276,7 +281,8 @@ shinyServer(function(input, output, session) {
                                                                             , to_lat=potentiaalinen_location_information$lat , to_lon=potentiaalinen_location_information$lon)
                     )
                     if(class(potentiaalinen_tyo_durations) != 'try-error'){
-                      potentiaalinen_to_tyo_durations <<- lapply(potentiaalinen_tyo_durations, duration_min_and_max)
+                      # potentiaalinen_to_tyo_durations <<- lapply(potentiaalinen_tyo_durations, duration_min_and_max)
+                      durations$potentiaalinen_to_tyo_durations = lapply(potentiaalinen_tyo_durations, duration_min_and_max)
                       cat('\npotentiaalinen_to_tyo_durations\n')
                       print(potentiaalinen_to_tyo_durations)
                     }
@@ -353,6 +359,7 @@ shinyServer(function(input, output, session) {
                   ### get route durations
                   
                   # durations to center
+                  
                   cat('\npotentiaalinen lat: ', location_info$lat, '\n')
                   cat('potentiaalinen lon: ', location_info$lon, '\n')
                   cat('center lat: ', city_center_location$lat, '\n')
@@ -361,15 +368,18 @@ shinyServer(function(input, output, session) {
                                                                              , to_lat=city_center_location$lat , to_lon=city_center_location$lon)
                   )
                   if(class(potentiaalinen_center_durations) != 'try-error'){
-                    potentiaalinen_to_center_durations <<- lapply(potentiaalinen_center_durations, duration_min_and_max)
+                    durations$potentiaalinen_to_center_durations = lapply(potentiaalinen_center_durations, duration_min_and_max)
+                    # potentiaalinen_to_center_durations <<- lapply(potentiaalinen_center_durations, duration_min_and_max)
                     print(potentiaalinen_to_center_durations)
                   }
                   # durations to work
+                  
                   potentiaalinen_tyo_durations =  try(get_route_durations(from_lat = location_info$lat , from_lon=location_info$lon 
                                                                           , to_lat=tyo_location_information$lat , to_lon=tyo_location_information$lon)
                   )
                   if(class(potentiaalinen_tyo_durations) != 'try-error'){
-                    potentiaalinen_to_tyo_durations <<- lapply(potentiaalinen_tyo_durations, duration_min_and_max)
+                    durations$potentiaalinen_to_tyo_durations = lapply(potentiaalinen_tyo_durations, duration_min_and_max)
+                    # potentiaalinen_to_tyo_durations <<- lapply(potentiaalinen_tyo_durations, duration_min_and_max)
                   }
                   
                   
@@ -383,6 +393,8 @@ shinyServer(function(input, output, session) {
                   ### poista vanhat potentiaalinenin liityvät markkerit ###
                   leafletProxy("map_in_ui", session) %>% 
                     clearGroup(potentiaalinengroups)
+                  leafletProxy("map_in_ui", session) %>% 
+                    clearGroup('potentiaalinen')
                   
                   ### hae koordinaattitason palvelut
                   
@@ -416,7 +428,7 @@ shinyServer(function(input, output, session) {
               # hae zip-tason info
               
               update_zip_objects(location_info , this_input , zip_objects,session)
-              
+              print('potential zip-objects updadet')
               #### lopuksi päivitetään osoite
               if(location_info$user_interaction_method == 'click'){
                 new_address = try( address_from_listing(location_info ) )
@@ -464,10 +476,16 @@ shinyServer(function(input, output, session) {
             
             # poista markkerrin liittyvät markerit
             leafletProxy("map_in_ui", session) %>% 
-              clearGroup(kotigroups) ##### ENTÄ MUUT RYHMÄT SIMO!?!?!?!?!?!
+              clearGroup(kotigroups) 
+            leafletProxy("map_in_ui", session) %>% 
+              clearGroup('koti') 
             
             # poista markkeriin liittyvät zip-objektit
             remove_zip_objects_for(this_input,zip_objects)
+            
+            # poista matka-ajat
+            durations$koti_to_tyo_durations = NULL
+            durations$koti_to_center_durations = NULL
             
             # ... ja palauta tekstikenttä oletusasetuksiin  
             output$koti_valikko = renderUI({
@@ -480,6 +498,10 @@ shinyServer(function(input, output, session) {
             leafletProxy("map_in_ui", session) %>% 
               removeMarker('tyo')
             
+            # poista matka-ajat
+            durations$koti_to_tyo_durations = NULL
+            durations$potentiaalinen_to_center_durations = NULL
+
             output$tyo_valikko = renderUI({
               textInput("tyo_osoite_from_ui", label = p(""), value = tyo_value_default) 
             })
@@ -491,6 +513,12 @@ shinyServer(function(input, output, session) {
             
             leafletProxy("map_in_ui", session) %>% 
               clearGroup(potentiaalinengroups)
+            leafletProxy("map_in_ui", session) %>% 
+              clearGroup('potentiaalinen')
+            
+            # poista matka-ajat
+            durations$potentiaalinen_to_tyo_durations = NULL
+            durations$potentiaalinen_to_center_durations = NULL
             
             remove_zip_objects_for(this_input,zip_objects)
             
@@ -502,54 +530,116 @@ shinyServer(function(input, output, session) {
       }
     }
   })
-  ##################### visut  #####################
   
-  # pendeling  
-  output$koti_to_tyo_text = renderPrint({
-    if(!is.null(koti_to_tyo_durations)){
-      if(length(koti_to_tyo_durations)>0){
-        res = paste( 'Kodista työpaikalle\n'
-                     , 'Aamulla: ' , koti_to_tyo_durations$morning$min , '-' , koti_to_tyo_durations$morning$max , ' minuuttia\n' 
-                     , 'Illalla: ', koti_to_tyo_durations$evening$min , '-' , koti_to_tyo_durations$evening$max , ' minuuttia' )
-      }
-    } else{
-      res = NULL
-    }
-    print(res)
-  })
-  output$koti_to_center_text = renderText({
-    if(!is.null(koti_to_center_durations)){
-      if(length(koti_to_center_durations)>0){
-        res = paste('Kodista Helsingin keskustaan\n'
-                    , 'Aamulla: ' , koti_to_center_durations$morning$min , '-' , koti_to_center_durations$morning$max , ' minuuttia\n' 
-                    , 'Illalla: ', koti_to_center_durations$evening$min , '-' , koti_to_center_durations$evening$max , ' minuuttia' )
-      }
-    }
-  })
-  output$potentiaalinen_to_tyo_text = renderText({
-    if(!is.null(potentiaalinen_to_tyo_durations)){
-      if(length(potentiaalinen_to_tyo_durations)>0){
-        res = paste( 'Potentiaalisesta osoitteesta töihin\n'
-                     , 'Aamulla: ' , potentiaalinen_to_tyo_durations$morning$min , '-' , potentiaalinen_to_tyo_durations$morning$max , ' minuuttia\n' 
-                     , 'Illalla: ', potentiaalinen_to_tyo_durations$evening$min , '-' , potentiaalinen_to_tyo_durations$evening$max , ' minuuttia' )
-      }
-    }
-  })
-  output$potentiaalinen_to_center_text = renderText({
-    if(!is.null(potentiaalinen_to_center_durations)){
-      if(length(potentiaalinen_to_center_durations)>0){
-        res = paste( 'Potentiaalisesta Helsingin keskustan\n'
-                     , 'Aamulla: ' , potentiaalinen_to_center_durations$morning$min , '-' , potentiaalinen_to_center_durations$morning$max , ' minuuttia\n' 
-                     , 'Illalla: ', potentiaalinen_to_center_durations$evening$min , '-' , potentiaalinen_to_center_durations$evening$max , ' minuuttia' )
-      }
-    }
-  })
+#   pendeling_data = reactive({
+#     dat_titles = c('Kodista töihin' , 'Kodista Helsinkiin' , 'Potentiaalisesta töihin' , 'Potentiaalisesta Helsinkiin')
+#     dats = list(koti_to_tyo_durations(),koti_to_center_durations(),potentiaalinen_to_tyo_durations(),potentiaalinen_to_center_durations())
+#     print(dats)
+#     
+#     all_null = all(sapply(dats, is.null))
+#     
+#     if(!all_null){
+#       print('dats initoity')
+#       print(dats)
+#       if(nrow(dats)>0){  
+#         null_ind = sapply(dats, is.null)
+#         if(all(null_ind)){
+#           return(NULL)
+#         }
+#         dats = dats[!null_ind]
+#         dat_titles = dat_titles[!null_ind]
+#         
+#         names(dats) = dat_titles
+#         dat_df = melt(dats) %>% spread(L3, value)
+#         colnames(dat_df)[1:2] = c('time' ,'travel' )
+#         dat_df$vari = 2
+#         dat_df$vari[grep('Kodista',dat_df$travel)] = 1
+#         dat_df$vari = as.factor(dat_df$vari)
+#         dat_df$time = ifelse(dat_df$time=='evening' , 'Ilta' , 'Aamu')
+#         print(dat_df)
+#         return(dat_df)
+#       }
+#     }
+#   })
+  #       pendeling_data = reactive({
+  #         dat_titles = c('Kodista töihin' , 'Kodista Helsinkiin' , 'Potentiaalisesta töihin' , 'Potentiaalisesta Helsinkiin')
+  #         dats = list(koti_to_tyo_durations,koti_to_center_durations,potentiaalinen_to_tyo_durations,potentiaalinen_to_center_durations)
+  #         print('poistetaan tyhjat aikatauluista')    
+  #         null_ind = sapply(dats, is.null)
+  #         if(all(null_ind)){
+  #           return(NULL)
+  #         }
+  #         dats = dats[!null_ind]
+  #         dat_titles = dat_titles[!null_ind]
+  #         
+  #         names(dats) = dat_titles
+  #         dat_df = melt(dats) %>% spread(L3, value)
+  #         colnames(dat_df)[1:2] = c('time' ,'travel' )
+  #         dat_df$vari = 2
+  #         dat_df$vari[grep('Kodista',dat_df$travel)] = 1
+  #         dat_df$vari = as.factor(dat_df$vari)
+  #         dat_df$time = ifelse(dat_df$time=='evening' , 'Ilta' , 'Aamu')
+  #         print(dat_df)
+  #         return(dat_df)
+  #       })
+  
+  ##################### visut  #####################
   
   # pendeling
   
-  output$pendeling_koti_plot = renderPlot({
-    
-  })
+#   output$pendeling_plot = renderPlot({
+#     print(str(isolate(pendeling_data())))
+#     print(isolate(pendeling_data()))
+#     if(!is.null(pendeling_data())){
+#       if(nrow(pendeling_data())>0){
+#         dat_df = pendeling_data()
+#         print(isolate(dat_df))
+#         ggplot(dat_df , aes( x = time , ymax = max , ymin=min , color= vari) ) + 
+#           geom_errorbar(size=2) + 
+#           scale_color_manual(values = paletti) + 
+#           facet_wrap(~ travel , ncol=1) + 
+#           coord_flip() +
+#           ylab('') +
+#           xlab('') +
+#           theme(legend.position = "none") +
+#           ggtitle('Matka-ajat') 
+#       }
+#     }
+#   })
+  
+    output$pendeling_plot = renderPlot({
+        dat_titles = c('Kodista töihin' , 'Kodista Helsinkiin' , 'Potentiaalisesta töihin' , 'Potentiaalisesta Helsinkiin')
+        dats = list(durations$koti_to_tyo_durations
+                    ,durations$koti_to_center_durations
+                    ,durations$potentiaalinen_to_tyo_durations
+                    ,durations$potentiaalinen_to_center_durations)
+        print('poistetaan tyhjat aikatauluista')    
+        null_ind = sapply(dats, is.null)
+        if(all(null_ind)){
+          return(NULL)
+        }
+        dats = dats[!null_ind]
+        dat_titles = dat_titles[!null_ind]
+        
+        names(dats) = dat_titles
+        dat_df = melt(dats) %>% spread(L3, value)
+        colnames(dat_df)[1:2] = c('time' ,'travel' )
+        dat_df$vari = 2
+        dat_df$vari[grep('Kodista',dat_df$travel)] = 1
+        dat_df$vari = as.factor(dat_df$vari)
+        dat_df$time = ifelse(dat_df$time=='evening' , 'Ilta' , 'Aamu')
+        
+        ggplot(dat_df , aes( x = time , ymax = max , ymin=min , color= vari) ) + 
+          geom_errorbar(size=2) + 
+          scale_color_manual(values = paletti) + 
+          facet_wrap(~ travel , ncol=1) + 
+          coord_flip() +
+          ylab('') +
+          xlab('') +
+          theme(legend.position = "none") +
+          ggtitle('Matka-ajat') 
+      # }
+    }) 
   
   # asuntojen hinnat
   output$asuntojen_hinnat_plot <- renderPlot({
@@ -752,6 +842,49 @@ shinyServer(function(input, output, session) {
   #     marker_store <<- c(marker_store , ala_asteet_layerids)
   #     
   #   })
+  
+  ### vanhat reitit
+  #   
+  #   output$koti_to_tyo_text = renderPrint({
+  #     if(!is.null(koti_to_tyo_durations)){
+  #       if(length(koti_to_tyo_durations)>0){
+  #         res = paste( 'Kodista työpaikalle\n'
+  #                      , 'Aamulla: ' , koti_to_tyo_durations$morning$min , '-' , koti_to_tyo_durations$morning$max , ' minuuttia\n' 
+  #                      , 'Illalla: ', koti_to_tyo_durations$evening$min , '-' , koti_to_tyo_durations$evening$max , ' minuuttia' )
+  #       }
+  #     } else{
+  #       res = NULL
+  #     }
+  #     print(res)
+  #   })
+  #   output$koti_to_center_text = renderText({
+  #     if(!is.null(koti_to_center_durations)){
+  #       if(length(koti_to_center_durations)>0){
+  #         res = paste('Kodista Helsingin keskustaan\n'
+  #                     , 'Aamulla: ' , koti_to_center_durations$morning$min , '-' , koti_to_center_durations$morning$max , ' minuuttia\n' 
+  #                     , 'Illalla: ', koti_to_center_durations$evening$min , '-' , koti_to_center_durations$evening$max , ' minuuttia' )
+  #       }
+  #     }
+  #   })
+  #   output$potentiaalinen_to_tyo_text = renderText({
+  #     if(!is.null(potentiaalinen_to_tyo_durations)){
+  #       if(length(potentiaalinen_to_tyo_durations)>0){
+  #         res = paste( 'Potentiaalisesta osoitteesta töihin\n'
+  #                      , 'Aamulla: ' , potentiaalinen_to_tyo_durations$morning$min , '-' , potentiaalinen_to_tyo_durations$morning$max , ' minuuttia\n' 
+  #                      , 'Illalla: ', potentiaalinen_to_tyo_durations$evening$min , '-' , potentiaalinen_to_tyo_durations$evening$max , ' minuuttia' )
+  #       }
+  #     }
+  #   })
+  #   output$potentiaalinen_to_center_text = renderText({
+  #     if(!is.null(potentiaalinen_to_center_durations)){
+  #       if(length(potentiaalinen_to_center_durations)>0){
+  #         res = paste( 'Potentiaalisesta Helsingin keskustan\n'
+  #                      , 'Aamulla: ' , potentiaalinen_to_center_durations$morning$min , '-' , potentiaalinen_to_center_durations$morning$max , ' minuuttia\n' 
+  #                      , 'Illalla: ', potentiaalinen_to_center_durations$evening$min , '-' , potentiaalinen_to_center_durations$evening$max , ' minuuttia' )
+  #       }
+  #     }
+  #   })
+  #   
   
   ################################## DEBUGGAUS ##################################
   
