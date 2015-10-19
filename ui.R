@@ -7,15 +7,24 @@ shinyUI(
       ### vasemman puolen paneeeli
       
       sidebarPanel(      
-
+        
         style = "height:100vh;background-color: #ffffff;overflow-y: auto; }"
         , width = 4             
         , h3("Osoitteet")
         
-        , uiOutput("koti_valikko")
-        , uiOutput("tyo_valikko")
-        , uiOutput("potentiaalinen_valikko")
-
+        , div(style = "display:flex"
+              , div(style="flex: 1" , img(src="home.png") )
+              , div(style="flex: 5" , uiOutput("koti_valikko") )
+        )
+        , div(style= "display: flex"
+              , div(style="flex: 1" , img(src="work.png") )
+              , div(style="flex: 5" , uiOutput("tyo_valikko") )
+        )
+        , div(style= "display: flex"
+              , div(style="flex: 1" , img(src="potential.png") )
+              , div(style ="flex:5;" , uiOutput("potentiaalinen_valikko") )
+        )
+        
         , textOutput('koti_to_tyo_text')
         , textOutput('koti_to_center_text')
         , textOutput('potentiaalinen_to_tyo_text')
@@ -63,7 +72,6 @@ shinyUI(
         style = "background-color: #ffffff;"
         , fixed = F
         , draggable = T
-        #           , id = "right_side_panel"
         , top = 60
         , left = "auto"
         , right = 40
