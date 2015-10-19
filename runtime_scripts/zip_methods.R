@@ -72,7 +72,7 @@ add_recommendation_layer = function(recommendation_vector , this_input , session
   
   for( recommendation in recommendation_vector ){
     
-    cat('adding polygon for' , recommendation)
+    cat('adding polygon for' , recommendation,'\n')
     
     leafletProxy("map_in_ui" , session) %>%
       addPolygons(data=subset(pk_postinumerot, pnro == recommendation )

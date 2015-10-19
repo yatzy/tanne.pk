@@ -181,6 +181,8 @@ shinyServer(function(input, output, session) {
                   ### poista vanhat kotiin liityvät markkerit ###
                   leafletProxy("map_in_ui", session) %>% 
                     clearGroup(kotigroups)
+                  leafletProxy("map_in_ui", session) %>% 
+                    clearGroup('koti')
                   
                   ### hae koordinaattitason palvelut
                   
@@ -320,6 +322,8 @@ shinyServer(function(input, output, session) {
         # poista markkeriin liittyvät markerit
         leafletProxy("map_in_ui", session) %>% 
           clearGroup(potentiaalinengroups)
+        leafletProxy("map_in_ui", session) %>% 
+          clearGroup('potentiaalinen')
         
         # poista markkeriin liittyvät zip-objektit
         remove_zip_objects_for('potentiaalinen',zip_objects)
