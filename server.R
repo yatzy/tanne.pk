@@ -97,10 +97,10 @@ shinyServer(function(input, output, session) {
   ## palveluihin littyvät eventit
   
   click_palvelu <<- eventReactive(input$palvelut_extra_group ,{
-                                  print(output$palvelut_extra_group) })
+    print(output$palvelut_extra_group) })
   
   observeEvent(input$palvelut_extra_group,{
-                              print(input$palvelut_extra_group)})
+    print(input$palvelut_extra_group)})
   
   ### markkerien päivitys osoitekentän kautta ###
   ### kotiosoite ###
@@ -117,7 +117,7 @@ shinyServer(function(input, output, session) {
       #  clearGroup)
       leafletProxy("map_in_ui", session) %>% 
         clearGroup(kotigroups)
-        
+      
       
       # poista markkeriin liittyvät zip-objektit
       remove_zip_objects_for('koti',zip_objects)
@@ -464,7 +464,7 @@ shinyServer(function(input, output, session) {
             
             # poista markkerrin liittyvät markerit
             leafletProxy("map_in_ui", session) %>% 
-              clearGroup(kotigroups)
+              clearGroup(kotigroups) ##### ENTÄ MUUT RYHMÄT SIMO!?!?!?!?!?!
             
             # poista markkeriin liittyvät zip-objektit
             remove_zip_objects_for(this_input,zip_objects)
@@ -512,11 +512,14 @@ shinyServer(function(input, output, session) {
                      , 'Aamulla: ' , koti_to_tyo_durations$morning$min , '-' , koti_to_tyo_durations$morning$max , ' minuuttia\n' 
                      , 'Illalla: ', koti_to_tyo_durations$evening$min , '-' , koti_to_tyo_durations$evening$max , ' minuuttia' )
       }
+    } else{
+      res = NULL
     }
+    print(res)
   })
   output$koti_to_center_text = renderText({
     if(!is.null(koti_to_center_durations)){
-      if(length(koti_to_tyo_durations)>0){
+      if(length(koti_to_center_durations)>0){
         res = paste('Kodista Helsingin keskustaan\n'
                     , 'Aamulla: ' , koti_to_center_durations$morning$min , '-' , koti_to_center_durations$morning$max , ' minuuttia\n' 
                     , 'Illalla: ', koti_to_center_durations$evening$min , '-' , koti_to_center_durations$evening$max , ' minuuttia' )
@@ -540,6 +543,12 @@ shinyServer(function(input, output, session) {
                      , 'Illalla: ', potentiaalinen_to_center_durations$evening$min , '-' , potentiaalinen_to_center_durations$evening$max , ' minuuttia' )
       }
     }
+  })
+  
+  # pendeling
+  
+  output$pendeling_koti_plot = renderPlot({
+    
   })
   
   # asuntojen hinnat

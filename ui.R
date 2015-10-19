@@ -10,7 +10,9 @@ shinyUI(
         
         style = "height:100vh;background-color: #ffffff;overflow-y: auto; }"
         , width = 4             
-        , h3("Osoitteet")
+        # , h3("Osoitteet")
+        
+        # osoitteet
         
         , div(style = "display:flex"
               , div(style="flex: 1" , img(src="home.png") )
@@ -25,19 +27,26 @@ shinyUI(
               , div(style ="flex:5;" , uiOutput("potentiaalinen_valikko") )
         )
         
+        # reitit
+        
         , textOutput('koti_to_tyo_text')
         , textOutput('koti_to_center_text')
         , textOutput('potentiaalinen_to_tyo_text')
         , textOutput('potentiaalinen_to_center_text')
         
+        # palveluboxit
+        
         , uiOutput("palvelut_box")
         , uiOutput("palvelut_extra_box")
         , uiOutput("palvelut_extra_group")
+        
+        # statit
+        
         , plotOutput("asuntojen_hinnat_plot" , height = "250px" )
-        , plotOutput("talojakauma_plot" , height = "150px"   )
-        , plotOutput("koulutusjakauma_plot" , height = "200px"   )
-        , plotOutput("toimintajakauma_plot" , height = "250px"   )
-        , plotOutput("ikajakauma_plot" , height = "250px"   )
+        , plotOutput("talojakauma_plot" , height = "150px" )
+        , plotOutput("koulutusjakauma_plot" , height = "200px" )
+        , plotOutput("toimintajakauma_plot" , height = "250px" )
+        , plotOutput("ikajakauma_plot" , height = "250px" )
       )
       
       # pääpaneeli
