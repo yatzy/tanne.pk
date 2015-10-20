@@ -47,6 +47,7 @@ get_kirjastot = function(lat , lon  , radius ){
   if(class(kirjastot) == 'try-error' ){
     stop('could not retrieve kirjastot')
   }
+  print(kirjastot)
   return(kirjastot)
 }
 
@@ -93,6 +94,8 @@ get_ruokakaupat = function(lat, lon , radius){
     stop('no data found')
   }
   
+  ruokakaupat$tyyppi = 'ruokakaupat'
+  
   return(ruokakaupat)
 }
 
@@ -121,6 +124,7 @@ get_point_objects = function(lat , lon , radius){
   # ja palauta kaikki objektit
   return( return_list )
 }
+
 
 # example
 # lat = 60.226516;lon= 24.890556;radius =  1

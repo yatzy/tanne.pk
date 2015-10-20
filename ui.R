@@ -1,32 +1,74 @@
 # 
 shinyUI(
-  fluidPage(
-#     theme = shinytheme("cerulean") ,
-     sidebarLayout(
+  fluidPage( 
+    theme = "cerulean_fork.css"
+    
+    , sidebarLayout( 
       
       ### vasemman puolen paneeeli
       
-      sidebarPanel(  style = "background-color: #ffffff;"
-        , width = 3               
-        , h3("Osoitteet")
-        # , textInput("kotiosoite_from_ui", label = p(""), value = "Kotiosoite") 
-        , uiOutput("koti_valikko")
-        , uiOutput("tyo_valikko")
-        , uiOutput("potentiaalinen_valikko")
-        , actionButton("reset_button", "Nollaa osoitteet")
+      sidebarPanel(      
         
-        , conditionalPanel( condition = "input.kotiosoite_from_ui != 'Kotiosoite'"
-                            , h5('Hyvin menee')
-                            #, plotOutput( "koti_pic" )
-                            , showOutput("asuntojen_hinta_time_series_plot" , 'polycharts' )
+        style = "height:100vh;background-color: #ffffff;overflow-y:auto"
+        , width = 4             
+        # , h3("Osoitteet")
+        
+        # osoitteet
+        
+        , div(style = "display:flex"
+              , div(style="flex: 1" , img(src="home.png") )
+              , div(style="flex: 5" , uiOutput("koti_valikko") )
         )
+        , div(style= "display: flex"
+              , div(style="flex: 1" , img(src="work.png") )
+              , div(style="flex: 5" , uiOutput("tyo_valikko") )
+        )
+        , div(style= "display: flex"
+              , div(style="flex: 1" , img(src="potential.png") )
+              , div(style ="flex:5;" , uiOutput("potentiaalinen_valikko") )
+        )
+        
+        # reitit
+        , plotOutput("pendeling_plot")
+        
+        # palveluboxit
+        
+        , uiOutput("palvelut_box")
+        , uiOutput("palvelut_extra_box")
+        , uiOutput("palvelut_extra_group")
+        
+        # statit
+        
+        , plotOutput("asuntojen_hinnat_plot" , height = "250px" )
+        , plotOutput("talojakauma_plot" , height = "150px" )
+        , plotOutput("koulutusjakauma_plot" , height = "200px" )
+        , plotOutput("toimintajakauma_plot" , height = "250px" )
+        , plotOutput("ikajakauma_plot" , height = "250px" )
       )
-      , mainPanel(  
-        width = 9
-        # render map created in server.r
-        #, leafletOutput("map_in_ui" , width = "0", height = "0")
-        , leafletOutput("map_in_ui" , width = "100%", height = "1800")
+      
+      # pääpaneeli
+      
+      , mainPanel(  style = "height:100vh;background-color: #ffffff;padding:0;margin-left:0"
+                    , width = 8
+                    , leafletOutput("map_in_ui" , width = "100%", height = "100%")
       )
+    )
+    
+    , absolutePanel(  
+      style = "background-color: #ffffff;"
+      , fixed = F
+      , draggable = F
+      
+      , top = 0
+      #, left = "auto"
+      , right = 0
+      , bottom = "auto"
+      , width = 100
+      , height = "auto"
+      , h5("DEBUG")
+      
+      , actionButton("alkuun_nappi", "Palaa alkuun")
+      
     )
     
     
@@ -36,7 +78,6 @@ shinyUI(
         style = "background-color: #ffffff;"
         , fixed = F
         , draggable = T
-        #           , id = "right_side_panel"
         , top = 60
         , left = "auto"
         , right = 40

@@ -13,6 +13,23 @@ shinyServer(function(input, output, session) {
     textInput("potentiaalinen_osoite_from_ui", label = p(""), value = potentiaalinen_value_default) 
   })
   
+  # Palvelut
+  output$palvelut_box = renderUI({
+    checkboxInput('palvelut', 'Palvelut', TRUE)
+  })
+  
+  output$palvelut_extra_box = renderUI({
+    checkboxInput('palvelut_extra_auki', 'Lisää vaihtoehtoja', FALSE)
+  })
+  
+  output$palvelut_extra_group = renderUI({
+    conditionalPanel(condition = 'input.palvelut_extra_auki == true',
+                     checkboxGroupInput('palvelut_extra_group',NULL,palvelut_nimet,selected=palvelut_nimet))
+  })
+  
+  # inittaa postikoodille kerättävät objektit
+  zip_objects = reactiveValues(asuntojen_hinnat = NULL , alue_info = NULL )
+  
   ### create map to ui
   
   output$map_in_ui <- renderLeaflet({
@@ -22,12 +39,16 @@ shinyServer(function(input, output, session) {
       addTiles('//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png'
                , attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>' ) %>% 
       # set initial boundaries to centre of Helsinki
-      setView( lng=24.95 , lat=60.21 , zoom = 11)
+      setView( lng=city_center_location$lon , lat=city_center_location$lat , zoom = 11) %>%
+      setMaxBounds(lng1=boundary_west_lat, lat1=boundary_south_lon, lng2=boundary_east_lat, lat2=boundary_north_lon)
+    
   }) 
   
   # click_info() - functio palauttaa viimeisimmän karttaklikin leveys- ja pituuspiirit, sekä osoitetiedot
   
   click_info <<- eventReactive(input$map_in_ui_click , { 
+    click_count <<- click_count + 1
+    print(click_count)
     list(
       lat = as.numeric(input$map_in_ui_click$lat)
       , lon = as.numeric(input$map_in_ui_click$lng)
@@ -45,10 +66,10 @@ shinyServer(function(input, output, session) {
   
   observeEvent(input$map_in_ui_click, {
     click_time <<- Sys.time()
-    cat('KLIKKI!!! LAT:', click_info()$lat, 'LON:' , click_info()$lon ,'\n'  )
+    cat('KLIKKI!!! LAT: ', click_info()$lat, 'LON:' , click_info()$lon ,'\n'  )
     
     if( input$koti_osoite_from_ui == koti_value_default ){
-      cat('klikki koski kotia')
+      cat('klikki koski kotia\n')
       print(input$koti_osoite_from_ui)
       output$koti_valikko = renderUI({
         textInput("koti_osoite_from_ui", label = p("")
@@ -56,7 +77,7 @@ shinyServer(function(input, output, session) {
       })
       
     } else if( input$tyo_osoite_from_ui == tyo_value_default ){
-      cat('klikki koski tyota')
+      cat('klikki koski tyota\n')
       print(input$tyo_osoite_from_ui)
       output$tyo_valikko = renderUI({
         textInput("tyo_osoite_from_ui", label = p("")
@@ -64,7 +85,7 @@ shinyServer(function(input, output, session) {
       })
       
     } else { #(input$pontentiaalinen_osoite_from_ui == potentiaalinen_value_default)
-      cat('klikki koski potentiaalista')
+      cat('klikki koski potentiaalista\n')
       print(input$potentiaalinen_osoite_from_ui)
       output$potentiaalinen_valikko = renderUI({
         textInput("potentiaalinen_osoite_from_ui", label = p("")
@@ -73,212 +94,472 @@ shinyServer(function(input, output, session) {
     }
   })
   
+  ## palveluihin littyvät eventit
+  
+  click_palvelu <<- eventReactive(input$palvelut_extra_group ,{
+    print(output$palvelut_extra_group) 
+  })
+  
+  observeEvent(input$palvelut_extra_group,{
+    print(input$palvelut_extra_group)
+  })
+  
   ### markkerien päivitys osoitekentän kautta ###
   ### kotiosoite ###
   
   observeEvent(input$koti_osoite_from_ui , {
-    if(input$koti_osoite_from_ui != koti_value_default  ){
-      osoite = input$koti_osoite_from_ui
-      print( 'muutetetaan kotia' )
-      ui_time = Sys.time()
-      this_input <- 'koti'
+    
+    if(input$koti_osoite_from_ui == koti_value_default  || nchar(str_trim(input$koti_osoite_from_ui))== 0 ) {
       
-      # palauta paikkaa koskevat tiedot
-      location_info = try(get_location_information(ui_time , click_time , ui_interaction_lag , osoite))
       
-      ### jos koordinaatit löytyvät ###
-      if(class(location_info) !='try-error' ){
-        if(!is.null(location_info$lon)){
+      # poista itse markkeri
+      leafletProxy("map_in_ui", session) %>% 
+        removeMarker('koti')
+      
+      # poista markkerrin liittyvät markerit
+      leafletProxy("map_in_ui", session) %>% 
+        clearGroup(kotigroups) 
+      leafletProxy("map_in_ui", session) %>% 
+        clearGroup('koti') 
+      
+      # poista markkeriin liittyvät zip-objektit
+      remove_zip_objects_for('koti',zip_objects)
+      
+      # poista matka-ajat
+      if(!is.null(durations$koti_to_tyo_durations)){durations$koti_to_tyo_durations = NULL}
+      if(!is.null(durations$koti_to_center_durations)){durations$koti_to_center_durations = NULL}
+      
+    }
+    
+    if( nchar(str_trim(input$koti_osoite_from_ui))>0 ){
+      if(is.vector(input$koti_osoite_from_ui)){
+        if(input$koti_osoite_from_ui != koti_value_default  ){
           
-          ### lisää kodille markkeri ###  
-          leafletProxy("map_in_ui" , session) %>%
-            addMarkers(lng = location_info$lon
-                       , lat = location_info$lat
-                       , layerId = this_input
-                       , icon = icon_koti)
+          progress_koti_lisaa1 = shiny::Progress$new(session, min=1, max=4)
+          on.exit(progress_koti_lisaa1$close())
           
-          ### poista vanhat kotiin liityvät markkerit ###
-          leafletProxy("map_in_ui", session) %>% 
-            clearGroup(this_input)
+          progress_koti_lisaa1$set(value = 1 ,message='Haetaan kotiosoiteen tiedot')
           
-          ### hae koordinaattitason palvelut
+          osoite = input$koti_osoite_from_ui
+          print( 'muutetetaan kotia' )
+          ui_time = Sys.time()
+          this_input <- 'koti'
           
-          services = try(get_point_objects(lat=location_info$lat , lon = location_info$lon , radius = radius ))
+          # palauta paikkaa koskevat tiedot
+          location_info = try(get_location_information(ui_time , click_time , ui_interaction_lag , osoite))
+          print( 'kodin info haettu' )
+          print( str(location_info) )
           
-          ### lisää uudet kotiin liittyvät markkerit ###         
-          if(class(services) != 'try-error'){
-            if(length(services) > 0 ){
-              for( i in 1:length(services)){
-                
-                this_service = services[[i]] 
-                this_name = names(services[i]) 
-                
-                if(class(this_service) != 'try-error' ){
-                  if(length(this_service$lon)>0){
-                    # these_ids = paste0(this_input , this_service$lon , this_service$lat ) 
-                    icon_name = paste0( 'icon_' , this_name , sep=''  ) 
+          progress_koti_lisaa1$set(value = 2 , message='Haetaan kodin palvelut' )
+          
+          ### jos koordinaatit löytyvät ###
+          if(class(location_info) !='try-error' ){
+            if(!is_empty(location_info$lon) ){
+              if(!is.null(location_info$lon)){
+                if(length(location_info$lon)>0){
+                  
+                  progress_koti_lisaa2 <<- shiny::Progress$new(session, min=1, max=6)
+                  on.exit(progress_koti_lisaa2$close())
+                  
+                  progress_koti_lisaa2$set(value = 1 ,message='Haetaan kotiosoiteen reitit 1')
+                  
+                  print(head(location_info$lon))
+                  print('Kotiosoite hyvä')
+                  koti_location_information <<- location_info
+                  
+                  ### get route durations
+                  
+                  # durations to center
+                  cat('\nkoti lat: ', location_info$lat, '\n')
+                  cat('koti lon: ', location_info$lon, '\n')
+                  cat('center lat: ', city_center_location$lat, '\n')
+                  cat('center lon: ', city_center_location$lon , '\n')
+                  koti_center_durations =  try(get_route_durations(from_lat = location_info$lat , from_lon=location_info$lon 
+                                                                   , to_lat=city_center_location$lat , to_lon=city_center_location$lon)
+                  )
+                  if(class(koti_center_durations) != 'try-error'){
+                    durations$koti_to_center_durations = lapply(koti_center_durations, duration_min_and_max)
+                    # koti_to_center_durations <<- lapply(koti_center_durations, duration_min_and_max)
+                    cat('\nkoti_to_center_durations\n')
+                    print(durations$koti_to_center_durations)
+                  }
+                  
+                  progress_koti_lisaa2$set(value = 2 ,message='Haetaan kotiosoiteen reitit 2')
+                  
+                  # durations to work
+                  koti_tyo_durations =  try(get_route_durations(from_lat = location_info$lat , from_lon=location_info$lon 
+                                                                , to_lat=tyo_location_information$lat , to_lon=tyo_location_information$lon)
+                  )
+                  if(class(koti_tyo_durations) != 'try-error'){
+                    durations$koti_to_tyo_durations = lapply(koti_tyo_durations, duration_min_and_max)
+                    # koti_to_tyo_durations <<- lapply(koti_tyo_durations, duration_min_and_max)
+                    cat('\nkoti_to_tyo_durations\n')
+                    print(durations$koti_to_tyo_durations)
+                  }
+                  
+                  progress_koti_lisaa2$set(value = 3 ,message='Päivitetään markkerit')
+                  
+                  ### lisää kodille markkeri ###  
+                  leafletProxy("map_in_ui" , session) %>%
+                    addMarkers(lng = location_info$lon
+                               , lat = location_info$lat
+                               , layerId = this_input
+                               , icon = icon_koti)
+                  
+                  ### poista vanhat kotiin liityvät markkerit ###
+                  leafletProxy("map_in_ui", session) %>% 
+                    clearGroup(kotigroups)
+                  leafletProxy("map_in_ui", session) %>% 
+                    clearGroup('koti')
+                  
+                  ### hae koordinaattitason palvelut
+                  progress_koti_lisaa2$set(value = 4 ,message='Haetaan kodin palvelut')
+                  
+                  services = try(get_point_objects(lat=location_info$lat , lon = location_info$lon , radius = radius ))
+                  
+                  progress_koti_lisaa2$set(value = 5 ,message='Päivitetään palvelut')
+                  
+                  ### lisää uudet kotiin liittyvät markkerit ###         
+                  if(class(services) != 'try-error'){
+                    if(length(services) > 0 ){
+                      for( i in 1:length(services)){
+                        
+                        this_service = services[[i]] 
+                        this_name = names(services[i]) 
+                        
+                        if(class(this_service) != 'try-error' ){
+                          if(length(this_service$lon)>0){
+                            # these_ids = paste0(this_input , this_service$lon , this_service$lat ) 
+                            icon_name = paste0( 'icon_' , this_name , sep=''  ) 
+                            
+                            leafletProxy("map_in_ui" , session) %>%
+                              addMarkers(lng = this_service$lon
+                                         , lat = this_service$lat
+                                         , group = sprintf("%s_%s",this_input,this_service$tyyppi)
+                                         , icon = eval(parse(text = icon_name)) ) 
+                            # marker_store <<- append(marker_store , these_ids )
+                          }
+                        }
+                      }
+                    }
+                  }
+                  
+                  progress_koti_lisaa2$set(value = 6 )
+                  # progress2$close()
+                }
+              }
+              
+              progress_koti_lisaa1$set(value = 3 , message = 'Päivitetään alueen tiedot')
+              
+              ### hae zip-tason info
+              update_zip_objects(location_info , this_input,zip_objects,session)
+              print('zip metodi päivitetty')
+              #### lopuksi päivitetään osoite
+              if(location_info$user_interaction_method == 'click'){
+                new_address = try( address_from_listing(location_info ) )
+                if( validy_check_address( new_address) ){
+                  output$koti_valikko = renderUI({
+                    textInput("koti_osoite_from_ui", label = p("")
+                              , value = new_address )
+                  })
+                }
+              }
+              progress_koti_lisaa1$set(value = 4)
+              progress_koti_lisaa1$close()
+            }
+          }
+        }
+      }
+    }
+  }) 
+  
+  ### tyoosoite ### 
+  
+  observeEvent(input$tyo_osoite_from_ui , {
+    if(input$tyo_osoite_from_ui == tyo_value_default || str_trim(input$tyo_osoite_from_ui)== "") {
+      
+      
+      leafletProxy("map_in_ui", session) %>% 
+        removeMarker('tyo')
+      
+      # poista töihin liittyvät reitit
+      if(!is.null(durations$koti_to_tyo_durations)) {durations$koti_to_tyo_durations = NULL}
+      if(!is.null(durations$potentiaalinen_to_tyo_durations)) {durations$potentiaalinen_to_tyo_durations = NULL}
+      
+    }
+    
+    if(input$tyo_osoite_from_ui != tyo_value_default ){
+      if( nchar(str_trim(input$tyo_osoite_from_ui)) > 0 ){
+        if(is.vector(input$tyo_osoite_from_ui)){
+          
+          progress_tyo_lisaa1 = shiny::Progress$new(session, min=1, max=3)
+          on.exit(progress_tyo_lisaa1$close())
+          progress_tyo_lisaa1$set(value = 1 , message = 'Haetaan työpaikan tiedot')
+          
+          osoite = input$tyo_osoite_from_ui
+          print( 'muutetetaan tyota' )
+          ui_time = Sys.time()
+          this_input <- 'tyo'
+          
+          progress_tyo_lisaa1$set(value = 2 , message = 'Haetaan työpaikan tiedot')
+          
+          # palauta paikkaa koskevat tiedot
+          location_info = try(get_location_information(ui_time , click_time , ui_interaction_lag , osoite))
+          if(class(location_info) != 'try-error'){
+            if(!is_empty(location_info$lon) ){
+              if(!is.null(location_info$lon)){
+                if(length(location_info$lon)>0){
+                  
+                  progress_tyo_lisaa2 = shiny::Progress$new(session, min=1, max=4)
+                  on.exit(progress_tyo_lisaa2$close())
+                  progress_tyo_lisaa2$set(value = 1 , message = 'Päivitetään reittitiedot 1')
+                  
+                  tyo_location_information <<- location_info
+                  
+                  # durations to koti
+                  if(!is.null(koti_location_information)){
+                    koti_tyo_durations =  try(get_route_durations(from_lat = location_info$lat 
+                                                                  , from_lon=location_info$lon 
+                                                                  , to_lat=koti_location_information$lat 
+                                                                  , to_lon=koti_location_information$lon)
+                    )
+                    if(class(koti_tyo_durations) != 'try-error'){
+                      # koti_to_tyo_durations <<- lapply(koti_tyo_durations, duration_min_and_max)
+                      durations$koti_to_tyo_durations = lapply(koti_tyo_durations, duration_min_and_max)
+                      cat('\nkoti_to_tyo_durations\n')
+                      print(durations$koti_to_tyo_durations)
+                    }
+                  }
+                  
+                  progress_tyo_lisaa2$set(value = 2 , message = 'Päivitetään reittitiedot 2')
+                  
+                  # durations to potentiaalinen
+                  if(!is.null(location_info)){
+                    potentiaalinen_tyo_durations =  try(get_route_durations(from_lat = location_info$lat , from_lon=location_info$lon 
+                                                                            , to_lat=potentiaalinen_location_information$lat , to_lon=potentiaalinen_location_information$lon)
+                    )
+                    if(class(potentiaalinen_tyo_durations) != 'try-error'){
+                      # potentiaalinen_to_tyo_durations <<- lapply(potentiaalinen_tyo_durations, duration_min_and_max)
+                      durations$potentiaalinen_to_tyo_durations = lapply(potentiaalinen_tyo_durations, duration_min_and_max)
+                      cat('\npotentiaalinen_to_tyo_durations\n')
+                      print(durations$potentiaalinen_to_tyo_durations)
+                    }
+                  }
+                  
+                  progress_tyo_lisaa2$set(value = 3 , message = 'Päivitetään työpaikan markkerit')
+                  
+                  ### lisää tyolle markkeri ###  
+                  leafletProxy("map_in_ui" , session) %>%
+                    addMarkers(lng = location_info$lon
+                               , lat = location_info$lat
+                               , layerId = this_input
+                               , icon = icon_tyo)
+                  
+                  progress_tyo_lisaa2$set(value = 4 , message = 'Päivitetään työpaikan osoite')
+                  
+                  #### lopuksi päivitetään osoite
+                  if(location_info$user_interaction_method == 'click'){
+                    new_address = try( address_from_listing(location_info ) )
+                    if( validy_check_address(new_address) ){
+                      output$tyo_valikko = renderUI({
+                        textInput("tyo_osoite_from_ui", label = p("")
+                                  , value = new_address )
+                      })
+                    }
                     
-                    leafletProxy("map_in_ui" , session) %>%
-                      addMarkers(lng = this_service$lon
-                                 , lat = this_service$lat
-                                 , group = this_input
-                                 , icon = eval(parse(text = icon_name)) ) 
-                    # marker_store <<- append(marker_store , these_ids )
+                    progress_tyo_lisaa2$set(value = 5 )
+                    progress_tyo_lisaa2$close()
+                    
                   }
                 }
               }
             }
           }
-          ### hae zip-tason info
-          
-          if(!is.null(location_info$address$postcode)){
-            
-            koti_zip_objects <- try(get_zip_objects(location_info$address$postcode))
-            if(class(koti_zip_objects) != 'try-error'){
-              if(length(koti_zip_objects)>0){
-                print(str(koti_zip_objects))
-                koti_zip_objects$asuntojen_hinnat$paikka = this_input
-                koti_zip_objects$alue_info$paikka = this_input
-                koti_zip_objects <<- koti_zip_objects
-              }
-            }
-          }
-          
-          #### lopuksi päivitetään osoite
-          if(location_info$user_interaction_method == 'click'){
-            new_address = try( address_from_listing(location_info ) )
-            if( validy_check_address(new_address) ){
-              output$koti_valikko = renderUI({
-                textInput("koti_osoite_from_ui", label = p("")
-                          , value = new_address )
-              })
-            }
-          }
-          
         }
+        
+        progress_tyo_lisaa1$set(value = 3)
+        progress_tyo_lisaa1$close()
       }
-    }
-  }) 
-  ### tyoosoite ### 
-  
-  observeEvent(input$tyo_osoite_from_ui , {
-    if(input$tyo_osoite_from_ui != tyo_value_default ){
-      osoite = input$tyo_osoite_from_ui
-      print( 'muutetetaan tyota' )
-      ui_time = Sys.time()
-      this_input <- 'tyo'
-      
-      # palauta paikkaa koskevat tiedot
-      location_info = try(get_location_information(ui_time , click_time , ui_interaction_lag , osoite))
-      
-      ### lisää tyolle markkeri ###  
-      leafletProxy("map_in_ui" , session) %>%
-        addMarkers(lng = location_info$lon
-                   , lat = location_info$lat
-                   , layerId = this_input
-                   , icon = icon_tyo)
-      
-      #### lopuksi päivitetään osoite
-      if(location_info$user_interaction_method == 'click'){
-        new_address = try( address_from_listing(location_info ) )
-        if( validy_check_address(new_address) ){
-          output$tyo_valikko = renderUI({
-            textInput("tyo_osoite_from_ui", label = p("")
-                      , value = new_address )
-          })
-        }
-      }
-      
     }
   })  
   ### potentiaalinen ###
   
   observeEvent(input$potentiaalinen_osoite_from_ui , {
     print('muutos potentiaalisessa')
-    if(input$potentiaalinen_osoite_from_ui != potentiaalinen_value_default ){
-      osoite = input$potentiaalinen_osoite_from_ui
-      print('muutetaan potentiaalista')
-      ui_time = Sys.time()
-      this_input <- 'potentiaalinen'
+    print(input$potentiaalinen_osoite_from_ui)
+    if(is.vector(input$potentiaalinen_osoite_from_ui)){
+      if(input$potentiaalinen_osoite_from_ui == potentiaalinen_value_default || str_trim(input$potentiaalinen_osoite_from_ui)== "") {
+        
+        # poista itse markkeri
+        leafletProxy("map_in_ui", session) %>% 
+          removeMarker('potentiaalinen')
+        
+        
+        # poista markkeriin liittyvät markerit
+        leafletProxy("map_in_ui", session) %>% 
+          clearGroup(potentiaalinengroups)
+        leafletProxy("map_in_ui", session) %>% 
+          clearGroup('potentiaalinen')
+        
+        # poista potentiaaliseen liittyvät reitit
+        if(!is.null(durations$potentiaalinen_to_tyo_durations)){durations$potentiaalinen_to_tyo_durations = NULL }
+        if(!is.null(durations$potentiaalinen_to_center_durations)){durations$potentiaalinen_to_center_durations = NULL }
+        
+        # poista markkeriin liittyvät zip-objektit
+        remove_zip_objects_for('potentiaalinen',zip_objects)
+      }
       
-      # palauta paikkaa koskevat tiedot
-      location_info = try(get_location_information(ui_time , click_time , ui_interaction_lag , osoite))
-      
-      ### jos koordinaatit löytyvät ###
-      if(class(location_info) !='try-error' ){
-        if(!is.null(location_info$lon)){
+      if(nchar(str_trim(input$potentiaalinen_osoite_from_ui)) > 0){
+        if(input$potentiaalinen_osoite_from_ui != potentiaalinen_value_default ){
           
-          ### lisää kodille markkeri ###  
-          leafletProxy("map_in_ui" , session) %>%
-            addMarkers(lng = location_info$lon
-                       , lat = location_info$lat
-                       , layerId = this_input
-                       , icon = icon_potentiaalinen)
+          progress_potentiaalinen_lisaa1 = shiny::Progress$new(session, min=1, max=3)
+          on.exit(progress_potentiaalinen_lisaa1$close())
+          progress_potentiaalinen_lisaa1$set(value = 1 , message = 'Haetaan potentiaalisen osoite')
           
-          ### poista vanhat potentiaalinenin liityvät markkerit ###
-          leafletProxy("map_in_ui", session) %>% 
-            clearGroup(this_input)
-          # removeMarker( marker_store[ grep('potentiaalinen',marker_store ) ] )
-          # marker_store <<- marker_store[ !grep('potentiaalinen',marker_store ) ]
+          osoite = input$potentiaalinen_osoite_from_ui
+          print('muutetaan potentiaalista')
+          ui_time = Sys.time()
+          this_input <- 'potentiaalinen'
           
-          ### hae koordinaattitason palvelut
+          # palauta paikkaa koskevat tiedot
+          print('haetaan osoite')
+          location_info = try(get_location_information(ui_time , click_time , ui_interaction_lag , osoite))
           
-          services = try(get_point_objects(lat=location_info$lat , lon = location_info$lon , radius = radius ))
+          progress_potentiaalinen_lisaa1$set(value = 2 , message = 'Lisätään potentiaalisen tiedot')
           
-          ### lisää uudet potentiaalinenin liittyvät markkerit ###         
-          if(class(services) != 'try-error'){
-            if(length(services) > 0 ){
-              for( i in 1:length(services)){
-                
-                this_service = services[[i]] 
-                this_name = names(services[i]) 
-                
-                if(class(this_service) != 'try-error' ){
-                  if(length(this_service$lon)>0){
-                    # these_ids = paste0(this_input , this_service$lon , this_service$lat ) 
-                    icon_name = paste0( 'icon_' , this_name , sep=''  ) 
-                    
-                    leafletProxy("map_in_ui" , session) %>%
-                      addMarkers(lng = this_service$lon
-                                 , lat = this_service$lat
-                                 , group = this_input
-                                 , icon = eval(parse(text = icon_name)) ) 
-                    # marker_store <<- append(marker_store , these_ids )
+          ### jos koordinaatit löytyvät ###
+          if(class(location_info) !='try-error' ){
+            print('osoite löytyi')
+            cat(str(location_info))
+            if(!is_empty(location_info$lon) ){
+              if(!is.null(location_info$lon)){
+                if(length(location_info)>0){  
+                  
+                  progress_potentiaalinen_lisaa2 = shiny::Progress$new(session, min=1, max=5)
+                  on.exit(progress_potentiaalinen_lisaa2$close())
+                  progress_potentiaalinen_lisaa2$set(value = 1 , message = 'Haetaan potentiaalisen osoite')
+                  
+                  potentiaalinen_location_information <<- location_info
+                  
+                  ### get route durations
+                  
+                  # durations to center
+                  
+                  progress_potentiaalinen_lisaa2$set(value = 2 , message = 'Haetaan potentiaalisen reitit 1')
+                  
+                  cat('\npotentiaalinen lat: ', location_info$lat, '\n')
+                  cat('potentiaalinen lon: ', location_info$lon, '\n')
+                  cat('center lat: ', city_center_location$lat, '\n')
+                  cat('center lon: ', city_center_location$lon , '\n')
+                  potentiaalinen_center_durations =  try(get_route_durations(from_lat = location_info$lat , from_lon=location_info$lon 
+                                                                             , to_lat=city_center_location$lat , to_lon=city_center_location$lon)
+                  )
+                  if(class(potentiaalinen_center_durations) != 'try-error'){
+                    durations$potentiaalinen_to_center_durations = lapply(potentiaalinen_center_durations, duration_min_and_max)
+                    # potentiaalinen_to_center_durations <<- lapply(potentiaalinen_center_durations, duration_min_and_max)
+                    print(durations$potentiaalinen_to_center_durations)
                   }
+                  
+                  progress_potentiaalinen_lisaa2$set(value = 3 , message = 'Haetaan potentiaalisen reitit 2')
+                  
+                  # durations to work
+                  
+                  potentiaalinen_tyo_durations =  try(get_route_durations(from_lat = location_info$lat , from_lon=location_info$lon 
+                                                                          , to_lat=tyo_location_information$lat , to_lon=tyo_location_information$lon)
+                  )
+                  if(class(potentiaalinen_tyo_durations) != 'try-error'){
+                    durations$potentiaalinen_to_tyo_durations = lapply(potentiaalinen_tyo_durations, duration_min_and_max)
+                    # potentiaalinen_to_tyo_durations <<- lapply(potentiaalinen_tyo_durations, duration_min_and_max)
+                  }
+                  
+                  progress_potentiaalinen_lisaa2$set(value = 4 , message = 'Lisätään potentiaalisen markkerit')
+                  
+                  ### lisää potentiaaliselle markkeri ###  
+                  leafletProxy("map_in_ui" , session) %>%
+                    addMarkers(lng = location_info$lon
+                               , lat = location_info$lat
+                               , layerId = this_input
+                               , icon = icon_potentiaalinen)
+                  
+                  ### poista vanhat potentiaalinenin liityvät markkerit ###
+                  leafletProxy("map_in_ui", session) %>% 
+                    clearGroup(potentiaalinengroups)
+                  leafletProxy("map_in_ui", session) %>% 
+                    clearGroup('potentiaalinen')
+                  
+                  ### hae koordinaattitason palvelut
+                  progress_potentiaalinen_lisaa2$set(value = 5 , message = 'Haetaan potentiaalisen palvelut')
+                  
+                  services = try(get_point_objects(lat=location_info$lat , lon = location_info$lon , radius = radius ))
+                  
+                  ### lisää uudet potentiaalinenin liittyvät markkerit ###         
+                  if(class(services) != 'try-error'){
+                    #print(services$tyyppi)
+                    if(length(services) > 0 ){
+                      for( i in 1:length(services)){
+                        
+                        this_service = services[[i]] 
+                        this_name = names(services[i]) 
+                        
+                        if(class(this_service) != 'try-error' ){
+                          if(length(this_service$lon)>0){
+                            icon_name = paste0( 'icon_' , this_name , sep=''  ) 
+                            
+                            leafletProxy("map_in_ui" , session) %>%
+                              addMarkers(lng = this_service$lon
+                                         , lat = this_service$lat
+                                         , group = sprintf("%s_%s",this_input,this_service$tyyppi)
+                                         , icon = eval(parse(text = icon_name)) ) 
+                          }
+                        }
+                      }
+                    }
+                  }
+                  
                 }
               }
-            }
-          }
-          # hae zip-tason info
-          
-          if(!is.null(location_info$address$postcode)){
-            
-            potentiaalinen_zip_objects <- try(get_zip_objects(location_info$address$postcode))
-            if(class(potentiaalinen_zip_objects) != 'try-error'){
-              if(length(potentiaalinen_zip_objects)>0){
-                print(str(potentiaalinen_zip_objects))
-                potentiaalinen_zip_objects$asuntojen_hinnat$paikka = this_input
-                potentiaalinen_zip_objects$alue_info$paikka = this_input
-                potentiaalinen_zip_objects <<- potentiaalinen_zip_objects
+              # hae zip-tason info
+              
+              progress_potentiaalinen_lisaa2$set(value = 6 , message = 'Haetaan potentiaalisen aluetiedot')
+              
+              update_zip_objects(location_info , this_input , zip_objects,session)
+              print('potential zip-objects updadet')
+              #### lopuksi päivitetään osoite
+              if(location_info$user_interaction_method == 'click'){
+                new_address = try( address_from_listing(location_info ) )
+                if( validy_check_address(new_address) ){
+                  output$potentiaalinen_valikko = renderUI({
+                    textInput("potentiaalinen_osoite_from_ui", label = p("")
+                              , value = new_address )
+                  })
+                }
               }
+              
+              progress_potentiaalinen_lisaa2$set(value = 7)
+              progress_potentiaalinen_lisaa2$close()
             }
           }
           
-          #### lopuksi päivitetään osoite
-          if(location_info$user_interaction_method == 'click'){
-            new_address = try( address_from_listing(location_info ) )
-            if( validy_check_address(new_address) ){
-              output$potentiaalinen_valikko = renderUI({
-                textInput("potentiaalinen_osoite_from_ui", label = p("")
-                          , value = new_address )
-              })
-            }
-          }
+          progress_potentiaalinen_lisaa1$set(value = 3)
+          progress_potentiaalinen_lisaa1$close()
         }
       }
     }
   })
   
+  ### alkuun näppäin
+  
+  observeEvent(input$alkuun_nappi, {
+    output$koti_valikko = renderUI({
+      textInput("koti_osoite_from_ui", label = p(""), value = koti_value_default) 
+    })
+    output$tyo_valikko = renderUI({
+      textInput("tyo_osoite_from_ui", label = p(""), value = tyo_value_default) 
+    })
+    output$potentiaalinen_valikko = renderUI({
+      textInput("potentiaalinen_osoite_from_ui", label = p(""), value = potentiaalinen_value_default) 
+    })
+  })
   
   ### removing existing markers by clicking
   
@@ -290,17 +571,7 @@ shinyServer(function(input, output, session) {
           
           if(this_input == 'koti'){
             
-            # poista itse markkeri
-            leafletProxy("map_in_ui", session) %>% 
-              removeMarker(this_input)
-            
-            # poista markkerrin liittyvät markerit
-            leafletProxy("map_in_ui", session) %>% 
-              clearGroup(this_input)
-            # removeMarker( marker_store[ grep('koti',marker_store ) ] )
-            marker_store <<- marker_store[ !grep('koti',marker_store ) ]
-            
-            # ... ja palauta tekstikenttä oletusasetuksiin  
+            # palauta tekstikenttä oletusasetuksiin  
             output$koti_valikko = renderUI({
               textInput("koti_osoite_from_ui", label = p(""), value = koti_value_default) 
             })
@@ -308,169 +579,325 @@ shinyServer(function(input, output, session) {
           }
           else if(this_input == 'tyo'){
             
-            leafletProxy("map_in_ui", session) %>% 
-              removeMarker('tyo')
-            
             output$tyo_valikko = renderUI({
               textInput("tyo_osoite_from_ui", label = p(""), value = tyo_value_default) 
             })
           }
           else if(this_input == 'potentiaalinen') {
             
-            leafletProxy("map_in_ui", session) %>% 
-              removeMarker(this_input)
-            
-            leafletProxy("map_in_ui", session) %>% 
-              clearGroup(this_input)
-            # removeMarker( marker_store[ grep('potentiaalinen',marker_store ) ] )
-            # marker_store <<- marker_store[ !grep('potentiaalinen',marker_store ) ]
-            
             output$potentiaalinen_valikko = renderUI({
-              textInput("pontentiaalinen_osoite_from_ui", label = p(""), value = potentiaalinen_value_default) 
+              textInput("potentiaalinen_osoite_from_ui", label = p(""), value = potentiaalinen_value_default) 
             })
           }
         }
       }
     }
   })
+  
+  ### remove polygon layers by clicking
+  
+  observeEvent(input$map_in_ui_shape_click , {
+    leafletProxy("map_in_ui" , session) %>% 
+      removeShape(input$map_in_ui_shape_click$id)
+  })
   ##################### visut  #####################
   
-  asuntojen_hinnat = reactive({
-    asuntojen_hinnat = try(merge(koti_zip_objects$asuntojen_hinnat , potentiaalinen_zip_objects$asuntojen_hinnat , by='Vuosi'))
-    
-    if(class(asuntojen_hinnat) == 'try-error'){
-      if(is.null(koti_zip_objects$asuntojen_hinnat)){
-        cat('koti_zip_objects$asuntojen_hinnat not found')
-        asuntojen_hinnat = potentiaalinen_zip_objects$asuntojen_hinnat
-      } else if(is.null(potentiaalinen_zip_objects$asuntojen_hinnat)){
-        cat('potentiaalinen_zip_objects$asuntojen_hinnat not found')
-        asuntojen_hinnat = potentiaalinen_zip_objects$asuntojen_hinnat
-      } 
+  # pendeling
+  
+  output$pendeling_plot = renderPlot({
+    withProgress(message = 'Päivitetään reittikuvaajaa',{
+      dat_titles = c('Kodista töihin' , 'Kodista Helsinkiin' , 'Potentiaalisesta töihin' , 'Potentiaalisesta Helsinkiin')
+      dats = list(durations$koti_to_tyo_durations
+                  , durations$koti_to_center_durations
+                  , durations$potentiaalinen_to_tyo_durations
+                  , durations$potentiaalinen_to_center_durations)
+      print('poistetaan tyhjat aikatauluista')    
+      null_ind = sapply(dats, is.null)
+      if(all(null_ind)){
+        return(NULL)
+      }
+      dats = dats[!null_ind]
+      dat_titles = dat_titles[!null_ind]
+      
+      names(dats) = dat_titles
+      dat_df = melt(dats) %>% spread(L3, value)
+      colnames(dat_df)[1:2] = c('time' ,'travel' )
+      # varit: koti=1, potentiaalinen = 2
+      dat_df$vari = 2
+      dat_df$vari[grep('Kodista',dat_df$travel)] = 1
+      dat_df$vari = as.factor(dat_df$vari)
+      dat_df$time = ifelse(dat_df$time=='evening' , 'Ilta' , 'Aamu')
+      
+      # paletti
+      if( '2' %in% as.character(dat_df$vari) && '1' %in% as.character(dat_df$vari) ){
+        pal = paletti
+      } else if('1' %in% as.character(dat_df$vari)){
+        pal = paletti[1]
+      } else{
+        pal = paletti[2]
+      }
+      
+      pic = ggplot(dat_df , aes( x = time , ymax = max , ymin=min , color= vari) ) + 
+        geom_errorbar(size=2) + 
+        scale_color_manual(values = pal) + 
+        facet_wrap(~ travel , ncol=1) + 
+        coord_flip() +
+        ylab('') +
+        xlab('') +
+        theme(legend.position = "none"
+              , strip.background = element_rect(fill="#ffffff")
+              , strip.text.x = element_text(size=12) ) +
+        ggtitle('Matka-ajat (minuuttia)') 
+      
+      incProgress(1)
+      pic
+    })
+  }) 
+  
+  
+  # asuntojen hinnat
+  output$asuntojen_hinnat_plot <- renderPlot({
+    if(!is.null(zip_objects$asuntojen_hinnat)){
+      withProgress(message = 'Päivitetään asuntokuvaaja',{
+        
+        # print(zip_objects$asuntojen_hinnat)
+        
+        if(is.numeric(zip_objects$asuntojen_hinnat$Vuosi)){
+          
+          maxvuosi = max(zip_objects$asuntojen_hinnat$Vuosi)
+          minvuosi = min(zip_objects$asuntojen_hinnat$Vuosi)
+          meanvuosi = floor(mean(c(maxvuosi,minvuosi)))
+          
+          # paletti
+          pal = paletti
+          if(length(unique(zip_objects$asuntojen_hinnat$paikka)) == 1 ){
+            if( unique(zip_objects$asuntojen_hinnat$paikka) == 'koti'  ){
+              pal = paletti[1]
+            } else{
+              pal = paletti[2]
+            }
+          }
+          
+          pic = ggplot(zip_objects$asuntojen_hinnat , aes(x=Vuosi , y=Keskiarvo , color=paikka)) + 
+            geom_line( size = 2 ) + 
+            scale_x_continuous('Vuosi' , breaks=c(minvuosi,meanvuosi,maxvuosi) ) + 
+            scale_color_manual( values = pal ) + 
+            ylab('Hinta (e/m^2)') + 
+            theme(legend.position = "none") + 
+            ggtitle('Asuntojen hinnat')
+        }
+        incProgress(1)
+        pic
+      })
     }
-    return(asuntojen_hinnat)
-  })
-  
-  output$asuntojen_hinta_time_series_plot <- renderChart({
-    
-    print( 'asuntojen_hinnat:',asuntojen_hinnat() )
-    n <- nPlot(Keskiarvo.x ~ Vuosi, data=asuntojen_hinnat(), type = "lineChart" , group="paikka")
-    n$chart(useInteractiveGuideline=TRUE)
-    n$set(dom = 'test_data_time_series_plot', width = 330 , height=280)
-    n
   })
   
   
-  ##################### HAUT   ##################### 
+  output$ikajakauma_plot <- renderPlot({
+    if(!is.null(zip_objects$alue_info)){
+      withProgress(message = 'Päivitetään ikäkuvaajaa',{
+        
+        data = zip_objects$alue_info[ , c('paikka','x.0.15.vuotiaat','x.16.29.vuotiaat','x.30.59.vuotiaat','x.yli.60.vuotiaat')]
+        data = melt( data ,factorsAsStrings = T)
+        data$value = data$value*100
+        data$variable = str_replace(data$variable,'x.','')
+        data$variable = gsub('.','-',data$variable,fixed =T)
+        
+        # paletti
+        pal = paletti
+        if(length(unique(data$paikka)) == 1 ){
+          if( unique(data$paikka) == 'koti'  ){
+            pal = paletti[1]
+          } else{
+            pal = paletti[2]
+          }
+        }
+        
+        pic = ggplot(data , aes(x=variable , y=value , fill=paikka)) + 
+          geom_bar(stat="identity" , position=position_dodge() ) + 
+          scale_fill_manual( values = pal ) + 
+          xlab('') + 
+          scale_y_continuous("") +
+          coord_flip() + 
+          theme(legend.position = "none") + 
+          ggtitle('Ikäjakauma (% asukkaista)')
+        incProgress(1)
+        pic
+      })
+    }
+  })
   
-  # ala-asteet
-  #   ala_asteet = reactive({
-  #     ala_asteet = get_palvelu('ala_asteet' 
-  #                              , lat = click_info()$value[2] 
-  #                              , lon = click_info()$value[1] 
-  #                              , radius = 2 )
-  #     return(ala_asteet)
-  #   })
-  #   
-  #   # ruokakaupat
-  #   ruokakaupat = reactive({
-  #     ruokakaupat = get_nearest( conn , 'coord' 
-  #                                , lat = click_info()$value[2] 
-  #                                , lon = click_info()$value[1] 
-  #                                , radius = 2 
-  #                                , tyyppi =  'Ruokakaupat' 
-  #                                , count =  100 )
-  #     return(ruokakaupat)
-  #   })
+  output$talojakauma_plot <- renderPlot({
+    if(!is.null(zip_objects$alue_info)){
+      withProgress(message = 'Päivitetään talokuvaajaa',{
+        
+        data = zip_objects$alue_info[ , c('paikka','pientaloja','kerrostaloja')]
+        data = melt( data ,factorsAsStrings = T)
+        data$value = data$value*100
+        
+        # paletti
+        pal = paletti
+        if(length(unique(data$paikka)) == 1 ){
+          if( unique(data$paikka) == 'koti'  ){
+            pal = paletti[1]
+          } else{
+            pal = paletti[2]
+          }
+        }
+        
+        pic = ggplot(data , aes(x=variable , y=value , fill=paikka)) + 
+          geom_bar(stat="identity" , position=position_dodge() ) + 
+          scale_fill_manual( values = pal ) + 
+          xlab('') + 
+          scale_y_continuous("") +
+          coord_flip() + 
+          theme(legend.position = "none") + 
+          ggtitle('Asunnot (% asukkaista)')
+        incProgress(1)
+        pic
+      })
+    }
+  })
   
-  ### MARKKERIEN PIIRTO 
+  
+  output$koulutusjakauma_plot <- renderPlot({
+    if(!is.null(zip_objects$alue_info)){
+      withProgress(message = 'Päivitetään koulutuskuvaajaa',{
+        
+        data = zip_objects$alue_info[ , c('paikka','perusasteen_koulutus','toisen_asteen_koulutus','korkeakoulutus')]
+        data = melt( data ,factorsAsStrings = T)
+        data$value = data$value*100
+        
+        data$variable = as.character(data$variable)
+        data$variable = ifelse(data$variable == 'perusasteen_koulutus' , 'perusaste' , data$variable )
+        data$variable = ifelse(data$variable == 'toisen_asteen_koulutus' , 'toinen_aste' , data$variable )
+        
+        data$variable = as.factor(data$variable)
+        data$variable <- ordered(data$variable, levels = c("perusaste", "toinen_aste", "korkeakoulutus"))
+        
+        # paletti
+        pal = paletti
+        if(length(unique(data$paikka)) == 1 ){
+          if( unique(data$paikka) == 'koti'  ){
+            pal = paletti[1]
+          } else{
+            pal = paletti[2]
+          }
+        }
+        
+        pic = ggplot(data , aes(x=variable , y=value , fill=paikka)) + 
+          geom_bar(stat="identity" , position=position_dodge() ) + 
+          scale_fill_manual( values = pal ) + 
+          xlab('') + 
+          scale_y_continuous("") +
+          coord_flip() + 
+          theme(legend.position = "none") + 
+          ggtitle('Korkein koulutusaste (% asukkaista)')
+        incProgress(1)
+        pic
+      })
+    }
+  })
+  
+  output$toimintajakauma_plot <- renderPlot({
+    if(!is.null(zip_objects$alue_info)){
+      withProgress(message = 'Päivitetään toimintakuvaajaa',{
+        
+        data = zip_objects$alue_info[ , c('paikka','tyolliset', 'tyottomat' , 'lapset',  'opiskelijat','muut')]
+        data = melt( data ,factorsAsStrings = T)
+        data$value = data$value*100
+        
+        # paletti
+        pal = paletti
+        if(length(unique(data$paikka)) == 1 ){
+          if( unique(data$paikka) == 'koti'  ){
+            pal = paletti[1]
+          } else{
+            pal = paletti[2]
+          }
+        }
+        
+        pic = ggplot(data , aes(x=variable , y=value , fill=paikka)) + 
+          geom_bar(stat="identity" , position=position_dodge() ) + 
+          scale_fill_manual( values = pal ) + 
+          xlab('') + 
+          scale_y_continuous("") +
+          coord_flip() + 
+          theme(legend.position = "none") + 
+          ggtitle('Pääasiallinen toiminta (% asukkaista)')
+        incProgress(1)
+        pic
+      })
+    }
+  })
   
   
-  #   observeEvent(input$map_in_ui_click,{ 
-  #     
-  #     ### piiirra ruokakaupat ###
-  #     ruokakaupat_layerids = paste0(last_added_marker , ruokakaupat()$lon , ruokakaupat()$lat ) 
-  #     leafletProxy("map_in_ui" , session) %>%
-  #       addMarkers(lng = ruokakaupat()$lon
-  #                  , lat = ruokakaupat()$lat
-  #                  , layerId = ruokakaupat_layerids
-  #                  , icon = icon_kauppa) 
-  #     marker_store <<- c(marker_store , ruokakaupat_layerids )
-  #     ### piiirra ala-asteet ###
-  #     
-  #     ala_asteet_layerids = paste0(last_added_marker , ala_asteet()$lon , ala_asteet()$lat ) 
-  #     leafletProxy("map_in_ui" , session) %>%
-  #       addMarkers(lng = ala_asteet()$longitude
-  #                  , lat = ala_asteet()$latitude
-  #                  , layerId = paste0( last_added_marker , ala_asteet()$longitude , ala_asteet()$latitude ) 
-  #                  , icon = icon_ala_aste)
-  #     marker_store <<- c(marker_store , ala_asteet_layerids)
-  #     
-  #   })
   
   ################################## DEBUGGAUS ##################################
   
-  test_data_time_series = data.frame(  value = c(cumsum(rnorm( 16,0,1 ) ) , cumsum(rnorm( 16,0,1 ) ) )
-                                       , paikka = rep( c('koti','muutto') , each=16 )
-                                       , vuosi = 2000:2015)
-  
-  output$test_data_time_series_plot <- renderChart({
-    n <- nPlot(value ~ vuosi, data=test_data_time_series, type = "lineChart" , group="paikka")
-    #     n$xAxis(tickFormat ="#!function (d) {return d3.time.format('%m/%Y')(new Date(d * 86400000 ));}!#",showMaxMin=FALSE)
-    #     n$yAxis(tickFormat ="#!function (d) {return d3.format('.1f')(d);}!#",showMaxMin = FALSE)
-    n$chart(useInteractiveGuideline=TRUE)
-    n$set(dom = 'test_data_time_series_plot', width = 330 , height=280)
-    n
-  })
-  
-  # example placeholder for texst
-  output$kotiosoite <- renderText({ paste( input$koti_osoite_from_ui ) })
-  output$muutto_osoite <- renderPrint({ cat(input$muutto_osoite_from_ui) })
-  # example placeholder for pictures  
-  output$koti_pic = renderPlot( plot(1:10) )
-  output$muutto_pic = renderPlot( plot(10:1) )
-  
-  
-  # output$click_... - textit debuggausta varten
-  output$click_latlon = renderText( paste( 'click lon lat: ' , click_info()$rounded[1] , click_info()$rounded[2]  ))
-  output$click_address = renderText( paste( 'address: ' 
-                                            , reverse_geocode_nominatim(lat = click_info()$value[2] 
-                                                                        , lon = click_info()$value[1]  )))
-  # palauttaa kaiken click_info()-funktion antaman infon yhtenä pötkönä
-  output$click_all_info = renderText(
-    paste( reverse_geocode_nominatim(lat = click_info()$value[2] 
-                                     , lon = click_info()$value[1] 
-                                     , get = 'listing' ) )
-  )
-  
-  # testitaulukko
-  test_table_head = reactive({
-    test_table_head =head(
-      get_nearest( conn , 'coord' , click_info()$value[2] , click_info()$value[1] , 2 , 'Ruokakaupat' , 100 ) 
-      , 2 )
-    #print(test_table_head)
-    return(test_table_head)
-  })
-  output$test_table <- renderDataTable({ test_table_head() })
-  #   # testitaulukko2
-  #   test_table_head2 = reactive({
-  #     test_table_head2 =head(
-  #       get_palvelu('ala_asteet' , lat = click_info()$value[2] , lon = click_info()$value[2],distance=10 )      
-  #       , 2 )
-  #     print(test_table_head2)
-  #     return(test_table_head2)
-  #   })
-  # output$test_table2 <- renderDataTable({ test_table_head2() })
-  
-  #   output$asuntojen_hinta_time_series_plot <- renderChart({
-  #     if(!is.null(home_zip_objects$asuntojen_hinnat)){
-  #       if(ncol(home_zip_objects$asuntojen_hinnat)){
-  #         n <- nPlot(Keskiarvo ~ Vuosi, data=home_zip_objects$asuntojen_hinnat
-  #                    , type = "lineChart" , group="paikka")
-  #         n$chart(useInteractiveGuideline=TRUE)
-  #         n$set(dom = 'asuntojen_hinta_time_series_plot', width = 330 , height=280)
-  #         n
-  #       }
-  #     }
-  #   })
-  
+  if(DEBUG){
+    test_data_time_series = data.frame(  value = c(cumsum(rnorm( 16,0,1 ) ) , cumsum(rnorm( 16,0,1 ) ) )
+                                         , paikka = rep( c('koti','muutto') , each=16 )
+                                         , vuosi = 2000:2015)
+    
+    output$test_data_time_series_plot <- renderChart({
+      n <- nPlot(value ~ vuosi, data=test_data_time_series, type = "lineChart" , group="paikka")
+      #     n$xAxis(tickFormat ="#!function (d) {return d3.time.format('%m/%Y')(new Date(d * 86400000 ));}!#",showMaxMin=FALSE)
+      #     n$yAxis(tickFormat ="#!function (d) {return d3.format('.1f')(d);}!#",showMaxMin = FALSE)
+      n$chart(useInteractiveGuideline=TRUE)
+      n$set(dom = 'test_data_time_series_plot', width = 330 , height=280)
+      n
+    })
+    
+    # example placeholder for texst
+    output$kotiosoite <- renderText({ paste( input$koti_osoite_from_ui ) })
+    output$muutto_osoite <- renderPrint({ cat(input$muutto_osoite_from_ui) })
+    # example placeholder for pictures  
+    output$koti_pic = renderPlot( plot(1:10) )
+    output$muutto_pic = renderPlot( plot(10:1) )
+    
+    
+    # output$click_... - textit debuggausta varten
+    output$click_latlon = renderText( paste( 'click lon lat: ' , click_info()$rounded[1] , click_info()$rounded[2]  ))
+    output$click_address = renderText( paste( 'address: ' 
+                                              , reverse_geocode_nominatim(lat = click_info()$value[2] 
+                                                                          , lon = click_info()$value[1]  )))
+    # palauttaa kaiken click_info()-funktion antaman infon yhtenä pötkönä
+    output$click_all_info = renderText(
+      paste( reverse_geocode_nominatim(lat = click_info()$value[2] 
+                                       , lon = click_info()$value[1] 
+                                       , get = 'listing' ) )
+    )
+    
+    # testitaulukko
+    test_table_head = reactive({
+      test_table_head =head(
+        get_nearest( conn , 'coord' , click_info()$value[2] , click_info()$value[1] , 2 , 'Ruokakaupat' , 100 ) 
+        , 2 )
+      #print(test_table_head)
+      return(test_table_head)
+    })
+    output$test_table <- renderDataTable({ test_table_head() })
+    #   # testitaulukko2
+    #   test_table_head2 = reactive({
+    #     test_table_head2 =head(
+    #       get_palvelu('ala_asteet' , lat = click_info()$value[2] , lon = click_info()$value[2],distance=10 )      
+    #       , 2 )
+    #     print(test_table_head2)
+    #     return(test_table_head2)
+    #   })
+    # output$test_table2 <- renderDataTable({ test_table_head2() })
+    
+    #   output$asuntojen_hinta_time_series_plot <- renderChart({
+    #     if(!is.null(home_zip_objects$asuntojen_hinnat)){
+    #       if(ncol(home_zip_objects$asuntojen_hinnat)){
+    #         n <- nPlot(Keskiarvo ~ Vuosi, data=home_zip_objects$asuntojen_hinnat
+    #                    , type = "lineChart" , group="paikka")
+    #         n$chart(useInteractiveGuideline=TRUE)
+    #         n$set(dom = 'asuntojen_hinta_time_series_plot', width = 330 , height=280)
+    #         n
+    #       }
+    #     }
+    #   })
+  } # debug loppuu
 })
