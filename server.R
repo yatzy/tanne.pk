@@ -724,7 +724,7 @@ shinyServer(function(input, output, session) {
         incProgress(1)
         pic
       })
-    }
+    } else{NULL}
   })
   
   output$talojakauma_plot <- renderPlot({
@@ -756,7 +756,7 @@ shinyServer(function(input, output, session) {
         incProgress(1)
         pic
       })
-    }
+    } else{NULL}
   })
   
   
