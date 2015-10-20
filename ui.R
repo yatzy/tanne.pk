@@ -1,8 +1,9 @@
 
 shinyUI(
-  fluidPage(
-    #     theme = shinytheme("cerulean") ,
-    sidebarLayout(
+  fluidPage( 
+    theme = "cerulean.css"
+    
+    , sidebarLayout( 
       
       ### vasemman puolen paneeeli
       
@@ -29,7 +30,7 @@ shinyUI(
         
         # reitit
         , plotOutput("pendeling_plot")
-
+        
         # palveluboxit
         
         , uiOutput("palvelut_box")
@@ -47,7 +48,7 @@ shinyUI(
       
       # pääpaneeli
       
-      , mainPanel(  style = "height:100vh;background-color: #ffffff;"
+      , mainPanel(  style = "height:100vh;background-color: #ffffff;padding:0"
                     , width = 8
                     , leafletOutput("map_in_ui" , width = "100%", height = "100%")
       )

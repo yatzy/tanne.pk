@@ -72,11 +72,12 @@ add_recommendation_layer = function(recommendation_vector , this_input , session
   
   for( recommendation in recommendation_vector ){
     
-    cat('adding polygon for' , recommendation,'\n')
+    cat('adding polygon for ' , recommendation , '\n')
     
     leafletProxy("map_in_ui" , session) %>%
       addPolygons(data=subset(pk_postinumerot, pnro == recommendation )
-                  , weight=1 , fillColor = vari, group = this_input
+                  , weight=1 , fillColor = vari , group = this_input 
+                  , layerId  = paste('suosittelu',this_input, runif(1),sep='' )
                   , label = labeli)
   }
   
@@ -108,7 +109,9 @@ update_zip_objects = function(location_info , this_input , zip_objects,session){
   
   if(!is.null(location_info$address$postcode)){
     
-    data <- try(get_zip_objects(location_info$address$postcode))
+    this_zip = location_info$address$postcode  %>% as.character() %>% str_replace('.','')
+    
+    data <- try(get_zip_objects(this_zip))
     if(class(data) != 'try-error'){
       if(length(data)>0){
         

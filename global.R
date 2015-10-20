@@ -1,5 +1,6 @@
 ### kirjastot tahan
 
+library(shinythemes)
 library(jsonlite)
 library(dplyr)
 library(leaflet)

@@ -102,4 +102,3 @@ duration_min_and_max = function( duration_vec ){
 # duration_min_and_max(test_times$morning)
 # duration_min_and_max(test_times$evening)
 
-
