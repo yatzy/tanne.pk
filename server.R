@@ -108,10 +108,10 @@ shinyServer(function(input, output, session) {
   ### kotiosoite ###
   
   observeEvent(input$koti_osoite_from_ui , {
-
+    
     if(input$koti_osoite_from_ui == koti_value_default  || nchar(str_trim(input$koti_osoite_from_ui))== 0 ) {
       
-
+      
       # poista itse markkeri
       leafletProxy("map_in_ui", session) %>% 
         removeMarker('koti')
@@ -126,8 +126,8 @@ shinyServer(function(input, output, session) {
       remove_zip_objects_for('koti',zip_objects)
       
       # poista matka-ajat
-      durations$koti_to_tyo_durations = NULL
-      durations$koti_to_center_durations = NULL
+      if(!is.null(durations$koti_to_tyo_durations)){durations$koti_to_tyo_durations = NULL}
+      if(!is.null(durations$koti_to_center_durations)){durations$koti_to_center_durations = NULL}
       
     }
     
@@ -181,7 +181,7 @@ shinyServer(function(input, output, session) {
                     durations$koti_to_center_durations = lapply(koti_center_durations, duration_min_and_max)
                     # koti_to_center_durations <<- lapply(koti_center_durations, duration_min_and_max)
                     cat('\nkoti_to_center_durations\n')
-                    print(koti_to_center_durations)
+                    print(durations$koti_to_center_durations)
                   }
                   
                   progress_koti_lisaa2$set(value = 2 ,message='Haetaan kotiosoiteen reitit 2')
@@ -194,7 +194,7 @@ shinyServer(function(input, output, session) {
                     durations$koti_to_tyo_durations = lapply(koti_tyo_durations, duration_min_and_max)
                     # koti_to_tyo_durations <<- lapply(koti_tyo_durations, duration_min_and_max)
                     cat('\nkoti_to_tyo_durations\n')
-                    print(koti_to_tyo_durations)
+                    print(durations$koti_to_tyo_durations)
                   }
                   
                   progress_koti_lisaa2$set(value = 3 ,message='Päivitetään markkerit')
@@ -278,13 +278,13 @@ shinyServer(function(input, output, session) {
   observeEvent(input$tyo_osoite_from_ui , {
     if(input$tyo_osoite_from_ui == tyo_value_default || str_trim(input$tyo_osoite_from_ui)== "") {
       
-
+      
       leafletProxy("map_in_ui", session) %>% 
         removeMarker('tyo')
       
       # poista töihin liittyvät reitit
-      durations$koti_to_tyo_durations = NULL
-      durations$potentiaalinen_to_tyo_durations = NULL
+      if(!is.null(durations$koti_to_tyo_durations)) {durations$koti_to_tyo_durations = NULL}
+      if(!is.null(durations$potentiaalinen_to_tyo_durations)) {durations$potentiaalinen_to_tyo_durations = NULL}
       
     }
     
@@ -327,14 +327,14 @@ shinyServer(function(input, output, session) {
                       # koti_to_tyo_durations <<- lapply(koti_tyo_durations, duration_min_and_max)
                       durations$koti_to_tyo_durations = lapply(koti_tyo_durations, duration_min_and_max)
                       cat('\nkoti_to_tyo_durations\n')
-                      print(koti_to_tyo_durations)
+                      print(durations$koti_to_tyo_durations)
                     }
                   }
                   
                   progress_tyo_lisaa2$set(value = 2 , message = 'Päivitetään reittitiedot 2')
                   
                   # durations to potentiaalinen
-                  if(!is.null(potentiaalinen_location_information)){
+                  if(!is.null(location_info)){
                     potentiaalinen_tyo_durations =  try(get_route_durations(from_lat = location_info$lat , from_lon=location_info$lon 
                                                                             , to_lat=potentiaalinen_location_information$lat , to_lon=potentiaalinen_location_information$lon)
                     )
@@ -342,7 +342,7 @@ shinyServer(function(input, output, session) {
                       # potentiaalinen_to_tyo_durations <<- lapply(potentiaalinen_tyo_durations, duration_min_and_max)
                       durations$potentiaalinen_to_tyo_durations = lapply(potentiaalinen_tyo_durations, duration_min_and_max)
                       cat('\npotentiaalinen_to_tyo_durations\n')
-                      print(potentiaalinen_to_tyo_durations)
+                      print(durations$potentiaalinen_to_tyo_durations)
                     }
                   }
                   
@@ -394,16 +394,16 @@ shinyServer(function(input, output, session) {
         leafletProxy("map_in_ui", session) %>% 
           removeMarker('potentiaalinen')
         
-
+        
         # poista markkeriin liittyvät markerit
         leafletProxy("map_in_ui", session) %>% 
           clearGroup(potentiaalinengroups)
         leafletProxy("map_in_ui", session) %>% 
           clearGroup('potentiaalinen')
-
+        
         # poista potentiaaliseen liittyvät reitit
-        durations$potentiaalinen_to_tyo_durations = NULL
-        durations$potentiaalinen_to_center_durations = NULL
+        if(!is.null(durations$potentiaalinen_to_tyo_durations)){durations$potentiaalinen_to_tyo_durations = NULL }
+        if(!is.null(durations$potentiaalinen_to_center_durations)){durations$potentiaalinen_to_center_durations = NULL }
         
         # poista markkeriin liittyvät zip-objektit
         remove_zip_objects_for('potentiaalinen',zip_objects)
@@ -457,7 +457,7 @@ shinyServer(function(input, output, session) {
                   if(class(potentiaalinen_center_durations) != 'try-error'){
                     durations$potentiaalinen_to_center_durations = lapply(potentiaalinen_center_durations, duration_min_and_max)
                     # potentiaalinen_to_center_durations <<- lapply(potentiaalinen_center_durations, duration_min_and_max)
-                    print(potentiaalinen_to_center_durations)
+                    print(durations$potentiaalinen_to_center_durations)
                   }
                   
                   progress_potentiaalinen_lisaa2$set(value = 3 , message = 'Haetaan potentiaalisen reitit 2')
@@ -578,7 +578,7 @@ shinyServer(function(input, output, session) {
             
           }
           else if(this_input == 'tyo'){
-
+            
             output$tyo_valikko = renderUI({
               textInput("tyo_osoite_from_ui", label = p(""), value = tyo_value_default) 
             })
@@ -604,208 +604,235 @@ shinyServer(function(input, output, session) {
   
   # pendeling
   
-
-    output$pendeling_plot = renderPlot({
-        dat_titles = c('Kodista töihin' , 'Kodista Helsinkiin' , 'Potentiaalisesta töihin' , 'Potentiaalisesta Helsinkiin')
-        dats = list(durations$koti_to_tyo_durations
-                    , durations$koti_to_center_durations
-                    , durations$potentiaalinen_to_tyo_durations
-                    , durations$potentiaalinen_to_center_durations)
-        print('poistetaan tyhjat aikatauluista')    
-        null_ind = sapply(dats, is.null)
-        if(all(null_ind)){
-          return(NULL)
-        }
-        dats = dats[!null_ind]
-        dat_titles = dat_titles[!null_ind]
-        
-        names(dats) = dat_titles
-        dat_df = melt(dats) %>% spread(L3, value)
-        colnames(dat_df)[1:2] = c('time' ,'travel' )
-        # varit: koti=1, potentiaalinen = 2
-        dat_df$vari = 2
-        dat_df$vari[grep('Kodista',dat_df$travel)] = 1
-        dat_df$vari = as.factor(dat_df$vari)
-        dat_df$time = ifelse(dat_df$time=='evening' , 'Ilta' , 'Aamu')
-        
-        # paletti
-        if( '2' %in% as.character(dat_df$vari) && '1' %in% as.character(dat_df$vari) ){
-          pal = paletti
-        } else if('1' %in% as.character(dat_df$vari)){
-          pal = paletti[1]
-        } else{
-          pal = paletti[2]
-        }
-        
-        ggplot(dat_df , aes( x = time , ymax = max , ymin=min , color= vari) ) + 
-          geom_errorbar(size=2) + 
-          scale_color_manual(values = pal) + 
-          facet_wrap(~ travel , ncol=1) + 
-          coord_flip() +
-          ylab('') +
-          xlab('') +
-          theme(legend.position = "none"
-                , strip.background = element_rect(fill="#ffffff")
-                , strip.text.x = element_text(size=12) ) +
-          ggtitle('Matka-ajat (minuuttia)') 
-    }) 
+  output$pendeling_plot = renderPlot({
+    withProgress(message = 'Päivitetään reittikuvaajaa',{
+      dat_titles = c('Kodista töihin' , 'Kodista Helsinkiin' , 'Potentiaalisesta töihin' , 'Potentiaalisesta Helsinkiin')
+      dats = list(durations$koti_to_tyo_durations
+                  , durations$koti_to_center_durations
+                  , durations$potentiaalinen_to_tyo_durations
+                  , durations$potentiaalinen_to_center_durations)
+      print('poistetaan tyhjat aikatauluista')    
+      null_ind = sapply(dats, is.null)
+      if(all(null_ind)){
+        return(NULL)
+      }
+      dats = dats[!null_ind]
+      dat_titles = dat_titles[!null_ind]
+      
+      names(dats) = dat_titles
+      dat_df = melt(dats) %>% spread(L3, value)
+      colnames(dat_df)[1:2] = c('time' ,'travel' )
+      # varit: koti=1, potentiaalinen = 2
+      dat_df$vari = 2
+      dat_df$vari[grep('Kodista',dat_df$travel)] = 1
+      dat_df$vari = as.factor(dat_df$vari)
+      dat_df$time = ifelse(dat_df$time=='evening' , 'Ilta' , 'Aamu')
+      
+      # paletti
+      if( '2' %in% as.character(dat_df$vari) && '1' %in% as.character(dat_df$vari) ){
+        pal = paletti
+      } else if('1' %in% as.character(dat_df$vari)){
+        pal = paletti[1]
+      } else{
+        pal = paletti[2]
+      }
+      
+      pic = ggplot(dat_df , aes( x = time , ymax = max , ymin=min , color= vari) ) + 
+        geom_errorbar(size=2) + 
+        scale_color_manual(values = pal) + 
+        facet_wrap(~ travel , ncol=1) + 
+        coord_flip() +
+        ylab('') +
+        xlab('') +
+        theme(legend.position = "none"
+              , strip.background = element_rect(fill="#ffffff")
+              , strip.text.x = element_text(size=12) ) +
+        ggtitle('Matka-ajat (minuuttia)') 
+      
+      incProgress(1)
+      pic
+    })
+  }) 
+  
   
   # asuntojen hinnat
   output$asuntojen_hinnat_plot <- renderPlot({
     if(!is.null(zip_objects$asuntojen_hinnat)){
-      
-      # print(zip_objects$asuntojen_hinnat)
-      
-      if(is.numeric(zip_objects$asuntojen_hinnat$Vuosi)){
+      withProgress(message = 'Päivitetään asuntokuvaaja',{
         
-        maxvuosi = max(zip_objects$asuntojen_hinnat$Vuosi)
-        minvuosi = min(zip_objects$asuntojen_hinnat$Vuosi)
-        meanvuosi = floor(mean(c(maxvuosi,minvuosi)))
+        # print(zip_objects$asuntojen_hinnat)
+        
+        if(is.numeric(zip_objects$asuntojen_hinnat$Vuosi)){
+          
+          maxvuosi = max(zip_objects$asuntojen_hinnat$Vuosi)
+          minvuosi = min(zip_objects$asuntojen_hinnat$Vuosi)
+          meanvuosi = floor(mean(c(maxvuosi,minvuosi)))
+          
+          # paletti
+          pal = paletti
+          if(length(unique(zip_objects$asuntojen_hinnat$paikka)) == 1 ){
+            if( unique(zip_objects$asuntojen_hinnat$paikka) == 'koti'  ){
+              pal = paletti[1]
+            } else{
+              pal = paletti[2]
+            }
+          }
+          
+          pic = ggplot(zip_objects$asuntojen_hinnat , aes(x=Vuosi , y=Keskiarvo , color=paikka)) + 
+            geom_line( size = 2 ) + 
+            scale_x_continuous('Vuosi' , breaks=c(minvuosi,meanvuosi,maxvuosi) ) + 
+            scale_color_manual( values = pal ) + 
+            ylab('Hinta (e/m^2)') + 
+            theme(legend.position = "none") + 
+            ggtitle('Asuntojen hinnat')
+        }
+        incProgress(1)
+        pic
+      })
+    }
+  })
+  
+  
+  output$ikajakauma_plot <- renderPlot({
+    if(!is.null(zip_objects$alue_info)){
+      withProgress(message = 'Päivitetään ikäkuvaajaa',{
+        
+        data = zip_objects$alue_info[ , c('paikka','x.0.15.vuotiaat','x.16.29.vuotiaat','x.30.59.vuotiaat','x.yli.60.vuotiaat')]
+        data = melt( data ,factorsAsStrings = T)
+        data$value = data$value*100
+        data$variable = str_replace(data$variable,'x.','')
+        data$variable = gsub('.','-',data$variable,fixed =T)
         
         # paletti
         pal = paletti
-        if(length(unique(zip_objects$asuntojen_hinnat$paikka)) == 1 ){
-          if( unique(zip_objects$asuntojen_hinnat$paikka) == 'koti'  ){
+        if(length(unique(data$paikka)) == 1 ){
+          if( unique(data$paikka) == 'koti'  ){
             pal = paletti[1]
           } else{
             pal = paletti[2]
           }
         }
         
-        ggplot(zip_objects$asuntojen_hinnat , aes(x=Vuosi , y=Keskiarvo , color=paikka)) + 
-          geom_line( size = 2 ) + 
-          scale_x_continuous('Vuosi' , breaks=c(minvuosi,meanvuosi,maxvuosi) ) + 
-          scale_color_manual( values = pal ) + 
-          ylab('Hinta (e/m^2)') + 
+        pic = ggplot(data , aes(x=variable , y=value , fill=paikka)) + 
+          geom_bar(stat="identity" , position=position_dodge() ) + 
+          scale_fill_manual( values = pal ) + 
+          xlab('') + 
+          scale_y_continuous("") +
+          coord_flip() + 
           theme(legend.position = "none") + 
-          ggtitle('Asuntojen hinnat')
-      }
-    }
-  })
-  
-  output$ikajakauma_plot <- renderPlot({
-    if(!is.null(zip_objects$alue_info)){
-      
-      data = zip_objects$alue_info[ , c('paikka','x.0.15.vuotiaat','x.16.29.vuotiaat','x.30.59.vuotiaat','x.yli.60.vuotiaat')]
-      data = melt( data ,factorsAsStrings = T)
-      data$value = data$value*100
-      data$variable = str_replace(data$variable,'x.','')
-      data$variable = gsub('.','-',data$variable,fixed =T)
-      
-      # paletti
-      pal = paletti
-      if(length(unique(data$paikka)) == 1 ){
-        if( unique(data$paikka) == 'koti'  ){
-          pal = paletti[1]
-        } else{
-          pal = paletti[2]
-        }
-      }
-      
-      ggplot(data , aes(x=variable , y=value , fill=paikka)) + 
-        geom_bar(stat="identity" , position=position_dodge() ) + 
-        scale_fill_manual( values = pal ) + 
-        xlab('') + 
-        scale_y_continuous("") +
-        coord_flip() + 
-        theme(legend.position = "none") + 
-        ggtitle('Ikäjakauma (% asukkaista)')
+          ggtitle('Ikäjakauma (% asukkaista)')
+        incProgress(1)
+        pic
+      })
     }
   })
   
   output$talojakauma_plot <- renderPlot({
     if(!is.null(zip_objects$alue_info)){
-      
-      data = zip_objects$alue_info[ , c('paikka','pientaloja','kerrostaloja')]
-      data = melt( data ,factorsAsStrings = T)
-      data$value = data$value*100
-      
-      # paletti
-      pal = paletti
-      if(length(unique(data$paikka)) == 1 ){
-        if( unique(data$paikka) == 'koti'  ){
-          pal = paletti[1]
-        } else{
-          pal = paletti[2]
+      withProgress(message = 'Päivitetään talokuvaajaa',{
+        
+        data = zip_objects$alue_info[ , c('paikka','pientaloja','kerrostaloja')]
+        data = melt( data ,factorsAsStrings = T)
+        data$value = data$value*100
+        
+        # paletti
+        pal = paletti
+        if(length(unique(data$paikka)) == 1 ){
+          if( unique(data$paikka) == 'koti'  ){
+            pal = paletti[1]
+          } else{
+            pal = paletti[2]
+          }
         }
-      }
-      
-      ggplot(data , aes(x=variable , y=value , fill=paikka)) + 
-        geom_bar(stat="identity" , position=position_dodge() ) + 
-        scale_fill_manual( values = pal ) + 
-        xlab('') + 
-        scale_y_continuous("") +
-        coord_flip() + 
-        theme(legend.position = "none") + 
-        ggtitle('Asunnot (% asukkaista)')
+        
+        pic = ggplot(data , aes(x=variable , y=value , fill=paikka)) + 
+          geom_bar(stat="identity" , position=position_dodge() ) + 
+          scale_fill_manual( values = pal ) + 
+          xlab('') + 
+          scale_y_continuous("") +
+          coord_flip() + 
+          theme(legend.position = "none") + 
+          ggtitle('Asunnot (% asukkaista)')
+        incProgress(1)
+        pic
+      })
     }
   })
   
+  
   output$koulutusjakauma_plot <- renderPlot({
     if(!is.null(zip_objects$alue_info)){
-      
-      data = zip_objects$alue_info[ , c('paikka','perusasteen_koulutus','toisen_asteen_koulutus','korkeakoulutus')]
-      data = melt( data ,factorsAsStrings = T)
-      data$value = data$value*100
-      
-      data$variable = as.character(data$variable)
-      data$variable = ifelse(data$variable == 'perusasteen_koulutus' , 'perusaste' , data$variable )
-      data$variable = ifelse(data$variable == 'toisen_asteen_koulutus' , 'toinen_aste' , data$variable )
-      
-      data$variable = as.factor(data$variable)
-      data$variable <- ordered(data$variable, levels = c("perusaste", "toinen_aste", "korkeakoulutus"))
-      
-      # paletti
-      pal = paletti
-      if(length(unique(data$paikka)) == 1 ){
-        if( unique(data$paikka) == 'koti'  ){
-          pal = paletti[1]
-        } else{
-          pal = paletti[2]
+      withProgress(message = 'Päivitetään koulutuskuvaajaa',{
+        
+        data = zip_objects$alue_info[ , c('paikka','perusasteen_koulutus','toisen_asteen_koulutus','korkeakoulutus')]
+        data = melt( data ,factorsAsStrings = T)
+        data$value = data$value*100
+        
+        data$variable = as.character(data$variable)
+        data$variable = ifelse(data$variable == 'perusasteen_koulutus' , 'perusaste' , data$variable )
+        data$variable = ifelse(data$variable == 'toisen_asteen_koulutus' , 'toinen_aste' , data$variable )
+        
+        data$variable = as.factor(data$variable)
+        data$variable <- ordered(data$variable, levels = c("perusaste", "toinen_aste", "korkeakoulutus"))
+        
+        # paletti
+        pal = paletti
+        if(length(unique(data$paikka)) == 1 ){
+          if( unique(data$paikka) == 'koti'  ){
+            pal = paletti[1]
+          } else{
+            pal = paletti[2]
+          }
         }
-      }
-      
-      ggplot(data , aes(x=variable , y=value , fill=paikka)) + 
-        geom_bar(stat="identity" , position=position_dodge() ) + 
-        scale_fill_manual( values = pal ) + 
-        xlab('') + 
-        scale_y_continuous("") +
-        coord_flip() + 
-        theme(legend.position = "none") + 
-        ggtitle('Korkein koulutusaste (% asukkaista)')
+        
+        pic = ggplot(data , aes(x=variable , y=value , fill=paikka)) + 
+          geom_bar(stat="identity" , position=position_dodge() ) + 
+          scale_fill_manual( values = pal ) + 
+          xlab('') + 
+          scale_y_continuous("") +
+          coord_flip() + 
+          theme(legend.position = "none") + 
+          ggtitle('Korkein koulutusaste (% asukkaista)')
+        incProgress(1)
+        pic
+      })
     }
   })
   
   output$toimintajakauma_plot <- renderPlot({
     if(!is.null(zip_objects$alue_info)){
-      
-      data = zip_objects$alue_info[ , c('paikka','tyolliset', 'tyottomat' , 'lapset',  'opiskelijat','muut')]
-      data = melt( data ,factorsAsStrings = T)
-      data$value = data$value*100
-      
-      # paletti
-      pal = paletti
-      if(length(unique(data$paikka)) == 1 ){
-        if( unique(data$paikka) == 'koti'  ){
-          pal = paletti[1]
-        } else{
-          pal = paletti[2]
+      withProgress(message = 'Päivitetään toimintakuvaajaa',{
+        
+        data = zip_objects$alue_info[ , c('paikka','tyolliset', 'tyottomat' , 'lapset',  'opiskelijat','muut')]
+        data = melt( data ,factorsAsStrings = T)
+        data$value = data$value*100
+        
+        # paletti
+        pal = paletti
+        if(length(unique(data$paikka)) == 1 ){
+          if( unique(data$paikka) == 'koti'  ){
+            pal = paletti[1]
+          } else{
+            pal = paletti[2]
+          }
         }
-      }
-      
-      ggplot(data , aes(x=variable , y=value , fill=paikka)) + 
-        geom_bar(stat="identity" , position=position_dodge() ) + 
-        scale_fill_manual( values = pal ) + 
-        xlab('') + 
-        scale_y_continuous("") +
-        coord_flip() + 
-        theme(legend.position = "none") + 
-        ggtitle('Pääasiallinen toiminta (% asukkaista)')
+        
+        pic = ggplot(data , aes(x=variable , y=value , fill=paikka)) + 
+          geom_bar(stat="identity" , position=position_dodge() ) + 
+          scale_fill_manual( values = pal ) + 
+          xlab('') + 
+          scale_y_continuous("") +
+          coord_flip() + 
+          theme(legend.position = "none") + 
+          ggtitle('Pääasiallinen toiminta (% asukkaista)')
+        incProgress(1)
+        pic
+      })
     }
   })
   
   
-
+  
   ################################## DEBUGGAUS ##################################
   
   if(DEBUG){

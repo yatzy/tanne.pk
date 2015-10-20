@@ -1,7 +1,7 @@
 
 shinyUI(
   fluidPage( 
-    theme = "cerulean.css"
+    theme = "cerulean_fork.css"
     
     , sidebarLayout( 
       
@@ -9,7 +9,7 @@ shinyUI(
       
       sidebarPanel(      
         
-        style = "height:100vh;background-color: #ffffff;overflow-y: auto; }"
+        style = "height:100vh;background-color: #ffffff;overflow-y:auto"
         , width = 4             
         # , h3("Osoitteet")
         
@@ -48,7 +48,7 @@ shinyUI(
       
       # pääpaneeli
       
-      , mainPanel(  style = "height:100vh;background-color: #ffffff;padding:0"
+      , mainPanel(  style = "height:100vh;background-color: #ffffff;padding:0;margin-left:0"
                     , width = 8
                     , leafletOutput("map_in_ui" , width = "100%", height = "100%")
       )

@@ -20,6 +20,9 @@
     margin: 0;
     padding: 0;
   }
+  
+
+  
 body {
   margin: 0;
 }
@@ -38,6 +41,18 @@ section,
 summary {
   display: block;
 }
+
+.shiny-progress .progress-text {
+  
+  top: 50% ;
+  left: 60% ;
+  margin-top: 30px;
+  font-size: 12px;
+  text-align: center;
+
+}
+
+
 audio,
 canvas,
 progress,
