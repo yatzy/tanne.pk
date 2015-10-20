@@ -108,24 +108,29 @@ shinyServer(function(input, output, session) {
   ### kotiosoite ###
   
   observeEvent(input$koti_osoite_from_ui , {
+
     if(input$koti_osoite_from_ui == koti_value_default  || str_trim(input$koti_osoite_from_ui)== "") {
       
       # poista itse markkeri
       leafletProxy("map_in_ui", session) %>% 
         removeMarker('koti')
       
-      # poista markkeriin liittyvät markerit
-      #sapply(kotigroups, leafletProxy("map_in_ui", session) %>% 
-      #  clearGroup)
+      # poista markkerrin liittyvät markerit
       leafletProxy("map_in_ui", session) %>% 
-        clearGroup(kotigroups)
-      
+        clearGroup(kotigroups) 
+      leafletProxy("map_in_ui", session) %>% 
+        clearGroup('koti') 
       
       # poista markkeriin liittyvät zip-objektit
       remove_zip_objects_for('koti',zip_objects)
       
+      # poista matka-ajat
+      durations$koti_to_tyo_durations = NULL
+      durations$koti_to_center_durations = NULL
+      
     }
-    if(nchar(input$koti_osoite_from_ui)>0){
+    
+    if( nchar(str_trim(input$koti_osoite_from_ui))>0 ){
       if(is.vector(input$koti_osoite_from_ui)){
         if(input$koti_osoite_from_ui != koti_value_default  ){
           osoite = input$koti_osoite_from_ui
@@ -238,15 +243,23 @@ shinyServer(function(input, output, session) {
       }
     }
   }) 
+  
   ### tyoosoite ### 
   
   observeEvent(input$tyo_osoite_from_ui , {
-    if(input$potentiaalinen_osoite_from_ui == potentiaalinen_value_default || str_trim(input$potentiaalinen_osoite_from_ui)== "") {
+    if(input$tyo_osoite_from_ui == tyo_value_default || str_trim(input$tyo_osoite_from_ui)== "") {
+      
       leafletProxy("map_in_ui", session) %>% 
         removeMarker('tyo')
+      
+      # poista töihin liittyvät reitit
+      durations$koti_to_tyo_durations = NULL
+      durations$potentiaalinen_to_tyo_durations = NULL
+      
     }
+    
     if(input$tyo_osoite_from_ui != tyo_value_default ){
-      if(nchar(input$tyo_osoite_from_ui)>0){
+      if( nchar(str_trim(input$tyo_osoite_from_ui)) > 0 ){
         if(is.vector(input$tyo_osoite_from_ui)){
           
           osoite = input$tyo_osoite_from_ui
@@ -331,11 +344,16 @@ shinyServer(function(input, output, session) {
         leafletProxy("map_in_ui", session) %>% 
           clearGroup('potentiaalinen')
         
+        # poista potentiaaliseen liittyvät reitit
+        durations$potentiaalinen_to_tyo_durations = NULL
+        durations$potentiaalinen_to_center_durations = NULL
+        
         # poista markkeriin liittyvät zip-objektit
         remove_zip_objects_for('potentiaalinen',zip_objects)
         
       }
-      if(nchar(input$potentiaalinen_osoite_from_ui)>0){
+      
+      if(nchar(str_trim(input$potentiaalinen_osoite_from_ui)) > 0){
         if(input$potentiaalinen_osoite_from_ui != potentiaalinen_value_default ){
           osoite = input$potentiaalinen_osoite_from_ui
           print('muutetaan potentiaalista')
@@ -470,57 +488,19 @@ shinyServer(function(input, output, session) {
           
           if(this_input == 'koti'){
             
-            # poista itse markkeri
-            leafletProxy("map_in_ui", session) %>% 
-              removeMarker(this_input)
-            
-            # poista markkerrin liittyvät markerit
-            leafletProxy("map_in_ui", session) %>% 
-              clearGroup(kotigroups) 
-            leafletProxy("map_in_ui", session) %>% 
-              clearGroup('koti') 
-            
-            # poista markkeriin liittyvät zip-objektit
-            remove_zip_objects_for(this_input,zip_objects)
-            
-            # poista matka-ajat
-            durations$koti_to_tyo_durations = NULL
-            durations$koti_to_center_durations = NULL
-            
-            # ... ja palauta tekstikenttä oletusasetuksiin  
+            # palauta tekstikenttä oletusasetuksiin  
             output$koti_valikko = renderUI({
               textInput("koti_osoite_from_ui", label = p(""), value = koti_value_default) 
             })
             
           }
           else if(this_input == 'tyo'){
-            
-            leafletProxy("map_in_ui", session) %>% 
-              removeMarker('tyo')
-            
-            # poista matka-ajat
-            durations$koti_to_tyo_durations = NULL
-            durations$potentiaalinen_to_center_durations = NULL
 
             output$tyo_valikko = renderUI({
               textInput("tyo_osoite_from_ui", label = p(""), value = tyo_value_default) 
             })
           }
           else if(this_input == 'potentiaalinen') {
-            
-            leafletProxy("map_in_ui", session) %>% 
-              removeMarker(this_input)
-            
-            leafletProxy("map_in_ui", session) %>% 
-              clearGroup(potentiaalinengroups)
-            leafletProxy("map_in_ui", session) %>% 
-              clearGroup('potentiaalinen')
-            
-            # poista matka-ajat
-            durations$potentiaalinen_to_tyo_durations = NULL
-            durations$potentiaalinen_to_center_durations = NULL
-            
-            remove_zip_objects_for(this_input,zip_objects)
             
             output$potentiaalinen_valikko = renderUI({
               textInput("pontentiaalinen_osoite_from_ui", label = p(""), value = potentiaalinen_value_default) 
@@ -531,88 +511,18 @@ shinyServer(function(input, output, session) {
     }
   })
   
-#   pendeling_data = reactive({
-#     dat_titles = c('Kodista töihin' , 'Kodista Helsinkiin' , 'Potentiaalisesta töihin' , 'Potentiaalisesta Helsinkiin')
-#     dats = list(koti_to_tyo_durations(),koti_to_center_durations(),potentiaalinen_to_tyo_durations(),potentiaalinen_to_center_durations())
-#     print(dats)
-#     
-#     all_null = all(sapply(dats, is.null))
-#     
-#     if(!all_null){
-#       print('dats initoity')
-#       print(dats)
-#       if(nrow(dats)>0){  
-#         null_ind = sapply(dats, is.null)
-#         if(all(null_ind)){
-#           return(NULL)
-#         }
-#         dats = dats[!null_ind]
-#         dat_titles = dat_titles[!null_ind]
-#         
-#         names(dats) = dat_titles
-#         dat_df = melt(dats) %>% spread(L3, value)
-#         colnames(dat_df)[1:2] = c('time' ,'travel' )
-#         dat_df$vari = 2
-#         dat_df$vari[grep('Kodista',dat_df$travel)] = 1
-#         dat_df$vari = as.factor(dat_df$vari)
-#         dat_df$time = ifelse(dat_df$time=='evening' , 'Ilta' , 'Aamu')
-#         print(dat_df)
-#         return(dat_df)
-#       }
-#     }
-#   })
-  #       pendeling_data = reactive({
-  #         dat_titles = c('Kodista töihin' , 'Kodista Helsinkiin' , 'Potentiaalisesta töihin' , 'Potentiaalisesta Helsinkiin')
-  #         dats = list(koti_to_tyo_durations,koti_to_center_durations,potentiaalinen_to_tyo_durations,potentiaalinen_to_center_durations)
-  #         print('poistetaan tyhjat aikatauluista')    
-  #         null_ind = sapply(dats, is.null)
-  #         if(all(null_ind)){
-  #           return(NULL)
-  #         }
-  #         dats = dats[!null_ind]
-  #         dat_titles = dat_titles[!null_ind]
-  #         
-  #         names(dats) = dat_titles
-  #         dat_df = melt(dats) %>% spread(L3, value)
-  #         colnames(dat_df)[1:2] = c('time' ,'travel' )
-  #         dat_df$vari = 2
-  #         dat_df$vari[grep('Kodista',dat_df$travel)] = 1
-  #         dat_df$vari = as.factor(dat_df$vari)
-  #         dat_df$time = ifelse(dat_df$time=='evening' , 'Ilta' , 'Aamu')
-  #         print(dat_df)
-  #         return(dat_df)
-  #       })
-  
+
   ##################### visut  #####################
   
   # pendeling
   
-#   output$pendeling_plot = renderPlot({
-#     print(str(isolate(pendeling_data())))
-#     print(isolate(pendeling_data()))
-#     if(!is.null(pendeling_data())){
-#       if(nrow(pendeling_data())>0){
-#         dat_df = pendeling_data()
-#         print(isolate(dat_df))
-#         ggplot(dat_df , aes( x = time , ymax = max , ymin=min , color= vari) ) + 
-#           geom_errorbar(size=2) + 
-#           scale_color_manual(values = paletti) + 
-#           facet_wrap(~ travel , ncol=1) + 
-#           coord_flip() +
-#           ylab('') +
-#           xlab('') +
-#           theme(legend.position = "none") +
-#           ggtitle('Matka-ajat') 
-#       }
-#     }
-#   })
-  
+
     output$pendeling_plot = renderPlot({
         dat_titles = c('Kodista töihin' , 'Kodista Helsinkiin' , 'Potentiaalisesta töihin' , 'Potentiaalisesta Helsinkiin')
         dats = list(durations$koti_to_tyo_durations
-                    ,durations$koti_to_center_durations
-                    ,durations$potentiaalinen_to_tyo_durations
-                    ,durations$potentiaalinen_to_center_durations)
+                    , durations$koti_to_center_durations
+                    , durations$potentiaalinen_to_tyo_durations
+                    , durations$potentiaalinen_to_center_durations)
         print('poistetaan tyhjat aikatauluista')    
         null_ind = sapply(dats, is.null)
         if(all(null_ind)){
@@ -624,10 +534,20 @@ shinyServer(function(input, output, session) {
         names(dats) = dat_titles
         dat_df = melt(dats) %>% spread(L3, value)
         colnames(dat_df)[1:2] = c('time' ,'travel' )
+        # varit: koti=1, potentiaalinen = 2
         dat_df$vari = 2
         dat_df$vari[grep('Kodista',dat_df$travel)] = 1
         dat_df$vari = as.factor(dat_df$vari)
         dat_df$time = ifelse(dat_df$time=='evening' , 'Ilta' , 'Aamu')
+        
+        # paletti
+        if( '2' %in% as.character(dat_df$vari) && '1' %in% as.character(dat_df$vari) ){
+          pal = paletti
+        } else if('1' %in% as.character(dat_df$vari)){
+          pal = paletti[1]
+        } else{
+          pal = paletti[2]
+        }
         
         ggplot(dat_df , aes( x = time , ymax = max , ymin=min , color= vari) ) + 
           geom_errorbar(size=2) + 

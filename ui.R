@@ -29,11 +29,7 @@ shinyUI(
         
         # reitit
         , plotOutput("pendeling_plot")
-#         , textOutput('koti_to_tyo_text')
-#         , textOutput('koti_to_center_text')
-#         , textOutput('potentiaalinen_to_tyo_text')
-#         , textOutput('potentiaalinen_to_center_text')
-        
+
         # palveluboxit
         
         , uiOutput("palvelut_box")
