@@ -13,22 +13,29 @@ shinyServer(function(input, output, session) {
     textInput("potentiaalinen_osoite_from_ui", label = p(""), value = potentiaalinen_value_default) 
   })
   
-  # Palvelut
-  output$palvelut_box = renderUI({
-    checkboxInput('palvelut', 'Palvelut', TRUE)
-  })
-  
-  output$palvelut_extra_box = renderUI({
-    checkboxInput('palvelut_extra_auki', 'Lisää vaihtoehtoja', FALSE)
-  })
-  
-  output$palvelut_extra_group = renderUI({
-    conditionalPanel(condition = 'input.palvelut_extra_auki == true',
-                     checkboxGroupInput('palvelut_extra_group',NULL,palvelut_nimet,selected=palvelut_nimet))
-  })
+  #   # Palvelut
+  #   output$palvelut_box = renderUI({
+  #     checkboxInput('palvelut', 'Palvelut', TRUE)
+  #   })
+  #   
+  #   output$palvelut_extra_box = renderUI({
+  #     checkboxInput('palvelut_extra_auki', 'Lisää vaihtoehtoja', FALSE)
+  #   })
+  #   
+  #   output$palvelut_extra_group = renderUI({
+  #     conditionalPanel(condition = 'input.palvelut_extra_auki == true',
+  #                      checkboxGroupInput('palvelut_extra_group',NULL,palvelut_nimet,selected=palvelut_nimet))
+  #   })
   
   # inittaa postikoodille kerättävät objektit
   zip_objects = reactiveValues(asuntojen_hinnat = NULL , alue_info = NULL )
+  
+  # for testing settings_button
+#   observeEvent( input$settings_button , {
+#     session$sendCustomMessage(type = 'testmessage',
+#                               message = list(settings_button = input$settings_button))
+#     # cat(isolate(input$settings_button))
+#   })  
   
   ### create map to ui
   

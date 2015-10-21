@@ -31,11 +31,11 @@ shinyUI(
         # reitit
         , plotOutput("pendeling_plot")
         
-        # palveluboxit
-        
-        , uiOutput("palvelut_box")
-        , uiOutput("palvelut_extra_box")
-        , uiOutput("palvelut_extra_group")
+        #         # palveluboxit
+        #         
+        #         , uiOutput("palvelut_box")
+        #         , uiOutput("palvelut_extra_box")
+        #         , uiOutput("palvelut_extra_group")
         
         # statit
         
@@ -54,19 +54,61 @@ shinyUI(
       )
     )
     
-#     , absolutePanel(  
-#       style = "background-color: #ffffff;"
-#       , fixed = F
-#       , draggable = F
-#       
-#       , top = 0
-#       , right = 0
-#       , bottom = "auto"
-#       , width = 100
-#       , height = "auto"
-#       , h5("DEBUG")
-#       , actionButton("alkuun_nappi", "Palaa alkuun")
+    # settings button
+    
+    , absolutePanel( 
+      theme = "opacity:0.01;background:transparent;border:0px;"
+      , top = 0
+      , right = 70
+      , bottom = "auto"
+      , width = 1
+      , height = 1
+      # , submitButton( text="settings_button", icon = img(src="settings.png") )
+      , actionButton( inputId="settings_button",'', icon = img(src="settings.png"),width=70, height=1 )
+      # , submitButton("Settings", icon("cog"))
+    ) , tags$style(type='text/css', "#settings_button { background:transparent;border:0px;}") # opacity:0.51;
+    
+    # settings panel
+    
+    # for testing settings_button
+#     , singleton(
+#       tags$head(tags$script(src = "message-handler.js"))
 #     )
+    
+    , absolutePanel( 
+       top = 50
+      , right = 0
+      , bottom = "auto"
+      , conditionalPanel("input.settings_button%2 != 0"
+                         , checkboxGroupInput(inputId = 'palvelut_extra_group'
+                                              , label = NULL
+                                              , choices = palvelut_nimet
+                                              , selected = palvelut_nimet )
+      )
+    )
+    
+    #     , conditionalPanel("input.settings_button == true"
+    #                        , checkboxGroupInput(inputId = 'palvelut_extra_group'
+    #                                             , label = NULL
+    #                                             , choices = palvelut_nimet
+    #                                             , selected = palvelut_nimet )
+    #     )
+    
+    
+    
+    #     , absolutePanel(  
+    #       style = "background-color: #ffffff;"
+    #       , fixed = F
+    #       , draggable = F
+    #       
+    #       , top = 0
+    #       , right = 0
+    #       , bottom = "auto"
+    #       , width = 100
+    #       , height = "auto"
+    #       , h5("DEBUG")
+    #       , actionButton("alkuun_nappi", "Palaa alkuun")
+    #     )
     
     
     ### oikean puolen debug-paneeeli

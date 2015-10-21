@@ -55,6 +55,8 @@ icon_kirjastot <- icons(iconUrl = 'icons/live/library.svg' , iconWidth = 46,icon
 icon_terveysasemat <- icons(iconUrl = 'icons/live/health_center.svg' , iconWidth = 46,iconAnchorX=23 , iconAnchorY=55)
 icon_sairaalat <- icons(iconUrl = 'icons/live/hospital.svg' , iconWidth = 46,iconAnchorX=23 , iconAnchorY=55) 
 
+icon_settings <- icons(iconUrl = 'icons/live/settings.svg' , iconWidth = 70 , iconAnchorX=35 , iconAnchorY=35 ) 
+
 ### varit
 koti_vari = rgb( 0, 92 , 148 , maxColorValue = 255 )
 potentiaalinen_vari = rgb( 108 , 220 , 250 , maxColorValue = 255 )
@@ -65,7 +67,6 @@ paletti = c(koti_vari , potentiaalinen_vari)
 DEBUG = F
 radius = 1
 click_count = 0
-init_ready = F
 ui_interaction_lag = 5 # seconds
 koti_value_default = "Kotiosoite"
 tyo_value_default = "Työosoite"
@@ -94,6 +95,8 @@ durations$potentiaalinen_to_center_durations  = NULL
 # koti_location_information = NULL
 # tyo_location_information = NULL
 # potentiaalinen_location_information = NULL
+
+# palveluiden valikko
 
 palvelut_nimet = c('Ala-asteet' , 'Yläasteet' , 'Ruokakaupat' 
              , 'Kirjastot' , 'Sairaalat' , 'Terveysasemat','Päiväkodit')

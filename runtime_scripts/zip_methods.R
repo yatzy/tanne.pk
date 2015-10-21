@@ -71,7 +71,7 @@ add_recommendation_layer = function(recommendation_vector , this_input , session
   vari = ifelse(this_input == 'koti' , paletti[1] , paletti[2])
   
   for( recommendation in recommendation_vector ){
-    recommendation_zip = recommendation  %>% as.character() %>% str_replace('.','') %>% zippify()
+    recommendation_zip = recommendation  %>% as.character() %>% str_replace('\\.','') %>% zippify(method='back')
     cat('adding polygon for ' , recommendation_zip , '\n')
     
     leafletProxy("map_in_ui" , session) %>%
