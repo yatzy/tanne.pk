@@ -12,6 +12,7 @@ library(RPostgreSQL)
 library(ggplot2)
 library(tidyr)
 library(sp)
+library(shinyBS)
 
 theme_set(theme_bw())
 
