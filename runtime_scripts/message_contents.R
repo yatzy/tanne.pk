@@ -1,0 +1,1 @@
+init_content1 = "Syötä osoitteet klikkaamalla karttaan, tai syöttämällä tekstikentään."

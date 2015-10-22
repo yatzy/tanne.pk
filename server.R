@@ -1,4 +1,3 @@
-
 shinyServer(function(input, output, session) {
   
   ### init ui components
@@ -13,22 +12,19 @@ shinyServer(function(input, output, session) {
     textInput("potentiaalinen_osoite_from_ui", label = p(""), value = potentiaalinen_value_default) 
   })
   
-  # Palvelut
-  output$palvelut_box = renderUI({
-    checkboxInput('palvelut', 'Palvelut', TRUE)
-  })
   
-  output$palvelut_extra_box = renderUI({
-    checkboxInput('palvelut_extra_auki', 'Lisää vaihtoehtoja', FALSE)
+  observe({
+    cat('ui_events$count:', ui_events$count , '\n')
+    
+    if(ui_events$count == 0 ){
+      # initiation notification
+      createAlert(session, anchorId = "initiation_notification", alertId = 'init_notification1' , title = "Lisää",
+                  content = init_content1, append = FALSE)
+    }
+    if(ui_events$count > 0 ){
+      closeAlert(session, "init_notification1")
+    }
   })
-  
-  output$palvelut_extra_group = renderUI({
-    conditionalPanel(condition = 'input.palvelut_extra_auki == true',
-                     checkboxGroupInput('palvelut_extra_group',NULL,palvelut_nimet,selected=palvelut_nimet))
-  })
-  
-  # inittaa postikoodille kerättävät objektit
-  zip_objects = reactiveValues(asuntojen_hinnat = NULL , alue_info = NULL )
   
   ### create map to ui
   
@@ -47,8 +43,7 @@ shinyServer(function(input, output, session) {
   # click_info() - functio palauttaa viimeisimmän karttaklikin leveys- ja pituuspiirit, sekä osoitetiedot
   
   click_info <<- eventReactive(input$map_in_ui_click , { 
-    click_count <<- click_count + 1
-    print(click_count)
+    ui_events$count = ui_events$count + 1
     list(
       lat = as.numeric(input$map_in_ui_click$lat)
       , lon = as.numeric(input$map_in_ui_click$lng)
@@ -109,8 +104,9 @@ shinyServer(function(input, output, session) {
   
   observeEvent(input$koti_osoite_from_ui , {
     
+    # jos ui on tyhjä
+    
     if(input$koti_osoite_from_ui == koti_value_default  || nchar(str_trim(input$koti_osoite_from_ui))== 0 ) {
-      
       
       # poista itse markkeri
       leafletProxy("map_in_ui", session) %>% 
@@ -126,10 +122,15 @@ shinyServer(function(input, output, session) {
       remove_zip_objects_for('koti',zip_objects)
       
       # poista matka-ajat
-      if(!is.null(durations$koti_to_tyo_durations)){durations$koti_to_tyo_durations = NULL}
-      if(!is.null(durations$koti_to_center_durations)){durations$koti_to_center_durations = NULL}
-      
+      if(!is.null(durations$koti_to_tyo_durations)){ 
+        durations$koti_to_tyo_durations = NULL 
+      }
+      if(!is.null(durations$koti_to_center_durations)){ 
+        durations$koti_to_center_durations = NULL 
+      }
     }
+    
+    # jos uissa tapahtuu
     
     if( nchar(str_trim(input$koti_osoite_from_ui))>0 ){
       if(is.vector(input$koti_osoite_from_ui)){
@@ -138,7 +139,7 @@ shinyServer(function(input, output, session) {
           progress_koti_lisaa1 = shiny::Progress$new(session, min=1, max=4)
           on.exit(progress_koti_lisaa1$close())
           
-          progress_koti_lisaa1$set(value = 1 ,message='Haetaan kotiosoiteen tiedot')
+          progress_koti_lisaa1$set(value = 1 , message = 'Haetaan kotiosoiteen tiedot')
           
           osoite = input$koti_osoite_from_ui
           print( 'muutetetaan kotia' )
@@ -214,8 +215,8 @@ shinyServer(function(input, output, session) {
                   
                   ### hae koordinaattitason palvelut
                   progress_koti_lisaa2$set(value = 4 ,message='Haetaan kodin palvelut')
-                  
-                  services = try(get_point_objects(lat=location_info$lat , lon = location_info$lon , radius = radius ))
+                  cat('input radius: ', input$radius , '\n')
+                  services = try(get_point_objects(lat=location_info$lat , lon = location_info$lon , radius = input$radius ))
                   
                   progress_koti_lisaa2$set(value = 5 ,message='Päivitetään palvelut')
                   
@@ -230,7 +231,7 @@ shinyServer(function(input, output, session) {
                         if(class(this_service) != 'try-error' ){
                           if(length(this_service$lon)>0){
                             # these_ids = paste0(this_input , this_service$lon , this_service$lat ) 
-                            icon_name = paste0( 'icon_' , this_name , sep=''  ) 
+                            icon_name = paste0( 'icon_' , this_name , sep='') 
                             
                             leafletProxy("map_in_ui" , session) %>%
                               addMarkers(lng = this_service$lon
@@ -243,9 +244,7 @@ shinyServer(function(input, output, session) {
                       }
                     }
                   }
-                  
                   progress_koti_lisaa2$set(value = 6 )
-                  # progress2$close()
                 }
               }
               
@@ -490,7 +489,7 @@ shinyServer(function(input, output, session) {
                   ### hae koordinaattitason palvelut
                   progress_potentiaalinen_lisaa2$set(value = 5 , message = 'Haetaan potentiaalisen palvelut')
                   
-                  services = try(get_point_objects(lat=location_info$lat , lon = location_info$lon , radius = radius ))
+                  services = try(get_point_objects(lat=location_info$lat , lon = location_info$lon , radius = input$radius ))
                   
                   ### lisää uudet potentiaalinenin liittyvät markkerit ###         
                   if(class(services) != 'try-error'){
@@ -724,7 +723,7 @@ shinyServer(function(input, output, session) {
         incProgress(1)
         pic
       })
-    }
+    } else{NULL}
   })
   
   output$talojakauma_plot <- renderPlot({
@@ -756,7 +755,7 @@ shinyServer(function(input, output, session) {
         incProgress(1)
         pic
       })
-    }
+    } else{NULL}
   })
   
   
@@ -831,6 +830,29 @@ shinyServer(function(input, output, session) {
     }
   })
   
+  ################################## VANHAT ##################################
+  
+  # for testing settings_button
+  #   observeEvent( input$settings_button , {
+  #     session$sendCustomMessage(type = 'testmessage',
+  #                               message = list(settings_button = input$settings_button))
+  #     # cat(isolate(input$settings_button))
+  #   })  
+  
+  
+  #   # Palvelut
+  #   output$palvelut_box = renderUI({
+  #     checkboxInput('palvelut', 'Palvelut', TRUE)
+  #   })
+  #   
+  #   output$palvelut_extra_box = renderUI({
+  #     checkboxInput('palvelut_extra_auki', 'Lisää vaihtoehtoja', FALSE)
+  #   })
+  #   
+  #   output$palvelut_extra_group = renderUI({
+  #     conditionalPanel(condition = 'input.palvelut_extra_auki == true',
+  #                      checkboxGroupInput('palvelut_extra_group',NULL,palvelut_nimet,selected=palvelut_nimet))
+  #   })
   
   
   ################################## DEBUGGAUS ##################################

@@ -12,6 +12,8 @@ library(RPostgreSQL)
 library(ggplot2)
 library(tidyr)
 library(sp)
+library(shinyBS)
+
 
 theme_set(theme_bw())
 
@@ -40,6 +42,8 @@ source('runtime_scripts/get_palvelut.R')
 source('runtime_scripts/point_methods.R')
 source('runtime_scripts/zip_methods.R')
 source('runtime_scripts/route_methods.R')
+source('runtime_scripts/checkboxGroupInput_fork.R')
+source('runtime_scripts/message_contents.R')
 
 ### iconit
 
@@ -55,6 +59,8 @@ icon_kirjastot <- icons(iconUrl = 'icons/live/library.svg' , iconWidth = 46,icon
 icon_terveysasemat <- icons(iconUrl = 'icons/live/health_center.svg' , iconWidth = 46,iconAnchorX=23 , iconAnchorY=55)
 icon_sairaalat <- icons(iconUrl = 'icons/live/hospital.svg' , iconWidth = 46,iconAnchorX=23 , iconAnchorY=55) 
 
+icon_settings <- icons(iconUrl = 'icons/live/settings.svg' , iconWidth = 70 , iconAnchorX=35 , iconAnchorY=35 ) 
+
 ### varit
 koti_vari = rgb( 0, 92 , 148 , maxColorValue = 255 )
 potentiaalinen_vari = rgb( 108 , 220 , 250 , maxColorValue = 255 )
@@ -64,14 +70,17 @@ paletti = c(koti_vari , potentiaalinen_vari)
 
 DEBUG = F
 radius = 1
-click_count = 0
-init_ready = F
 ui_interaction_lag = 5 # seconds
 koti_value_default = "Kotiosoite"
 tyo_value_default = "Työosoite"
 potentiaalinen_value_default = "Potentiaalinen osoite"
 
+ui_events = reactiveValues()
+ui_events$count = 0
 ### location informations
+
+# inittaa postikoodille kerättävät objektit
+zip_objects = reactiveValues(asuntojen_hinnat = NULL , alue_info = NULL )
 
 # boundaries
 
@@ -95,12 +104,43 @@ durations$potentiaalinen_to_center_durations  = NULL
 # tyo_location_information = NULL
 # potentiaalinen_location_information = NULL
 
-palvelut_nimet = c('Ala-asteet' , 'Yläasteet' , 'Ruokakaupat' 
-             , 'Kirjastot' , 'Sairaalat' , 'Terveysasemat','Päiväkodit')
+# palveluiden valikko
+
+palvelut_nimet = c(
+  HTML('<img src="school.png" style="width:30px;">          Ala-asteet      '),
+  HTML('<img src="high_school.png" style="width:30px;">     Yläasteet       '),
+  HTML('<img src="shop.png" style="width:30px;">            Ruokakaupat      '),
+  HTML('<img src="library.png" style="width:30px;">         Kirjastot         '),
+  HTML('<img src="hospital.png" style="width:30px;">        Sairaalat        '),
+  HTML('<img src="health_center.png" style="width:30px;">   Terveysasemat     '),
+  HTML('<img src="kindergarten3.png" style="width:30px;">   Päiväkodit        ')
+)
+
+names(palvelut_nimet) = c('Ala-asteet',
+                          'Yläasteet',
+                          'Ruokakaupat',
+                          'Kirjastot',
+                          'Sairaalat',
+                          'Terveysasemat',
+                          'Päiväkodit')
+
+# palvelut_nimet = c('Ala-asteet' 
+#                    , 'Yläasteet' 
+#                    , 'Ruokakaupat' 
+#                    , 'Kirjastot' 
+#                    , 'Sairaalat' 
+#                    , 'Terveysasemat'
+#                    , 'Päiväkodit')
 
 palvelut  = c('ala_asteet' , 'yla_asteet' , 'ruokakaupat' 
-  , 'kirjastot' , 'sairaalat' , 'terveysasemat','paivakodit')
+              , 'kirjastot' , 'sairaalat' , 'terveysasemat','paivakodit')
 
-palvelu_df <<- data.frame(palvelut_nimet,palvelut,T)
-kotigroups <<- sapply(unique(palvelu_df[,2]),function(x){sprintf("%s_%s", 'koti',x)})
-potentiaalinengroups <<- sapply(unique(palvelu_df[,2]),function(x){sprintf("%s_%s", 'potentiaalinen',x)})
+palvelu_df = data.frame(palvelut_nimet,palvelut,T)
+kotigroups = sapply(unique(palvelu_df$palvelut)
+                    ,function(x){
+                      sprintf("%s_%s", 'koti',x)
+                    })
+potentiaalinengroups = sapply(unique(palvelu_df$palvelut)
+                              ,function(x){
+                                sprintf("%s_%s", 'potentiaalinen',x)
+                              })

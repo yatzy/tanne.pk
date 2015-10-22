@@ -1,9 +1,8 @@
-# 
 shinyUI(
   fluidPage( 
-    theme = "cerulean_fork.css"
+    theme = "cerulean_fork.css" ,
     
-    , sidebarLayout( 
+    sidebarLayout( 
       
       ### vasemman puolen paneeeli
       
@@ -11,7 +10,6 @@ shinyUI(
         
         style = "height:100vh;background-color: #ffffff;overflow-y:auto"
         , width = 4             
-        # , h3("Osoitteet")
         
         # osoitteet
         
@@ -28,16 +26,13 @@ shinyUI(
               , div(style ="flex:5;" , uiOutput("potentiaalinen_valikko") )
         )
         
-        # reitit
+        # initiation_notification
+        , bsAlert("initiation_notification")
+
+        ### reitit
         , plotOutput("pendeling_plot")
         
-        # palveluboxit
-        
-        , uiOutput("palvelut_box")
-        , uiOutput("palvelut_extra_box")
-        , uiOutput("palvelut_extra_group")
-        
-        # statit
+        ### statit
         
         , plotOutput("asuntojen_hinnat_plot" , height = "250px" )
         , plotOutput("talojakauma_plot" , height = "150px" )
@@ -46,7 +41,7 @@ shinyUI(
         , plotOutput("ikajakauma_plot" , height = "250px" )
       )
       
-      # pääpaneeli
+      ### pääpaneeli
       
       , mainPanel(  style = "height:100vh;background-color: #ffffff;padding:0;margin-left:0"
                     , width = 8
@@ -54,23 +49,39 @@ shinyUI(
       )
     )
     
-    , absolutePanel(  
-      style = "background-color: #ffffff;"
-      , fixed = F
-      , draggable = F
-      
-      , top = 0
-      #, left = "auto"
-      , right = 0
-      , bottom = "auto"
-      , width = 100
-      , height = "auto"
-      , h5("DEBUG")
-      
-      , actionButton("alkuun_nappi", "Palaa alkuun")
-      
+    ### settings panel
+    
+    , absolutePanel( 
+      width = 300
+      , top = 90
+      , right = 20
+      , conditionalPanel("input.settings_button%2 != 0"
+                         , wellPanel( 
+                           # theme = 'background:#ffffff;opacity:0.25;'
+                           checkboxGroupInput_fork(inputId = 'palvelut_extra_group'
+                                                   , label = 'Haettavat palvelut'
+                                                   , choices = palvelut_nimet
+                                                   , selected = palvelut_nimet )
+                           #                          checkboxGroupInput(inputId = 'palvelut_extra_group'
+                           #                                                 , label = 'Haettavat palvelut'
+                           #                                                 , choices = palvelut_nimet
+                           #                                                 , selected = palvelut_nimet )
+                           , sliderInput( 'radius' , 'Palvelujen hakusäde (km)' , min=0 , max=5 , value=1 )
+                         )
+      )
     )
     
+    ### settings button
+    
+    , absolutePanel( 
+      tags$style( "#settings_button{background:transparent;}")
+      , top = 0
+      , right = 70
+      , bottom = "auto"
+      , width = 1
+      , height = 1
+      , actionButton( inputId="settings_button",'', icon = img(src="settings.png"),width=70, height=1 )
+    )
     
     ### oikean puolen debug-paneeeli
     , if(DEBUG){
@@ -91,5 +102,32 @@ shinyUI(
         , dataTableOutput("test_table")
       )
     }
+    
+    # for testing settings_button
+    #     , singleton(
+    #       tags$head(tags$script(src = "message-handler.js"))
+    #     )
+    
+    #     , absolutePanel(  
+    #       style = "background-color: #ffffff;"
+    #       , fixed = F
+    #       , draggable = F
+    #       
+    #       , top = 0
+    #       , right = 0
+    #       , bottom = "auto"
+    #       , width = 100
+    #       , height = "auto"
+    #       , h5("DEBUG")
+    #       , actionButton("alkuun_nappi", "Palaa alkuun")
+    #     )
+    
+    #         # palveluboxit
+    #         
+    #         , uiOutput("palvelut_box")
+    #         , uiOutput("palvelut_extra_box")
+    #         , uiOutput("palvelut_extra_group")
+    
+    
   )  
 )

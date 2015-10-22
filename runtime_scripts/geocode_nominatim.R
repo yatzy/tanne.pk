@@ -138,6 +138,8 @@ reverse_geocode_nominatim = function( lat , lon , key = mapquest_key , get='list
       data$address$road = data$address$cycleway
     } else if( !is.null(data$address$footway) ){
       data$address$road = data$address$footway
+    } else if(any(grepl("address[0-9]{1,2}",names(data$address)))){
+      data$address$road = as.character(data$address[grepl("address[0-9]{1,2}",names(data$address))])
     }
   }
   
@@ -216,4 +218,7 @@ validy_check_address = function(address){
 # reverse_geocode_nominatim(60.1704434 , 24.934 , get = 'listing' ) # korjattu
 ## mita tapahtuu
 # reverse_geocode_nominatim(60.2708953 , 24.9257921 , get = 'listing' ) # korjattu
+# addr = reverse_geocode_nominatim(60.20366 , 24.92799 , get = 'listing' )  # korjattu
+# address_from_listing(addr)
+
 
