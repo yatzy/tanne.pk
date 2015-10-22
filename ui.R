@@ -27,7 +27,9 @@ shinyUI(
         )
         
         # initiation_notification
-        , bsAlert("initiation_notification")
+        , bsAlert("initiation_notification1")
+        , bsAlert("initiation_notification2")
+        , bsAlert("initiation_notification3")
 
         ### reitit
         , plotOutput("pendeling_plot")

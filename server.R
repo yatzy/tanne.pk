@@ -18,11 +18,17 @@ shinyServer(function(input, output, session) {
     
     if(ui_events$count == 0 ){
       # initiation notification
-      createAlert(session, anchorId = "initiation_notification", alertId = 'init_notification1' , title = "Lisää",
+      createAlert(session, anchorId = "initiation_notification1", alertId = 'init_notification1' , title = "Lisää",
                   content = init_content1, append = FALSE)
+      createAlert(session, anchorId = "initiation_notification2", alertId = 'init_notification2' , title = "Poista",
+                  content = init_content2, append = FALSE)
+      createAlert(session, anchorId = "initiation_notification3", alertId = 'init_notification3' , title = "Jatka",
+                  content = init_content3, append = FALSE)
     }
     if(ui_events$count > 0 ){
       closeAlert(session, "init_notification1")
+      closeAlert(session, "init_notification2")
+      closeAlert(session, "init_notification3")
     }
   })
   
@@ -63,7 +69,7 @@ shinyServer(function(input, output, session) {
     click_time <<- Sys.time()
     cat('KLIKKI!!! LAT: ', click_info()$lat, 'LON:' , click_info()$lon ,'\n'  )
     
-    if( input$koti_osoite_from_ui == koti_value_default ){
+    if( input$koti_osoite_from_ui == koti_value_default || nchar(str_trim(input$koti_osoite_from_ui))== 0  ){
       cat('klikki koski kotia\n')
       print(input$koti_osoite_from_ui)
       output$koti_valikko = renderUI({
@@ -71,7 +77,7 @@ shinyServer(function(input, output, session) {
                   , value = address_from_listing(click_info()$adress_details ) )
       })
       
-    } else if( input$tyo_osoite_from_ui == tyo_value_default ){
+    } else if( input$tyo_osoite_from_ui == tyo_value_default || nchar(str_trim(input$tyo_osoite_from_ui))== 0  ){
       cat('klikki koski tyota\n')
       print(input$tyo_osoite_from_ui)
       output$tyo_valikko = renderUI({
