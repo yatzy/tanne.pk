@@ -83,7 +83,6 @@ add_recommendation_layer = function(recommendation_vector , this_input , session
                     , label = labeli)
     }
   }
-  
 }
 
 get_zip_objects = function(zip){

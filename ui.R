@@ -10,7 +10,7 @@ shinyUI(
         
         style = "height:100vh;background-color: #ffffff;overflow-y:auto"
         , width = 4             
-
+        
         # osoitteet
         
         , div(style = "display:flex"
@@ -26,6 +26,9 @@ shinyUI(
               , div(style ="flex:5;" , uiOutput("potentiaalinen_valikko") )
         )
         
+        # initiation_notification
+        , bsAlert("initiation_notification")
+
         ### reitit
         , plotOutput("pendeling_plot")
         
@@ -42,7 +45,6 @@ shinyUI(
       
       , mainPanel(  style = "height:100vh;background-color: #ffffff;padding:0;margin-left:0"
                     , width = 8
-                    , bsAlert("initiation_notification")
                     , leafletOutput("map_in_ui" , width = "100%", height = "100%")
       )
     )
@@ -56,10 +58,14 @@ shinyUI(
       , conditionalPanel("input.settings_button%2 != 0"
                          , wellPanel( 
                            # theme = 'background:#ffffff;opacity:0.25;'
-                         checkboxGroupInput(inputId = 'palvelut_extra_group'
-                                                , label = 'Haettavat palvelut'
-                                                , choices = palvelut_nimet
-                                                , selected = palvelut_nimet )
+                           checkboxGroupInput_fork(inputId = 'palvelut_extra_group'
+                                                   , label = 'Haettavat palvelut'
+                                                   , choices = palvelut_nimet
+                                                   , selected = palvelut_nimet )
+                           #                          checkboxGroupInput(inputId = 'palvelut_extra_group'
+                           #                                                 , label = 'Haettavat palvelut'
+                           #                                                 , choices = palvelut_nimet
+                           #                                                 , selected = palvelut_nimet )
                            , sliderInput( 'radius' , 'Palvelujen hakusäde (km)' , min=0 , max=5 , value=1 )
                          )
       )
