@@ -20,16 +20,34 @@ shinyServer(function(input, output, session) {
       # initiation notification
       createAlert(session, anchorId = "initiation_notification1", alertId = 'init_notification1' , title = "Lisää",
                   content = init_content1, append = FALSE)
-      createAlert(session, anchorId = "initiation_notification2", alertId = 'init_notification2' , title = "Poista",
+      createAlert(session, anchorId = "initiation_notification2", alertId = 'init_notification2' , title = "Jatka",
                   content = init_content2, append = FALSE)
-      createAlert(session, anchorId = "initiation_notification3", alertId = 'init_notification3' , title = "Jatka",
+      createAlert(session, anchorId = "initiation_notification3", alertId = 'init_notification3' , title = "Poista",
                   content = init_content3, append = FALSE)
     }
     if(ui_events$count > 0 ){
       closeAlert(session, "init_notification1")
       closeAlert(session, "init_notification2")
       closeAlert(session, "init_notification3")
+      
+      if(input$settings_button %% 2 != 0){
+        createAlert(session, anchorId = "initiation_notification1", alertId = 'init_notification1' , title = "Lisää",
+                    content = init_content1, append = FALSE)
+        createAlert(session, anchorId = "initiation_notification2", alertId = 'init_notification2' , title = "Jatka",
+                    content = init_content2, append = FALSE)
+        createAlert(session, anchorId = "initiation_notification3", alertId = 'init_notification3' , title = "Poista",
+                    content = init_content3, append = FALSE)
+      } else{
+        closeAlert(session, "init_notification1")
+        closeAlert(session, "init_notification2")
+        closeAlert(session, "init_notification3")
+        
+      }
+      
+      
     }
+    
+    
   })
   
   ### create map to ui
@@ -49,7 +67,7 @@ shinyServer(function(input, output, session) {
   # click_info() - functio palauttaa viimeisimmän karttaklikin leveys- ja pituuspiirit, sekä osoitetiedot
   
   click_info <<- eventReactive(input$map_in_ui_click , { 
-    ui_events$count = ui_events$count + 1
+    # ui_events$count = ui_events$count + 1
     list(
       lat = as.numeric(input$map_in_ui_click$lat)
       , lon = as.numeric(input$map_in_ui_click$lng)
@@ -109,7 +127,6 @@ shinyServer(function(input, output, session) {
   ### kotiosoite ###
   
   observeEvent(input$koti_osoite_from_ui , {
-    
     # jos ui on tyhjä
     
     if(input$koti_osoite_from_ui == koti_value_default  || nchar(str_trim(input$koti_osoite_from_ui))== 0 ) {
@@ -142,6 +159,7 @@ shinyServer(function(input, output, session) {
       if(is.vector(input$koti_osoite_from_ui)){
         if(input$koti_osoite_from_ui != koti_value_default  ){
           
+          ui_events$count = ui_events$count + 1
           progress_koti_lisaa1 = shiny::Progress$new(session, min=1, max=4)
           on.exit(progress_koti_lisaa1$close())
           
@@ -297,6 +315,7 @@ shinyServer(function(input, output, session) {
       if( nchar(str_trim(input$tyo_osoite_from_ui)) > 0 ){
         if(is.vector(input$tyo_osoite_from_ui)){
           
+          ui_events$count = ui_events$count + 1
           progress_tyo_lisaa1 = shiny::Progress$new(session, min=1, max=3)
           on.exit(progress_tyo_lisaa1$close())
           progress_tyo_lisaa1$set(value = 1 , message = 'Haetaan työpaikan tiedot')
@@ -417,6 +436,7 @@ shinyServer(function(input, output, session) {
       if(nchar(str_trim(input$potentiaalinen_osoite_from_ui)) > 0){
         if(input$potentiaalinen_osoite_from_ui != potentiaalinen_value_default ){
           
+          ui_events$count = ui_events$count + 1
           progress_potentiaalinen_lisaa1 = shiny::Progress$new(session, min=1, max=3)
           on.exit(progress_potentiaalinen_lisaa1$close())
           progress_potentiaalinen_lisaa1$set(value = 1 , message = 'Haetaan potentiaalisen osoite')

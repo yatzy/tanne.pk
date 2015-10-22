@@ -63,7 +63,7 @@ shinyUI(
                            checkboxGroupInput_fork(inputId = 'palvelut_extra_group'
                                                    , label = 'Haettavat palvelut'
                                                    , choices = palvelut_nimet
-                                                   , selected = palvelut_nimet )
+                                                   , selected = names(palvelut_nimet) )
                            #                          checkboxGroupInput(inputId = 'palvelut_extra_group'
                            #                                                 , label = 'Haettavat palvelut'
                            #                                                 , choices = palvelut_nimet
