@@ -27,8 +27,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.8101934"
-     inkscape:cx="327.01001"
-     inkscape:cy="671.6406"
+     inkscape:cx="359.60321"
+     inkscape:cy="715.83477"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -260,7 +260,9 @@ yv8HAPdgUl2LH6sAAAAASUVORK5CYII=
 "
        preserveAspectRatio="none"
        height="210"
-       width="216" />
+       width="216"
+       inkscape:export-xdpi="62.5"
+       inkscape:export-ydpi="62.5" />
     <g
        transform="matrix(0.03323618,0,0,0.03323618,325.78488,357.93564)"
        inkscape:label="Layer"
