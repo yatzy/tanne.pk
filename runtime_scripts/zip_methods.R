@@ -154,7 +154,8 @@ update_zip_objects = function(location_info , this_input , zip_objects,session){
 
 remove_zip_objects_for = function(this_input,zip_objects){
   if(!is.null(zip_objects$asuntojen_hinnat)){
-    zip_objects$asuntojen_hinnat = subset(zip_objects$asuntojen_hinnat , zip_objects$asuntojen_hinnat$paikka != this_input)
+    zip_objects$asuntojen_hinnat = subset(zip_objects$asuntojen_hinnat 
+                                          , zip_objects$asuntojen_hinnat$paikka != this_input)
   }
   if(!is.null(zip_objects$alue_info)){
     zip_objects$alue_info = subset(zip_objects$alue_info , zip_objects$alue_info$paikka != this_input)

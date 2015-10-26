@@ -13,7 +13,7 @@ library(ggplot2)
 library(tidyr)
 library(sp)
 library(shinyBS)
-
+library(shinyjs)
 
 theme_set(theme_bw())
 
@@ -64,6 +64,7 @@ icon_settings <- icons(iconUrl = 'icons/live/settings.svg' , iconWidth = 70 , ic
 ### varit
 koti_vari = rgb( 0, 92 , 148 , maxColorValue = 255 )
 potentiaalinen_vari = rgb( 108 , 220 , 250 , maxColorValue = 255 )
+tyo_vari = rgb( 108 , 220 , 92 , maxColorValue = 255 )
 paletti = c(koti_vari , potentiaalinen_vari)
 
 ### asetukset tahan
@@ -91,7 +92,7 @@ boundary_west_lat = 24.326203
 boundary_east_lat = 25.524120
 
 # durations
-
+click_time = Sys.time() - ui_interaction_lag
 durations = reactiveValues()
 durations$koti_to_tyo_durations = NULL
 durations$koti_to_center_durations = NULL

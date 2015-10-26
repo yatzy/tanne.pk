@@ -1,11 +1,15 @@
 shinyUI(
   fluidPage( 
+    useShinyjs() , 
+    # emphasis for next address to get updated
+    shinyjs::inlineCSS(list(.emph_box_koti = "border-color:#005C94;border-style:none none solid none;border-width: 3px;")) , 
+    shinyjs::inlineCSS(list(.emph_box_tyo = "border-color:#6CDC5C;border-style:none none solid none;border-width: 3px;")) , 
+    shinyjs::inlineCSS(list(.emph_box_potentiaalinen = "border-color:#6CDCFA;border-style:none none solid none;border-width: 3px;")) , 
+    # theme with custom css
     theme = "cerulean_fork.css" ,
     
     sidebarLayout( 
-      
       ### vasemman puolen paneeeli
-      
       sidebarPanel(      
         
         style = "height:100vh;background-color: #ffffff;overflow-y:auto"
@@ -13,29 +17,35 @@ shinyUI(
         
         # osoitteet
         
-        , div(style = "display:flex"
-              , div(style="flex: 1" , img(src="home.png") )
-              , div(style="flex: 5" , uiOutput("koti_valikko") )
+        , div(style = "display:flex", id = "ui_koti_emphasis"
+              , div(style="flex: 1;margin-left:-20px;" , img(src="home.png") )
+              , div(style = "flex: 0;" , checkboxInput(inputId='ui_koti_selected' , label=NULL , value = T ) )
+              , div(style="flex: 8;" , uiOutput("koti_valikko") )
         )
-        , div(style= "display: flex"
-              , div(style="flex: 1" , img(src="work.png") )
-              , div(style="flex: 5" , uiOutput("tyo_valikko") )
+        , div(style= "display: flex", id = "ui_tyo_emphasis"
+              , div(style="flex: 1;margin-left:-20px;" , img(src="work.png") )
+              , div(style = "flex: 0;" , checkboxInput(inputId='ui_tyo_selected' , label=NULL , value = T ) )
+              , div(style="flex: 8" , uiOutput("tyo_valikko") )
         )
-        , div(style= "display: flex"
-              , div(style="flex: 1" , img(src="potential.png") )
-              , div(style ="flex:5;" , uiOutput("potentiaalinen_valikko") )
+        , div(style= "display: flex", id = "ui_potentiaalinen_emphasis"
+              , div(style="flex: 1;margin-left:-20px;" , img(src="potential.png") )
+              , div(style = "flex: 0;" , checkboxInput(inputId='ui_potentiaalinen_selected' , label=NULL,value = T ) )
+              , div(style ="flex:8;" , uiOutput("potentiaalinen_valikko") )
         )
         
-        # initiation_notification
+        ### initiation notifications
         , bsAlert("initiation_notification1")
         , bsAlert("initiation_notification2")
         , bsAlert("initiation_notification3")
-
+        , bsAlert("initiation_notification4")
+        
         ### reitit
-        , plotOutput("pendeling_plot")
-        
+        , plotOutput("pendeling_plot", height = "400px") 
+#         , conditionalPanel("input.ui_tyo_selected == true"
+#                            , plotOutput("pendeling_plot", height = "400px") )
+#         , conditionalPanel("input.ui_tyo_selected != true"
+#                            , plotOutput("pendeling_plot", height = "250px") )
         ### statit
-        
         , plotOutput("asuntojen_hinnat_plot" , height = "250px" )
         , plotOutput("talojakauma_plot" , height = "150px" )
         , plotOutput("koulutusjakauma_plot" , height = "200px" )
@@ -44,7 +54,6 @@ shinyUI(
       )
       
       ### pääpaneeli
-      
       , mainPanel(  style = "height:100vh;background-color: #ffffff;padding:0;margin-left:0"
                     , width = 8
                     , leafletOutput("map_in_ui" , width = "100%", height = "100%")
@@ -52,7 +61,6 @@ shinyUI(
     )
     
     ### settings panel
-    
     , absolutePanel( 
       width = 300
       , top = 90
@@ -74,7 +82,6 @@ shinyUI(
     )
     
     ### settings button
-    
     , absolutePanel( 
       tags$style( "#settings_button{background:transparent;}")
       , top = 0
@@ -97,11 +104,11 @@ shinyUI(
         , bottom = "auto"
         , width = 500
         , height = "auto"
-        , h5("DEBUG")
         , textOutput("click_latlon")
         , textOutput("click_address")
         , textOutput("click_all_info")
         , dataTableOutput("test_table")
+        , textOutput("click_count_text")
       )
     }
     

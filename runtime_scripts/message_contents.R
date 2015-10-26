@@ -7,3 +7,4 @@ init_content1 = "Syötä osoitteet klikkaamalla karttaan, tai syöttämällä te
 
 init_content2 = "Jatkamalla klikkailua potentiaalinen osoiteet päivittyvät järjestyksessä. <img src='jatka.png'>"
 init_content3 = "Poista osoite klikkaamalla, tai tyhjentämällä tekstikenttä. <img src='poista.png'>"
+init_content4 = "Valitse haluamasi palvelut yläkulman asetusvalikosta <img src='valitse.png'>"
