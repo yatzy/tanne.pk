@@ -21,11 +21,15 @@ id palvelu
 25624 kirjastot') , sep =' ' , header = T)
 
 get_palvelunumero = function(palvelu){
-  palvelu = try(palvelutaulu[ palvelutaulu$palvelu == palvelu , 'id'  ])
-  if(class(palvelu) == 'try-error'){
+  palvelunro = try(palvelutaulu[ palvelutaulu$palvelu == palvelu , 'id'  ])
+  if(class(palvelunro) == 'try-error'){
     stop('could not map palvelu to palvelunumero')
   }
-  return(palvelu)
+  if(length(palvelunro) == 0 ){
+    erromsg = paste('palvelunumero for ', palvelu ,' not found')
+    stop(erromsg)
+  }
+  return(palvelunro)
 }
 
 list_palvelut = function(){

@@ -233,21 +233,21 @@ shinyServer(function(input, output, session) {
                   
                   ### get route durations
                   
-                    # durations to center
-                    cat('\nkoti lat: ', location_info$lat, '\n')
-                    cat('koti lon: ', location_info$lon, '\n')
-                    cat('center lat: ', city_center_location$lat, '\n')
-                    cat('center lon: ', city_center_location$lon , '\n')
-                    koti_center_durations =  try(get_route_durations(from_lat = location_info$lat , from_lon=location_info$lon 
-                                                                     , to_lat=city_center_location$lat , to_lon=city_center_location$lon)
-                    )
-                    if(class(koti_center_durations) != 'try-error'){
-                      durations$koti_to_center_durations = lapply(koti_center_durations, duration_min_and_max)
-                      cat('\nkoti_to_center_durations\n')
-                      print(durations$koti_to_center_durations)
-                    }
-                    
-                    if(input$ui_tyo_selected){
+                  # durations to center
+                  cat('\nkoti lat: ', location_info$lat, '\n')
+                  cat('koti lon: ', location_info$lon, '\n')
+                  cat('center lat: ', city_center_location$lat, '\n')
+                  cat('center lon: ', city_center_location$lon , '\n')
+                  koti_center_durations =  try(get_route_durations(from_lat = location_info$lat , from_lon=location_info$lon 
+                                                                   , to_lat=city_center_location$lat , to_lon=city_center_location$lon)
+                  )
+                  if(class(koti_center_durations) != 'try-error'){
+                    durations$koti_to_center_durations = lapply(koti_center_durations, duration_min_and_max)
+                    cat('\nkoti_to_center_durations\n')
+                    print(durations$koti_to_center_durations)
+                  }
+                  
+                  if(input$ui_tyo_selected){
                     progress_koti_lisaa2$set(value = 2 ,message='Kotiosoiteen reitit töihin')
                     
                     # durations to work
@@ -290,18 +290,20 @@ shinyServer(function(input, output, session) {
                         
                         this_service = services[[i]] 
                         this_name = names(services[i]) 
+                        cat('handling service: ',this_name,'\n')
                         
                         if(class(this_service) != 'try-error' ){
                           if(length(this_service$lon)>0){
                             # these_ids = paste0(this_input , this_service$lon , this_service$lat ) 
                             icon_name = paste0( 'icon_' , this_name , sep='') 
+                            cat('adding marker ',icon_name,'\n')
                             
                             leafletProxy("map_in_ui" , session) %>%
                               addMarkers(lng = this_service$lon
                                          , lat = this_service$lat
-                                         , group = sprintf("%s_%s",this_input,this_service$tyyppi)
-                                         , icon = eval(parse(text = icon_name)) ) 
-                            # marker_store <<- append(marker_store , these_ids )
+                                         , group = sprintf("%s_%s" , this_input , this_service$tyyppi )
+                                         , icon = eval(parse(text = icon_name)) 
+                                         , popup = this_service$name_fi ) 
                           }
                         }
                       }
@@ -570,7 +572,8 @@ shinyServer(function(input, output, session) {
                               addMarkers(lng = this_service$lon
                                          , lat = this_service$lat
                                          , group = sprintf("%s_%s",this_input,this_service$tyyppi)
-                                         , icon = eval(parse(text = icon_name)) ) 
+                                         , icon = eval(parse(text = icon_name))
+                                         , popup = this_service$name_fi ) 
                           }
                         }
                       }

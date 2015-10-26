@@ -1,13 +1,44 @@
 # paivakodit
 get_paivakodit = function(lat , lon  , radius ){
-  paivakodit = try(get_palvelu('paivakodit' 
+#   paivakodit = try(get_palvelu('paivakodit' 
+#                                   , lat = lat
+#                                   , lon = lon
+#                                   , radius = radius ) 
+#   )
+  
+  kunnalliset_päiväkodit = try(get_palvelu('kunnalliset_päiväkodit' 
                                   , lat = lat
                                   , lon = lon
                                   , radius = radius ) 
   )
+  ostosopimuspäiväkodit = try(get_palvelu('ostosopimuspäiväkodit' 
+                                  , lat = lat
+                                  , lon = lon
+                                  , radius = radius ) 
+  )
+  yksityiset_päiväkodit = try(get_palvelu('yksityiset_päiväkodit' 
+                                  , lat = lat
+                                  , lon = lon
+                                  , radius = radius ) 
+  )
+  
+  pk_lista = list(kunnalliset_päiväkodit , ostosopimuspäiväkodit , yksityiset_päiväkodit)
+  
+  error_ind = sapply( pk_lista
+                     , function(x){
+                       class(x) == 'try-error' || nrow(x) == 0
+                       })
+  paivakodit = try(do.call( 'rbind', pk_lista[!error_ind]  ))
+  
   if(class(paivakodit) == 'try-error' ){
-    stop('could not retrieve paivakodit')
+    stop('error combining päiväkodit')
   }
+  if(nrow(paivakodit)==0 ){
+    stop('no päiväkodit found')
+  }
+  
+  paivakodit$tyyppi = 'paivakodit'
+  
   return(paivakodit)
 }
 
@@ -95,6 +126,8 @@ get_ruokakaupat = function(lat, lon , radius){
   }
   
   ruokakaupat$tyyppi = 'ruokakaupat'
+  name_fi_end = strsplit(ruokakaupat$osoite,',') %>% sapply('[[',1)
+  ruokakaupat$name_fi = paste(ruokakaupat$nimi , name_fi_end , sep=' ')
   
   return(ruokakaupat)
 }
