@@ -58,6 +58,7 @@ icon_paivakodit <- icons(iconUrl = 'icons/live/kindergarten3.svg' , iconWidth = 
 icon_kirjastot <- icons(iconUrl = 'icons/live/library.svg' , iconWidth = 46,iconAnchorX=23 , iconAnchorY=55) 
 icon_terveysasemat <- icons(iconUrl = 'icons/live/health_center.svg' , iconWidth = 46,iconAnchorX=23 , iconAnchorY=55)
 icon_sairaalat <- icons(iconUrl = 'icons/live/hospital.svg' , iconWidth = 46,iconAnchorX=23 , iconAnchorY=55) 
+icon_vanhainkodit <- icons(iconUrl = 'icons/live/nursing_home.svg' , iconWidth = 46,iconAnchorX=23 , iconAnchorY=55) 
 
 icon_settings <- icons(iconUrl = 'icons/live/settings.svg' , iconWidth = 70 , iconAnchorX=35 , iconAnchorY=35 ) 
 
@@ -114,7 +115,8 @@ palvelut_nimet = c(
   HTML('<img src="library.png" style="width:30px;">         Kirjastot         '),
   HTML('<img src="hospital.png" style="width:30px;">        Sairaalat        '),
   HTML('<img src="health_center.png" style="width:30px;">   Terveysasemat     '),
-  HTML('<img src="kindergarten3.png" style="width:30px;">   Päiväkodit        ')
+  HTML('<img src="kindergarten3.png" style="width:30px;">   Päiväkodit        '),
+  HTML('<img src="nursing_home.png" style="width:30px;">   Vanhainkodit        ')
 )
 
 names(palvelut_nimet) = c('Ala-asteet',
@@ -123,7 +125,8 @@ names(palvelut_nimet) = c('Ala-asteet',
                           'Kirjastot',
                           'Sairaalat',
                           'Terveysasemat',
-                          'Päiväkodit')
+                          'Päiväkodit',
+                          'Vanhainkodit')
 
 # palvelut_nimet = c('Ala-asteet' 
 #                    , 'Yläasteet' 
@@ -134,7 +137,8 @@ names(palvelut_nimet) = c('Ala-asteet',
 #                    , 'Päiväkodit')
 
 palvelut  = c('ala_asteet' , 'yla_asteet' , 'ruokakaupat' 
-              , 'kirjastot' , 'sairaalat' , 'terveysasemat','paivakodit')
+              , 'kirjastot' , 'sairaalat' , 'terveysasemat'
+              ,'paivakodit','vanhainkodit')
 
 palvelu_df = data.frame(palvelut_nimet,palvelut,T)
 kotigroups = sapply(unique(palvelu_df$palvelut)

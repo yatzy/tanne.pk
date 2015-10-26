@@ -42,6 +42,59 @@ get_paivakodit = function(lat , lon  , radius ){
   return(paivakodit)
 }
 
+# vanhainkodit
+get_vanhainkodit = function(lat , lon  , radius ){
+  vanhusten_itsenäinen_asuminen = try(get_palvelu('vanhusten_itsenäinen_asuminen' 
+                                                  , lat = lat
+                                                  , lon = lon
+                                                  , radius = radius ) 
+  )
+  vanhusten_palveluasuminen = try(get_palvelu('vanhusten_palveluasuminen' 
+                                              , lat = lat
+                                              , lon = lon
+                                              , radius = radius ) 
+  )
+  vanhusten_palveluasuminen_yksityinen = try(get_palvelu('vanhusten_palveluasuminen_yksityinen' 
+                                                         , lat = lat
+                                                         , lon = lon
+                                                         , radius = radius ) 
+  )
+  vanhusten_laitospalvelu = try(get_palvelu('vanhusten_laitospalvelu' 
+                                            , lat = lat
+                                            , lon = lon
+                                            , radius = radius ) 
+  )
+  vanhusten_laitospalvelu_yksityinen = try(get_palvelu('vanhusten_laitospalvelu_yksityinen' 
+                                                       , lat = lat
+                                                       , lon = lon
+                                                       , radius = radius ) 
+  )
+  vanhus_lista = list(vanhusten_itsenäinen_asuminen , vanhusten_palveluasuminen 
+                  , vanhusten_palveluasuminen_yksityinen , vanhusten_laitospalvelu
+                  , vanhusten_laitospalvelu_yksityinen )
+  
+  error_ind = sapply( vanhus_lista
+                      , function(x){
+                        class(x) == 'try-error' || nrow(x) == 0
+                      })
+  vanhainkodit = try(do.call( 'rbind', vanhus_lista[!error_ind]  ))
+  
+  if(class(vanhainkodit) == 'try-error' ){
+    stop('error combining vanhainkodit')
+  }
+  if(nrow(vanhainkodit)==0 ){
+    stop('no vanhainkodit found')
+  }
+  
+  vanhainkodit$tyyppi = 'vanhainkodit'
+  
+  return(vanhainkodit)
+  
+  
+  
+}
+
+
 # ala asteet
 get_ala_asteet = function(lat , lon  , radius ){
   ala_asteet = try(get_palvelu('ala_asteet' 
@@ -108,7 +161,6 @@ get_terveysasemat = function(lat , lon  , radius ){
   return(terveysasemat)
 }
 
-
 # ruokakaupat
 get_ruokakaupat = function(lat, lon , radius){
   ruokakaupat = try(get_nearest( conn , 'coord'
@@ -136,7 +188,8 @@ get_point_objects = function(lat , lon , radius){
   # lisää tähän kaikki metodikutsut!
   # call ruokakaupat kutsuu metodia get_ruokakaupat(lat = lat , lon = lon , radius = radius )
   calls = c('ala_asteet' , 'yla_asteet' , 'ruokakaupat' 
-            , 'kirjastot' , 'sairaalat' , 'terveysasemat','paivakodit')
+            , 'kirjastot' , 'sairaalat' , 'terveysasemat'
+            ,'paivakodit','vanhainkodit')
   
   return_list = lapply( calls , function(call){
     try(get_point_call_object(call, lat=lat , lon=lon , radius = radius )  ) 

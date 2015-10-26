@@ -18,7 +18,14 @@ id palvelu
 34272 yla_asteet
 25004 sairaalat
 25002 terveysasemat
-25624 kirjastot') , sep =' ' , header = T)
+25624 kirjastot
+28020 vanhusten_itsenäinen_asuminen
+28020 vanhusten_palveluasuminen
+28028 vanhusten_palveluasuminen_yksityinen
+28030 vanhusten_laitospalvelu
+28034 vanhusten_laitospalvelu_yksityinen') 
+                          , sep =' ' , header = T)
+
 
 get_palvelunumero = function(palvelu){
   palvelunro = try(palvelutaulu[ palvelutaulu$palvelu == palvelu , 'id'  ])
