@@ -2,9 +2,10 @@ shinyUI(
   fluidPage( 
     useShinyjs() , 
     # emphasis for next address to get updated
-    shinyjs::inlineCSS(list(.emph_box_koti = "border-color:#005C94;border-style:none none solid none;border-width: 3px;")) , 
-    shinyjs::inlineCSS(list(.emph_box_tyo = "border-color:#6CDC5C;border-style:none none solid none;border-width: 3px;")) , 
-    shinyjs::inlineCSS(list(.emph_box_potentiaalinen = "border-color:#6CDCFA;border-style:none none solid none;border-width: 3px;")) , 
+    # shinyjs::inlineCSS(list(.emph_box_koti = "border-color:#005C94;border-style:none none solid none;border-width: 3px;")) , 
+    shinyjs::inlineCSS(list(.emph_box_koti = "border-color:#005C94;border-style:solid;border-width: 3px;")) , 
+    shinyjs::inlineCSS(list(.emph_box_tyo = "border-color:#6CDC5C;border-style:solid;border-width: 3px;")) , 
+    shinyjs::inlineCSS(list(.emph_box_potentiaalinen = "border-color:#6CDCFA;border-style:solid;border-width: 3px;")) , 
     # theme with custom css
     theme = "cerulean_fork.css" ,
     
@@ -40,17 +41,38 @@ shinyUI(
         , bsAlert("initiation_notification4")
         
         ### reitit
-        , plotOutput("pendeling_plot", height = "400px") 
-#         , conditionalPanel("input.ui_tyo_selected == true"
-#                            , plotOutput("pendeling_plot", height = "400px") )
-#         , conditionalPanel("input.ui_tyo_selected != true"
-#                            , plotOutput("pendeling_plot", height = "250px") )
+        , conditionalPanel("input.show_pendeling_plot == True"
+                           , plotOutput("pendeling_plot", height = "400px") 
+        )
         ### statit
-        , plotOutput("asuntojen_hinnat_plot" , height = "250px" )
-        , plotOutput("talojakauma_plot" , height = "150px" )
-        , plotOutput("koulutusjakauma_plot" , height = "200px" )
-        , plotOutput("toimintajakauma_plot" , height = "250px" )
-        , plotOutput("ikajakauma_plot" , height = "250px" )
+        , conditionalPanel("input.show_asuntojen_hinnat_plot == True"
+                           , plotOutput("asuntojen_hinnat_plot" , height = "250px" )
+        )
+        , conditionalPanel("input.show_talojakauma_plot"
+                           , plotOutput("talojakauma_plot" , height = "150px" )
+        )
+        , conditionalPanel("input.show_asumisvaljyys_plot"
+                           , plotOutput("asumisvaljyys_plot" , height = "150px" )
+        )
+        , conditionalPanel("input.show_koulutusjakauma_plot"
+                           , plotOutput("koulutusjakauma_plot" , height = "200px" )
+        )
+        , conditionalPanel("input.show_ikajakauma_plot"
+                           , plotOutput("ikajakauma_plot" , height = "250px" )
+        )
+        , conditionalPanel("input.show_tulojakauma_plot"
+                           , plotOutput("tulojakauma_plot" , height = "250px" )
+        )
+        , conditionalPanel("input.show_keskitulot_plot"
+                           , plotOutput("keskitulot_plot" , height = "150px" )
+        )
+        , conditionalPanel("input.show_toimintajakauma_plot"
+                           , plotOutput("toimintajakauma_plot" , height = "250px" )
+        )
+        , conditionalPanel("input.show_yleisimmat_ammatit_table"
+                           , h4("Yleisimmät ammattiryhmät alueella", align = "center")
+                           , tableOutput("yleisimmat_ammatit_table")
+        )
       )
       
       ### pääpaneeli
@@ -61,24 +83,47 @@ shinyUI(
     )
     
     ### settings panel
-    , absolutePanel( 
-      width = 300
-      , top = 90
-      , right = 20
-      , conditionalPanel("input.settings_button%2 != 0"
-                         , wellPanel( 
-                           # theme = 'background:#ffffff;opacity:0.25;'
-                           checkboxGroupInput_fork(inputId = 'palvelut_extra_group'
-                                                   , label = 'Haettavat palvelut'
-                                                   , choices = palvelut_nimet
-                                                   , selected = names(palvelut_nimet) )
-                           #                          checkboxGroupInput(inputId = 'palvelut_extra_group'
-                           #                                                 , label = 'Haettavat palvelut'
-                           #                                                 , choices = palvelut_nimet
-                           #                                                 , selected = palvelut_nimet )
-                           , sliderInput( 'radius' , 'Palvelujen hakusäde (km)' , min=0 , max=5 , value=1 )
-                         )
-      )
+    , absolutePanel( style = 'height:70vh;overflow-y:auto'
+                     , width = 300
+                     , top = 90
+                     , right = 20
+                     , conditionalPanel("input.settings_button%2 != 0"
+                                        , wellPanel( 
+                                          # theme = 'background:#ffffff;opacity:0.25;'
+                                          checkboxGroupInput_fork(inputId = 'palvelut_extra_group'
+                                                                  , label = 'Haettavat palvelut'
+                                                                  , choices = palvelut_nimet
+                                                                  , selected = names(palvelut_nimet) )
+                                          #                          checkboxGroupInput(inputId = 'palvelut_extra_group'
+                                          #                                                 , label = 'Haettavat palvelut'
+                                          #                                                 , choices = palvelut_nimet
+                                          #                                                 , selected = palvelut_nimet )
+                                          , sliderInput( 'radius' , 'Palvelujen hakusäde (km)' , min=0 , max=5 , value=1 )
+                                          , checkboxGroupInput(inputId = 'output_selector'
+                                                               , label = 'Kuvaajat' 
+                                                               , c( "Työmatkat" = "show_pendeling_plot",
+                                                                    "Asuntojen hinnat" = "show_asuntojen_hinnat_plot",
+                                                                    "Talotyypit" = "show_talojakauma_plot",
+                                                                    "Asumisväljyys" = "show_asumisvaljyys_plot" ,
+                                                                    "Koulutustasot" = "show_koulutusjakauma_plot" ,
+                                                                    "Ikäjakauma" = "show_ikajakauma_plot" ,
+                                                                    "Tulojakauma" = "show_tulojakauma_plot" ,
+                                                                    "Keskitulot" = "show_keskitulot_plot" ,
+                                                                    "Pääasiallinen toiminta" = "show_toimintajakauma_plot" ,
+                                                                    "Yleisimmät ammattiryhmät" = "show_yleisimmat_ammatit_table" ) 
+                                                               , selected = c(
+                                                                 'show_pendeling_plot',
+                                                                 'show_asuntojen_hinnat_plot',
+                                                                 'show_talojakauma_plot',
+                                                                 'show_asumisvaljyys_plot',
+                                                                 'show_koulutusjakauma_plot',
+                                                                 'show_ikajakauma_plot',
+                                                                 'show_tulojakauma_plot',
+                                                                 'show_keskitulot_plot',
+                                                                 'show_toimintajakauma_plot',
+                                                                 'show_yleisimmat_ammatit_table') )
+                                        )
+                     )
     )
     
     ### settings button

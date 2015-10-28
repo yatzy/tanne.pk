@@ -17,7 +17,7 @@ get_alue_info = function(zip){
   if(class(conn) =='try-error'){
     stop('alue-info query failed')
   }
-  query = paste("select * from paavo where \"zip\" = '" , zip,"'" , sep='')
+  query = paste("select * from paavo3 where \"zip\" = '" , zip,"'" , sep='')
   res = dbGetQuery(conn , query)
   if(class(res) =='try-error'){
     stop('alue-info query failed')
@@ -62,8 +62,8 @@ add_recommendation_layer = function(recommendation_vector , this_input , session
   
   # label alueen paalle
   labeli = ifelse(this_input == 'koti' 
-                  , 'Suositus kodin sijainnin perusteella'
-                  , 'Vaihtoehto muuttosijainnille' )
+                  , 'Väestöltään kodin kanssa samanlainen'
+                  , 'Väestöltään potentiaalisen kanssa samanlainen' )
   
   print(labeli)
   print(class(labeli))

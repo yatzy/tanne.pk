@@ -28,6 +28,7 @@ get_location_information = function(ui_time , click_time , ui_interaction_lag , 
       location_info$lat = click_info()$lat
       location_info$lon = click_info()$lon
       location_info$user_interaction_method = user_interaction_method
+      
     } else{
       
       user_interaction_method ='text'

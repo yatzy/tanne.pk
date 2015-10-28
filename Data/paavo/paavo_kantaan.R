@@ -15,7 +15,7 @@ colnames(paavo)
 
 p2 = paavo[,50:ncol(paavo)]
 View(p2)
-removals = c('postinumeroalue' , 'zippa' , 'alkutuotannon.työpaikat','taloudet.yhteensä','pienten.lasten.taloudet')
+removals = c('postinumeroalue' , 'zippa' , 'alkutuotannon.työpaikat','taloudet.yhteensä','pienten.lasten.taloudet','asukkaat.yhteensä')
 rem_ind = which(colnames(paavo) %in% removals )
 which(colnames(paavo) == 'zip' )
 which(colnames(paavo) == 'asukkaat.yhteensä' )

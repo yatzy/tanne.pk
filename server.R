@@ -263,6 +263,16 @@ shinyServer(function(input, output, session) {
                   }
                   progress_koti_lisaa2$set(value = 3 ,message='Päivitetään markkerit')
                   
+                  
+                  ### keskitä kotiosoitteeseen
+                  if(!is.null(location_info$user_interaction_method)){
+                    if(location_info$user_interaction_method == 'text'){
+                      leafletProxy("map_in_ui" , session) %>%
+                        setView( lng=location_info$lon , lat=location_info$lat , zoom = 13)
+                    }
+                  }
+                  
+                  
                   ### lisää kodille markkeri ###  
                   leafletProxy("map_in_ui" , session) %>%
                     addMarkers(lng = location_info$lon
@@ -277,7 +287,7 @@ shinyServer(function(input, output, session) {
                     clearGroup('koti')
                   
                   ### hae koordinaattitason palvelut
-                  progress_koti_lisaa2$set(value = 4 ,message='Haetaan kodin palvelut')
+                  progress_koti_lisaa2$set(value = 4 , message='Haetaan kodin palvelut')
                   cat('input radius: ', input$radius , '\n')
                   services = try(get_point_objects(lat=location_info$lat , lon = location_info$lon , radius = input$radius ))
                   
@@ -316,7 +326,7 @@ shinyServer(function(input, output, session) {
               progress_koti_lisaa1$set(value = 3 , message = 'Päivitetään alueen tiedot')
               
               ### hae zip-tason info
-              update_zip_objects(location_info , this_input,zip_objects,session)
+              update_zip_objects(location_info , this_input , zip_objects , session)
               print('zip metodi päivitetty')
               #### lopuksi päivitetään osoite
               if(location_info$user_interaction_method == 'click'){
@@ -411,6 +421,15 @@ shinyServer(function(input, output, session) {
                     }
                   }
                   
+                  ### keskitä tyoosoitteeseen
+                  if(!is.null(location_info$user_interaction_method)){
+                    if(location_info$user_interaction_method == 'text'){
+                      leafletProxy("map_in_ui" , session) %>%
+                        setView( lng=location_info$lon , lat=location_info$lat , zoom = 13)
+                    }
+                  }
+                  
+                  
                   progress_tyo_lisaa2$set(value = 3 , message = 'Päivitetään työpaikan markkerit')
                   
                   ### lisää tyolle markkeri ###  
@@ -488,6 +507,7 @@ shinyServer(function(input, output, session) {
           print('haetaan osoite')
           location_info = try(get_location_information(ui_time , click_time , ui_interaction_lag , osoite))
           
+          
           progress_potentiaalinen_lisaa1$set(value = 2 , message = 'Lisätään potentiaalisen tiedot')
           
           ### jos koordinaatit löytyvät ###
@@ -535,6 +555,16 @@ shinyServer(function(input, output, session) {
                       # potentiaalinen_to_tyo_durations <<- lapply(potentiaalinen_tyo_durations, duration_min_and_max)
                     }
                   }
+                  
+                  ### keskitä potentiaaliseen osoitteeseen
+                  if(!is.null(location_info$user_interaction_method)){
+                    if(location_info$user_interaction_method == 'text'){
+                      leafletProxy("map_in_ui" , session) %>%
+                        setView( lng=location_info$lon , lat=location_info$lat , zoom = 13)
+                    }
+                  }
+                  
+                  
                   progress_potentiaalinen_lisaa2$set(value = 4 , message = 'Lisätään potentiaalisen markkerit')
                   
                   ### lisää potentiaaliselle markkeri ###  
@@ -585,7 +615,7 @@ shinyServer(function(input, output, session) {
               
               progress_potentiaalinen_lisaa2$set(value = 6 , message = 'Haetaan potentiaalisen aluetiedot')
               
-              update_zip_objects(location_info , this_input , zip_objects,session)
+              update_zip_objects(location_info , this_input , zip_objects , session)
               print('potential zip-objects updadet')
               #### lopuksi päivitetään osoite
               if(location_info$user_interaction_method == 'click'){
@@ -894,6 +924,157 @@ shinyServer(function(input, output, session) {
     }
   })
   
+  output$tulojakauma_plot <- renderPlot({
+    if(!is.null(zip_objects$alue_info)){
+      withProgress(message = 'Päivitetään tulojakaumakuvaajaa',{
+        
+        data = zip_objects$alue_info[ , c('paikka'
+                                          ,'alimpaan.tuloluokkaan.kuuluvat.asukkaat'
+                                          , 'keskimmäiseen.tuloluokkaan.kuuluvat.asukkaat' 
+                                          , 'ylimpään.tuloluokkaan.kuuluvat.asukkaat')]
+        colnames(data)[2:4] = c('Alin tuloluokka', 'Keskimmäinen tuloluokka' , 'Ylin tuloluokka')
+        data = melt( data , factorsAsStrings = T)
+        
+        # paletti
+        pal = paletti
+        if(length(unique(data$paikka)) == 1 ){
+          if( unique(data$paikka) == 'koti'  ){
+            pal = paletti[1]
+          } else{
+            pal = paletti[2]
+          }
+        }
+        
+        pic = ggplot(data , aes(x=variable , y=value , fill=paikka)) + 
+          geom_bar(stat="identity" , position=position_dodge() ) + 
+          scale_fill_manual( values = pal ) + 
+          xlab('') + 
+          scale_y_continuous("") +
+          coord_flip() + 
+          theme(legend.position = "none") + 
+          ggtitle('Tuloluokat (% asukkaista)')
+        incProgress(1)
+        pic
+      })
+    }
+  })
+  
+  output$keskitulot_plot <- renderPlot({
+    if(!is.null(zip_objects$alue_info)){
+      withProgress(message = 'Päivitetään keskitulokuvaajaa',{
+        
+        data = zip_objects$alue_info[ , c('paikka'
+                                          , 'keskitulot')]
+        data = melt( data ,factorsAsStrings = T)
+        
+        data$variable = ifelse(data$variable == 'Keskimmäinen tuloluokka' , 'Keskimmäinen\ntuloluokka',data$variable )
+        
+        # paletti
+        pal = paletti
+        if(length(unique(data$paikka)) == 1 ){
+          if( unique(data$paikka) == 'koti'  ){
+            pal = paletti[1]
+          } else{
+            pal = paletti[2]
+          }
+        }
+        
+        pic = ggplot(data , aes(x=variable , y=value , fill=paikka)) + 
+          geom_bar(stat="identity" , position=position_dodge() ) + 
+          scale_fill_manual( values = pal ) + 
+          xlab('') + 
+          scale_y_continuous('') + 
+          scale_y_continuous("") +
+          coord_flip() + 
+          theme(legend.position = "none") + 
+          ggtitle('Keskitulot')
+        incProgress(1)
+        pic
+      })
+    }
+  })
+  
+  output$asumisvaljyys_plot <- renderPlot({
+    if(!is.null(zip_objects$alue_info)){
+      withProgress(message = 'Päivitetään asumisväljyyskuvaajaa',{
+        
+        data = zip_objects$alue_info[ , c('paikka'
+                                          , 'asumisväljyys')]
+        data = melt( data ,factorsAsStrings = T)
+        
+        # paletti
+        pal = paletti
+        if(length(unique(data$paikka)) == 1 ){
+          if( unique(data$paikka) == 'koti'  ){
+            pal = paletti[1]
+          } else{
+            pal = paletti[2]
+          }
+        }
+        
+        pic = ggplot(data , aes(x=variable , y=value , fill=paikka)) + 
+          geom_bar(stat="identity" , position=position_dodge() ) + 
+          scale_fill_manual( values = pal ) + 
+          xlab('') + 
+          scale_y_continuous("") +
+          coord_flip() + 
+          theme(legend.position = "none") + 
+          ggtitle('Asumisväljyys')
+        incProgress(1)
+        pic
+      })
+    }
+  })
+  
+  output$yleisimmat_ammatit_table <- renderTable({
+    if(!is.null(zip_objects$alue_info)){
+      withProgress(message = 'Päivitetään yleisimmät ammattiryhmät',{
+        
+        data = zip_objects$alue_info[ , c('paikka'
+                                          , 'yleisimmat')]
+        data = cbind(data$paikka, data.frame(str_split_fixed(data$yleisimmat, ",",3) ) )
+        print(data)         
+        
+        incProgress(1)
+        data
+      })
+    }
+  }
+  , include.colnames=F
+  , include.rownames=F
+  )
+  
+#   output$show_pendeling_plot = reactive(
+#     input$show_pendeling_plot
+#   )
+#   output$show_asuntojen_hinnat_plot = reactive(
+#     input$show_asuntojen_hinnat_plot
+#   )
+#   output$show_talojakauma_plot = reactive(
+#     input$show_talojakauma_plot
+#   )
+#   output$show_asumisvaljyys_plot = reactive(
+#     input$show_asumisvaljyys_plot
+#   )
+#   output$show_koulutusjakauma_plot = reactive(
+#     input$show_koulutusjakauma_plot
+#   )
+#   output$show_ikajakauma_plot = reactive(
+#     input$show_ikajakauma_plot
+#   )
+#   output$show_tulojakauma_plot = reactive(
+#     input$show_tulojakauma_plot
+#   )
+#   output$show_keskitulot_plot = reactive(
+#     input$show_keskitulot_plot
+#   )
+#   output$show_toimintajakauma_plot = reactive(
+#     input$show_toimintajakauma_plot
+#   )
+#   output$show_yleisimmat_ammatit_table = reactive(
+#     input$show_yleisimmat_ammatit_table
+#   )
+
   ################################## VANHAT ##################################
   
   # for testing settings_button
