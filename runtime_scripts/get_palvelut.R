@@ -40,7 +40,7 @@ get_palvelunumero = function(palvelu){
 }
 
 list_palvelut = function(){
-  conn <- dbConnect(PostgreSQL(), host="localhost", 
+  conn <- dbConnect(PostgreSQL(), host="localhost" ,
                     user= "postgres", password = ei_mitaan , dbname="karttasovellus")
   on.exit(dbDisconnect(conn), add=TRUE)
   query = "select distinct(palvelu) from kunnalliset_palvelut"
@@ -49,7 +49,7 @@ list_palvelut = function(){
   return(res)
 }
 
-get_palvelu = function(palvelu , lat , lon , radius = 10){
+get_palvelu = function(palvelu , lat , lon , radius = 10, force_one=T){
   # radius kilometreissa
   radius = round(radius * 1000)
   palvelunro = get_palvelunumero(palvelu)
@@ -60,12 +60,18 @@ get_palvelu = function(palvelu , lat , lon , radius = 10){
   res = try(jsonlite::fromJSON(query_url) )
   wanted_columns = c('name_fi' , 'street_address_fi' , 'latitude' , 'longitude' , 'address_zip' , 'www_fi','address_city_fi')
   
+  if(length(res)==0 && force_one==T ){
+    query_url = sprintf(base_url , palvelunro , lat , lon , 20 * 1000 )
+    res = try(jsonlite::fromJSON(query_url) )
+  }
+  
   if(class(res) == 'try-error'){
     stop('error retrieving nearest locations')
   } 
   if( !all(wanted_columns %in% colnames(res) ) ){
     stop('not all information retrieved')
   }
+
   # print('no errors found')
   # drops = sapply( res , is.list ) 
   res = res[ , wanted_columns ]
@@ -78,6 +84,11 @@ get_palvelu = function(palvelu , lat , lon , radius = 10){
   colnames(res)[tolower(colnames(res)) == 'latitude'] = 'lat'
   res = res[ order(res$distance), ]
   res$tyyppi = palvelu
+  
+#   if(force_one){
+#     res = res[1, ]
+#   }
+  
   return(res)
 }
 

@@ -1,5 +1,5 @@
 
-get_nearest = function( conn , tablename , lat , lon , radius , tyyppi  , count ){
+get_nearest = function( conn , tablename , lat , lon , radius , tyyppi  , count , force_one = T){
   
   needed_arguments = c('conn' , 'tablename' , 'lat' , 'lon' , 'radius' , 'tyyppi'  , 'count')
   given_arguments = names(as.list(match.call())[-1])
@@ -10,7 +10,6 @@ get_nearest = function( conn , tablename , lat , lon , radius , tyyppi  , count 
   if(!all(success_list)){
     return(NA)
   }
-  
   
   query_base = "
   SELECT 
@@ -85,11 +84,20 @@ get_nearest = function( conn , tablename , lat , lon , radius , tyyppi  , count 
   } 
   
   res_df = try(dbGetQuery(conn ,  sprintf( query_base , tablename , lat , lon , radius , tyyppi , count ) ) )
+  
   if(class(res_df) == 'try-error'){
     stop( 'Could not execute the query' )  
   }
-  if(nrow(res_df) == 0){
-    stop('No data found')
+
+  if(nrow(res_df) == 0 && force_one == T){
+    res_df = try(dbGetQuery(conn ,  sprintf( query_base , tablename , lat , lon , 20 , tyyppi , 1 ) ) )
+    
+    if(class(res_df) == 'try-error'){
+      stop( 'Could not execute the query' )  
+    }
+    if(nrow(res_df)==0){
+      stop("just can't find data")
+    }
   }
   print(res_df)
   return(res_df)
@@ -101,7 +109,7 @@ get_nearest = function( conn , tablename , lat , lon , radius , tyyppi  , count 
 # osoite$lat = 60.239
 # osoite$lon = 24.938
 # # # 
-# # get_nearest( conn , 'coord' , osoite$lat , osoite$lon  , 'Ruokakaupat' , 100 )
+# get_nearest( conn , 'coord' , osoite$lat , osoite$lon , 4 , 'Ruokakaupat' , 100 )
 # asdf = get_nearest( conn , 'coord' , osoite$lat , osoite$lon , 2 , 'Ruokakaupat' , 100 )
 # # get_nearest( conn , 'coord' , osoite$lat , osoite$lon , 15 , 'Autoliikkeet' , 100 )
 # # get_nearest( conn , 'coord' , osoite$lat , osoite$lon , 0.5 , 'Ruokakaupat' , 100 )

@@ -92,6 +92,10 @@ ui_events$count = 0
 # inittaa postikoodille kerättävät objektit
 zip_objects = reactiveValues(asuntojen_hinnat = NULL , alue_info = NULL )
 
+# inittaa palveluvarastot
+koti_services = reactiveValues()
+potentiaalinen_services = reactiveValues()
+
 # boundaries
 
 city_center_location = list(lat = 60.173700, lon =  24.940179)

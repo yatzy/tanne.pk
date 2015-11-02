@@ -33,9 +33,16 @@ get_paivakodit = function(lat , lon  , radius ){
   if(class(paivakodit) == 'try-error' ){
     stop('error combining päiväkodit')
   }
+  
+  # if called with force_one in get_palvelut
+  if(radius>10){
+    paivakodit = paivakodit %>% arrange(distance) %>% .[1,] 
+  }
+  
   if(nrow(paivakodit)==0 ){
     stop('no päiväkodit found')
   }
+  
   
   paivakodit$tyyppi = 'paivakodit'
   
@@ -82,6 +89,12 @@ get_vanhainkodit = function(lat , lon  , radius ){
   if(class(vanhainkodit) == 'try-error' ){
     stop('error combining vanhainkodit')
   }
+  
+  # if called with force_one in get_palvelut
+  if(radius>10){
+    vanhainkodit = vanhainkodit %>% arrange(distance) %>% .[1,] 
+  }
+  
   if(nrow(vanhainkodit)==0 ){
     stop('no vanhainkodit found')
   }
@@ -89,9 +102,7 @@ get_vanhainkodit = function(lat , lon  , radius ){
   vanhainkodit$tyyppi = 'vanhainkodit'
   
   return(vanhainkodit)
-  
-  
-  
+
 }
 
 
@@ -211,9 +222,9 @@ get_point_objects = function(lat , lon , radius){
   return( return_list )
 }
 
-
 # example
-# lat = 60.226516;lon= 24.890556;radius =  1
+lat = 60.226516;lon= 24.890556;radius =  1
+asdf = get_point_objects(lat=lat , lon=lon,radius=radius)
 # lat = 60.18288
 # lon = 24.922
 # radius = 1
