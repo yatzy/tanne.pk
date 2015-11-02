@@ -1,5 +1,5 @@
 # paivakodit
-get_paivakodit = function(lat , lon  , radius ){
+get_paivakodit = function(lat , lon  , radius , service_radius_max=service_radius_max ){
 #   paivakodit = try(get_palvelu('paivakodit' 
 #                                   , lat = lat
 #                                   , lon = lon
@@ -35,14 +35,13 @@ get_paivakodit = function(lat , lon  , radius ){
   }
   
   # if called with force_one in get_palvelut
-  if(radius>10){
+  if( max(paivakodit$distance) ){
     paivakodit = paivakodit %>% arrange(distance) %>% .[1,] 
   }
   
   if(nrow(paivakodit)==0 ){
     stop('no päiväkodit found')
   }
-  
   
   paivakodit$tyyppi = 'paivakodit'
   
@@ -91,8 +90,8 @@ get_vanhainkodit = function(lat , lon  , radius ){
   }
   
   # if called with force_one in get_palvelut
-  if(radius>10){
-    vanhainkodit = vanhainkodit %>% arrange(distance) %>% .[1,] 
+  if( max(vanhainkodit$distance) > service_radius_max ){
+    vanhainkodit = vanhainkodit %>% arrange(distance) %>% .[1,]
   }
   
   if(nrow(vanhainkodit)==0 ){
@@ -223,7 +222,7 @@ get_point_objects = function(lat , lon , radius){
 }
 
 # example
-lat = 60.226516;lon= 24.890556;radius =  1
+lat = 60.226516;lon= 24.890556;radius =  0
 asdf = get_point_objects(lat=lat , lon=lon,radius=radius)
 # lat = 60.18288
 # lon = 24.922

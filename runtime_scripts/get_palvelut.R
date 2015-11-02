@@ -51,6 +51,7 @@ list_palvelut = function(){
 
 get_palvelu = function(palvelu , lat , lon , radius = 10, force_one=T){
   # radius kilometreissa
+  original_query_worked = T
   radius = round(radius * 1000)
   palvelunro = get_palvelunumero(palvelu)
   
@@ -60,9 +61,12 @@ get_palvelu = function(palvelu , lat , lon , radius = 10, force_one=T){
   res = try(jsonlite::fromJSON(query_url) )
   wanted_columns = c('name_fi' , 'street_address_fi' , 'latitude' , 'longitude' , 'address_zip' , 'www_fi','address_city_fi')
   
-  if(length(res)==0 && force_one==T ){
-    query_url = sprintf(base_url , palvelunro , lat , lon , 20 * 1000 )
-    res = try(jsonlite::fromJSON(query_url) )
+  if(!is.data.frame(res)){
+    original_query_worked = F
+    if(force_one==T ){
+      query_url = sprintf(base_url , palvelunro , lat , lon , 20 * 1000 )
+      res = try(jsonlite::fromJSON(query_url) )
+    }
   }
   
   if(class(res) == 'try-error'){
@@ -71,9 +75,7 @@ get_palvelu = function(palvelu , lat , lon , radius = 10, force_one=T){
   if( !all(wanted_columns %in% colnames(res) ) ){
     stop('not all information retrieved')
   }
-
-  # print('no errors found')
-  # drops = sapply( res , is.list ) 
+  
   res = res[ , wanted_columns ]
   
   mypoint = c(lon , lat)
@@ -85,9 +87,9 @@ get_palvelu = function(palvelu , lat , lon , radius = 10, force_one=T){
   res = res[ order(res$distance), ]
   res$tyyppi = palvelu
   
-#   if(force_one){
-#     res = res[1, ]
-#   }
+  if( force_one == T && original_query_worked == F ){
+    res = res[1,]
+  }
   
   return(res)
 }
@@ -96,7 +98,7 @@ get_palvelu = function(palvelu , lat , lon , radius = 10, force_one=T){
 # palvelu = 'ala_asteet'
 # lat = 60.18288
 # lon = 24.92204
-# radius = 6
+# radius = 0
 # asdf = get_palvelu(palvelu , lat , lon , radius )
 # # colnames(asdf)
 # asdf[[1]]$latitude

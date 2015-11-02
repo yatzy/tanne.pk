@@ -161,3 +161,7 @@ potentiaalinengroups = sapply(unique(palvelu_df$palvelut)
                               ,function(x){
                                 sprintf("%s_%s", 'potentiaalinen',x)
                               })
+
+service_radius_min = 1
+service_radius_max = 5
+service_radius_by = 0.5

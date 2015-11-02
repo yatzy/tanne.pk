@@ -181,7 +181,6 @@ shinyServer(function(input, output, session) {
   })
   
   
-  
   ### markkerien päivitys osoitekentän kautta ###
   ### kotiosoite ###
   
@@ -339,7 +338,7 @@ shinyServer(function(input, output, session) {
                       }
                     }
                   }
-                  progress_koti_lisaa2$set(value = 6 )
+                  progress_koti_lisaa2$set( value = 6 )
                 }
               }
               

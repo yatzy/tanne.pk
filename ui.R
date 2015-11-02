@@ -96,7 +96,10 @@ shinyUI(
                                                                   , choices = palvelut_nimet
                                                                   , selected = names(palvelut_nimet) )
                                           
-                                          , sliderInput( 'radius' , 'Palvelujen hakusäde (km)' , min=0 , max=5 , value=1 )
+                                          , sliderInput( 'radius' , 'Palvelujen hakusäde (km)' 
+                                                         , min=service_radius_min 
+                                                         , max=service_radius_max 
+                                                         , value=service_radius_by )
                                           
                                           , checkboxInput(inputId = 'show_pendeling_plot','Työmatkat',T)
                                           , checkboxInput(inputId = 'show_asuntojen_hinnat_plot','Asuntojen hinnat',T)
@@ -120,7 +123,7 @@ shinyUI(
       , bottom = "auto"
       , width = 1
       , height = 1
-      , actionButton( inputId="settings_button",'', icon = img(src="settings.png"),width=70, height=1 )
+      , actionButton( inputId="settings_button",'', icon = img(src="settings.png"), width=70 , height=1 )
     )
     
     ### oikean puolen debug-paneeeli
