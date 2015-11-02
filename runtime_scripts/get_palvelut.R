@@ -62,8 +62,10 @@ get_palvelu = function(palvelu , lat , lon , radius = 10, force_one=T){
   wanted_columns = c('name_fi' , 'street_address_fi' , 'latitude' , 'longitude' , 'address_zip' , 'www_fi','address_city_fi')
   
   if(!is.data.frame(res)){
+    cat('No data found for: ' , palvelu , '\n')
     original_query_worked = F
     if(force_one==T ){
+      cat('FORCE getting: ' , palvelu , '\n')
       query_url = sprintf(base_url , palvelunro , lat , lon , 20 * 1000 )
       res = try(jsonlite::fromJSON(query_url) )
     }

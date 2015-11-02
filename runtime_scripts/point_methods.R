@@ -1,5 +1,5 @@
 # paivakodit
-get_paivakodit = function(lat , lon  , radius , service_radius_max=service_radius_max ){
+get_paivakodit = function(lat , lon  , radius , service_radius_max = service_radius_max ){
 #   paivakodit = try(get_palvelu('paivakodit' 
 #                                   , lat = lat
 #                                   , lon = lon
@@ -35,7 +35,7 @@ get_paivakodit = function(lat , lon  , radius , service_radius_max=service_radiu
   }
   
   # if called with force_one in get_palvelut
-  if( max(paivakodit$distance) ){
+  if( max(paivakodit$distance) > service_radius_max ){
     paivakodit = paivakodit %>% arrange(distance) %>% .[1,] 
   }
   
@@ -49,7 +49,7 @@ get_paivakodit = function(lat , lon  , radius , service_radius_max=service_radiu
 }
 
 # vanhainkodit
-get_vanhainkodit = function(lat , lon  , radius ){
+get_vanhainkodit = function(lat , lon  , radius , service_radius_max = service_radius_max ){
   vanhusten_itsenäinen_asuminen = try(get_palvelu('vanhusten_itsenäinen_asuminen' 
                                                   , lat = lat
                                                   , lon = lon
@@ -91,6 +91,7 @@ get_vanhainkodit = function(lat , lon  , radius ){
   
   # if called with force_one in get_palvelut
   if( max(vanhainkodit$distance) > service_radius_max ){
+    cat('called with force_one, getting just one\n')
     vanhainkodit = vanhainkodit %>% arrange(distance) %>% .[1,]
   }
   
