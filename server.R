@@ -20,7 +20,7 @@ shinyServer(function(input, output, session) {
   observe({
     cat('ui_events$count:', ui_events$count , '\n')
     
-    if(ui_events$count == 0 ){
+    if( ui_events$count == 0 ){
       # initiation notification
       createAlert(session, anchorId = "initiation_notification1", alertId = 'init_notification1' , title = "Lisää",
                   content = init_content1, append = FALSE)
@@ -96,14 +96,14 @@ shinyServer(function(input, output, session) {
     # init map
     leaflet() %>%
       # add map layer
-#       addTiles('//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png' # ALKUPERÄINEN
-#                , attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>' ) %>% 
+      #       addTiles('//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png' # ALKUPERÄINEN
+      #                , attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>' ) %>% 
       addTiles('//{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png' # HAALEA
                , attribution = 'Tiles courtesy of <a href="http://openstreetmap.se/" target="_blank">OpenStreetMap Sweden</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>' ) %>% 
-#       addTiles('//{s}.tile.thunderforest.com/transport/{z}/{x}/{y}.png' # VAIKEA EROTTAA!
-#                , attribution = 'Maps by <a href="http://www.opencyclemap.org">OpenCycleMap</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>' ) %>% 
-#       addTiles('api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png' # ei toimi
-#                , attribution = 'Imagery from <a href="http://mapbox.com/about/maps/">MapBox</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>' ) %>% 
+      #       addTiles('//{s}.tile.thunderforest.com/transport/{z}/{x}/{y}.png' # VAIKEA EROTTAA!
+      #                , attribution = 'Maps by <a href="http://www.opencyclemap.org">OpenCycleMap</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>' ) %>% 
+      #       addTiles('api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png' # ei toimi
+      #                , attribution = 'Imagery from <a href="http://mapbox.com/about/maps/">MapBox</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>' ) %>% 
       # set initial boundaries to centre of Helsinki
       setView( lng=city_center_location$lon , lat=city_center_location$lat , zoom = 11) %>%
       setMaxBounds(lng1=boundary_west_lat, lat1=boundary_south_lon, lng2=boundary_east_lat, lat2=boundary_north_lon)
@@ -188,7 +188,7 @@ shinyServer(function(input, output, session) {
   observeEvent(input$koti_osoite_from_ui , {
     # jos ui on tyhjä
     
-    if(input$koti_osoite_from_ui == koti_value_default  || nchar(str_trim(input$koti_osoite_from_ui))== 0 ) {
+    if( input$koti_osoite_from_ui == koti_value_default  || nchar(str_trim(input$koti_osoite_from_ui))== 0 ) {
       
       # poista itse markkeri
       leafletProxy("map_in_ui", session) %>% 
@@ -661,60 +661,64 @@ shinyServer(function(input, output, session) {
     leafletProxy("map_in_ui" , session) %>% 
       removeShape(input$map_in_ui_shape_click$id)
   })
-
+  
   ##################### visut  #####################
   
   # pendeling
   
   output$pendeling_plot = renderPlot({
+    
+    withProgress(message = 'Päivitetään reittikuvaajaa',{
       
-      withProgress(message = 'Päivitetään reittikuvaajaa',{
-        dat_titles = c('Kodista töihin' , 'Kodista Helsinkiin' , 'Potentiaalisesta töihin' , 'Potentiaalisesta Helsinkiin')
-        dats = list(durations$koti_to_tyo_durations
-                    , durations$koti_to_center_durations
-                    , durations$potentiaalinen_to_tyo_durations
-                    , durations$potentiaalinen_to_center_durations)
-        print('poistetaan tyhjat aikatauluista')    
-        null_ind = sapply(dats, is.null)
-        if(all(null_ind)){
-          return(NULL)
-        }
-        dats = dats[!null_ind]
-        dat_titles = dat_titles[!null_ind]
-        
-        names(dats) = dat_titles
-        dat_df = melt(dats) %>% spread(L3, value)
-        colnames(dat_df)[1:2] = c('time' ,'travel' )
-        # varit: koti=1, potentiaalinen = 2
-        dat_df$vari = 2
-        dat_df$vari[grep('Kodista',dat_df$travel)] = 1
-        dat_df$vari = as.factor(dat_df$vari)
-        dat_df$time = ifelse(dat_df$time=='evening' , 'Ilta' , 'Aamu')
-        
-        # paletti
-        if( '2' %in% as.character(dat_df$vari) && '1' %in% as.character(dat_df$vari) ){
-          pal = paletti
-        } else if('1' %in% as.character(dat_df$vari)){
-          pal = paletti[1]
-        } else{
-          pal = paletti[2]
-        }
-        
-        pic = ggplot(dat_df , aes( x = time , ymax = max , ymin=min , color= vari) ) + 
-          geom_errorbar(size=2) + 
-          scale_color_manual(values = pal) + 
-          facet_wrap(~ travel , ncol=1) + 
-          coord_flip() +
-          ylab('') +
-          xlab('') +
-          theme(legend.position = "none"
-                , strip.background = element_rect(fill="#ffffff")
-                , strip.text.x = element_text(size=12) ) +
-          ggtitle('Matka-ajat (minuuttia)') 
-        
-        incProgress(1)
-        pic
-      })
+      dat_titles = c('Kodista töihin' , 'Kodista Helsinkiin' , 'Potentiaalisesta töihin' , 'Potentiaalisesta Helsinkiin')
+      
+      dats = list(durations$koti_to_tyo_durations
+                  , durations$koti_to_center_durations
+                  , durations$potentiaalinen_to_tyo_durations
+                  , durations$potentiaalinen_to_center_durations)
+      print('poistetaan tyhjat aikatauluista')
+
+      null_ind = sapply(dats, is.null)
+      if(all(null_ind)){
+        return(NULL)
+      }
+      
+      dats = dats[!null_ind]
+      dat_titles = dat_titles[!null_ind]
+      
+      names(dats) = dat_titles
+      dat_df = melt(dats) %>% spread(L3, value)
+      colnames(dat_df)[1:2] = c('time' ,'travel' )
+      # varit: koti=1, potentiaalinen = 2
+      dat_df$vari = 2
+      dat_df$vari[grep('Kodista',dat_df$travel)] = 1
+      dat_df$vari = as.factor(dat_df$vari)
+      dat_df$time = ifelse(dat_df$time=='evening' , 'Ilta' , 'Aamu')
+      
+      # paletti
+      if( '2' %in% as.character(dat_df$vari) && '1' %in% as.character(dat_df$vari) ){
+        pal = paletti
+      } else if('1' %in% as.character(dat_df$vari)){
+        pal = paletti[1]
+      } else{
+        pal = paletti[2]
+      }
+      
+      pic = ggplot(dat_df , aes( x = time , ymax = max , ymin=min , color= vari) ) + 
+        geom_errorbar(size=2) + 
+        scale_color_manual(values = pal) + 
+        facet_wrap( ~ travel , ncol=1) + 
+        coord_flip() +
+        ylab('') +
+        xlab('') +
+        theme(legend.position = "none"
+              , strip.background = element_rect(fill="#ffffff")
+              , strip.text.x = element_text(size=12) ) +
+        ggtitle('Matka-ajat (minuuttia)') 
+      
+      incProgress(1)
+      pic
+    })
   }) 
   
   
@@ -936,8 +940,7 @@ shinyServer(function(input, output, session) {
         data = zip_objects$alue_info[ , c('paikka'
                                           , 'keskitulot')]
         data = melt( data ,factorsAsStrings = T)
-        
-        data$variable = ifelse(data$variable == 'Keskimmäinen tuloluokka' , 'Keskimmäinen\ntuloluokka',data$variable )
+        data$variable = ifelse(data$variable == 'Keskimmäinen tuloluokka' , 'Keskimmäinen\ntuloluokka', data$variable )
         
         # paletti
         pal = paletti
@@ -952,12 +955,13 @@ shinyServer(function(input, output, session) {
         pic = ggplot(data , aes(x=variable , y=value , fill=paikka)) + 
           geom_bar(stat="identity" , position=position_dodge() ) + 
           scale_fill_manual( values = pal ) + 
+          ylab('') + 
           xlab('') + 
-          scale_y_continuous('') + 
-          scale_y_continuous("") +
+          scale_x_continuous('') +
           coord_flip() + 
           theme(legend.position = "none") + 
-          ggtitle('Keskitulot')
+          ggtitle('Keskitulot') +
+          theme(axis.ticks = element_blank(), axis.text.y = element_blank())
         incProgress(1)
         pic
       })
@@ -1013,7 +1017,7 @@ shinyServer(function(input, output, session) {
   , include.colnames=F
   , include.rownames=F
   )
-
+  
   output$closest_services_table = renderTable({
     
   })
