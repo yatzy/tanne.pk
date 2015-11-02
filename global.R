@@ -156,7 +156,7 @@ names(palvelut_nimet)  = palvelut
 
 #palvelut_valittu = as.logical(palvelut > 0)
   
-palvelu_df = data.frame(palvelut_nimet,palvelut,palvelut_valittu)
+palvelu_df = data.frame(palvelut_nimet,palvelut)
 kotigroups = sapply(unique(palvelu_df$palvelut)
                     ,function(x){
                       sprintf("%s_%s", 'koti',x)
