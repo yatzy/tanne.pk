@@ -131,14 +131,14 @@ palvelut_nimet = c(
   HTML('<img src="nursing_home.png" style="width:30px;">   Vanhainkodit        ')
 )
 
-names(palvelut_nimet) = c('Ala-asteet',
-                          'Yläasteet',
-                          'Ruokakaupat',
-                          'Kirjastot',
-                          'Sairaalat',
-                          'Terveysasemat',
-                          'Päiväkodit',
-                          'Vanhainkodit')
+# names(palvelut_nimet) = c('Ala-asteet',
+#                           'Yläasteet',
+#                           'Ruokakaupat',
+#                           'Kirjastot',
+#                           'Sairaalat',
+#                           'Terveysasemat',
+#                           'Päiväkodit',
+#                           'Vanhainkodit')
 
 # palvelut_nimet = c('Ala-asteet' 
 #                    , 'Yläasteet' 
@@ -152,7 +152,11 @@ palvelut  = c('ala_asteet' , 'yla_asteet' , 'ruokakaupat'
               , 'kirjastot' , 'sairaalat' , 'terveysasemat'
               ,'paivakodit','vanhainkodit')
 
-palvelu_df = data.frame(palvelut_nimet,palvelut,T)
+names(palvelut_nimet)  = palvelut
+
+#palvelut_valittu = as.logical(palvelut > 0)
+  
+palvelu_df = data.frame(palvelut_nimet,palvelut,palvelut_valittu)
 kotigroups = sapply(unique(palvelu_df$palvelut)
                     ,function(x){
                       sprintf("%s_%s", 'koti',x)

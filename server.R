@@ -161,7 +161,17 @@ shinyServer(function(input, output, session) {
   ## palveluihin littyvät eventit
   
   observeEvent(input$palvelut_extra_group,{
-    print(input$palvelut_extra_group)
+    
+    palvelut_valittu = palvelut %in% input$palvelut_extra_group
+    for (i in 1:length(palvelut)) {
+      if (palvelut_valittu[i]) {
+        leafletProxy("map_in_ui", session) %>% showGroup(kotigroups[i])
+        leafletProxy("map_in_ui", session) %>% showGroup(potentiaalinengroups[i])
+      } else {
+        leafletProxy("map_in_ui", session) %>% hideGroup(kotigroups[i])
+        leafletProxy("map_in_ui", session) %>% hideGroup(potentiaalinengroups[i])
+      }
+    }
   })
   
   # kuvaajiin liittyvät elementit
