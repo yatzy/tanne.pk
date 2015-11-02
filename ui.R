@@ -97,9 +97,9 @@ shinyUI(
                                                                   , selected = names(palvelut_nimet) )
                                           
                                           , sliderInput( 'radius' , 'Palvelujen hakusäde (km)' 
-                                                         , min=service_radius_min 
-                                                         , max=service_radius_max 
-                                                         , value=service_radius_by )
+                                                         , min = service_radius_min 
+                                                         , max = service_radius_max 
+                                                         , value = service_radius_by )
                                           
                                           , checkboxInput(inputId = 'show_pendeling_plot','Työmatkat',T)
                                           , checkboxInput(inputId = 'show_asuntojen_hinnat_plot','Asuntojen hinnat',T)

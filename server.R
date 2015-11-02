@@ -31,6 +31,7 @@ shinyServer(function(input, output, session) {
       createAlert(session, anchorId = "initiation_notification4", alertId = 'init_notification4' , title = "Valitse",
                   content = init_content4, append = FALSE)
     }
+    
     if(ui_events$count > 0 ){
       closeAlert(session, "init_notification1")
       closeAlert(session, "init_notification2")

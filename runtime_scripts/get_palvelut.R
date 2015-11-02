@@ -18,7 +18,7 @@ id palvelu
 34272 yla_asteet
 25004 sairaalat
 25002 terveysasemat
-25624 kirjastot
+25626 kirjastot
 28020 vanhusten_itsenäinen_asuminen
 28020 vanhusten_palveluasuminen
 28028 vanhusten_palveluasuminen_yksityinen
@@ -91,6 +91,7 @@ get_palvelu = function(palvelu , lat , lon , radius = 10, force_one=T){
   
   if( force_one == T && original_query_worked == F ){
     res = res[1,]
+    print(res)
   }
   
   return(res)
