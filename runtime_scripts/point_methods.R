@@ -35,7 +35,7 @@ get_paivakodit = function(lat , lon  , radius  ){
   }
   
   # if called with force_one in get_palvelut
-  if( max(paivakodit$distance) > 10 ){
+  if( max(paivakodit$distance) > 5 ){
     paivakodit = paivakodit %>% arrange(distance) %>% .[1,] 
     print(paivakodit)
   }
@@ -91,7 +91,7 @@ get_vanhainkodit = function(lat , lon  , radius  ){
   }
   
   # if called with force_one in get_palvelut
-  if( max(vanhainkodit$distance) > 10 ){
+  if( max(vanhainkodit$distance) > 5 ){
     cat('called with force_one, getting just one\n')
     vanhainkodit = vanhainkodit %>% arrange(distance) %>% .[1,]
     print(vanhainkodit)

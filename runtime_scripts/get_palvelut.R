@@ -91,6 +91,7 @@ get_palvelu = function(palvelu , lat , lon , radius = 10, force_one=T){
   
   if( force_one == T && original_query_worked == F ){
     res = res[1,]
+    print(res)
   }
   
   return(res)
