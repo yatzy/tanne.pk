@@ -308,10 +308,10 @@ shinyServer(function(input, output, session) {
                   ### hae koordinaattitason palvelut
                   progress_koti_lisaa2$set(value = 4 , message='Haetaan kodin palvelut')
                   cat('input radius: ', input$radius , '\n')
-                  services = try(get_point_objects(lat=location_info$lat , lon = location_info$lon , radius = input$radius ))
                   
                   progress_koti_lisaa2$set(value = 5 ,message='Päivitetään palvelut')
                   
+<<<<<<< HEAD
                   ### lisää uudet kotiin liittyvät markkerit ###         
                   if(class(services) != 'try-error'){
                     if(length(services) > 0 ){
@@ -339,6 +339,11 @@ shinyServer(function(input, output, session) {
                     }
                   }
                   progress_koti_lisaa2$set( value = 6 )
+=======
+                  create_palvelu_markers(session,this_input,location_info$lat,location_info$lon,input$radius)
+                  
+                  progress_koti_lisaa2$set(value = 6 )
+>>>>>>> 42fe137ca1df803cdd983f6da6ac9979b638a297
                 }
               }
               
@@ -602,35 +607,8 @@ shinyServer(function(input, output, session) {
                   ### hae koordinaattitason palvelut
                   progress_potentiaalinen_lisaa2$set(value = 5 , message = 'Haetaan potentiaalisen palvelut')
                   
-                  services = try(get_point_objects(lat=location_info$lat , lon = location_info$lon , radius = input$radius ))
+                  create_palvelu_markers(session,this_input,location_info$lat,location_info$lon,input$radius)
                   
-                  ### lisää uudet potentiaalinenin liittyvät markkerit ###         
-                  if(class(services) != 'try-error'){
-                    #print(services$tyyppi)
-                    if(length(services) > 0 ){
-                      
-                      potentiaalinen_services = services
-                      
-                      for( i in 1:length(services)){
-                        
-                        this_service = services[[i]] 
-                        this_name = names(services[i]) 
-                        
-                        if(class(this_service) != 'try-error' ){
-                          if(length(this_service$lon)>0){
-                            icon_name = paste0( 'icon_' , this_name , sep=''  ) 
-                            
-                            leafletProxy("map_in_ui" , session) %>%
-                              addMarkers(lng = this_service$lon
-                                         , lat = this_service$lat
-                                         , group = sprintf("%s_%s",this_input,this_service$tyyppi)
-                                         , icon = eval(parse(text = icon_name))
-                                         , popup = this_service$name_fi ) 
-                          }
-                        }
-                      }
-                    }
-                  }
                 }
               }
               # hae zip-tason info

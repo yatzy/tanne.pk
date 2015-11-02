@@ -194,36 +194,62 @@ get_ruokakaupat = function(lat, lon , radius){
   return(ruokakaupat)
 }
 
-get_point_objects = function(lat , lon , radius){
+create_palvelu_markers = function(session,this_input,lat,lon,radius) {
+  for( i in 1:length(palvelut)){
+    ### lisää uudet kotiin liittyvät markkerit ###
+    palvelu_nimi = palvelut[i]
+    services = try(get_palvelu_points(palvelu_nimi, lat=lat , lon = lon , radius = radius ))         
+    if(class(services) != 'try-error'){
+      cat('handling service: ',palvelu_nimi,'\n')
+      if (length(services) > 0) {
+        # these_ids = paste0(this_input , this_service$lon , this_service$lat ) 
+        icon_name = paste0( 'icon_' , palvelu_nimi, sep='') 
+        cat('adding marker ',icon_name,'\n')
+        
+        for (i in 1:length(services)) {
+          leafletProxy("map_in_ui" , session) %>%
+            addMarkers(lng = services$lon
+                       , lat = services$lat
+                       , group = sprintf("%s_%s" , this_input , palvelu_nimi )
+                       , icon = eval(parse(text = icon_name)) 
+                       , popup = services$name_fi )
+        }
+      }
+    }
+  }
+}
+
+get_palvelu_points = function(palvelu, lat , lon , radius){
   # lisää tähän kaikki metodikutsut!
   # call ruokakaupat kutsuu metodia get_ruokakaupat(lat = lat , lon = lon , radius = radius )
-  calls = c('ala_asteet' , 'yla_asteet' , 'ruokakaupat' 
-            , 'kirjastot' , 'sairaalat' , 'terveysasemat'
-            ,'paivakodit','vanhainkodit')
+  #calls = c('ala_asteet' , 'yla_asteet' , 'ruokakaupat' 
+  #          , 'kirjastot' , 'sairaalat' , 'terveysasemat'
+  #          ,'paivakodit','vanhainkodit')
   
-  return_list = lapply( calls , function(call){
-    try(get_point_call_object(call, lat=lat , lon=lon , radius = radius )  ) 
-  })
+#   return_list = lapply( calls , function(call){
+#     try(get_point_call_object(call, lat=lat , lon=lon , radius = radius )  ) 
+#   })
+  return( get_point_call_object(palvelu, lat=lat , lon=lon , radius = radius )  ) 
   
-  names(return_list) = calls
-  error_ind = sapply(return_list , function(x){
-    class(x) == 'try-error'
-  })
-  return_list = return_list[!error_ind]
-  if(length(return_list) == 0){
-    stop('No point method was successfull')
-  }
+#   names(return_list) = calls
+#   error_ind = sapply(return_list , function(x){
+#     class(x) == 'try-error'
+#   })
+#   return_list = return_list[!error_ind]
+#   if(length(return_list) == 0){
+ #   stop('No point method was successfull')
+ # }
   #   ala_asteet = get_ala_asteet(lat, lon , radius)
   #   yla_asteet = get_yla_asteet(lat, lon , radius)
   #   ruokakaupat = get_ruokakaupat(lat, lon , radius)
   
   # ja palauta kaikki objektit
-  return( return_list )
+  # return( return_list )
 }
 
 # example
-lat = 60.226516;lon= 24.890556;radius =  0
-asdf = get_point_objects(lat=lat , lon=lon,radius=radius)
+# lat = 60.226516;lon= 24.890556;radius =  0
+# asdf = get_point_objects(lat=lat , lon=lon,radius=radius)
 # lat = 60.18288
 # lon = 24.922
 # radius = 1
