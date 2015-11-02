@@ -18,7 +18,7 @@ id palvelu
 34272 yla_asteet
 25004 sairaalat
 25002 terveysasemat
-25624 kirjastot
+25626 kirjastot
 28020 vanhusten_itsenäinen_asuminen
 28020 vanhusten_palveluasuminen
 28028 vanhusten_palveluasuminen_yksityinen
