@@ -37,11 +37,14 @@ shinyServer(function(input, output, session) {
     
     if(class(this_ui_count) != 'try-error'){
       
-      if(ui_events$count == 0){
-        Sys.sleep(1)
-        addClass("ui_koti_emphasis", "emph_box_koti")
+      if(this_ui_count == 0){
+
+        ui_koti_emphasis_box = try(addClass("ui_koti_emphasis", "emph_box_koti"))
+        if(class(ui_koti_emphasis_box) != 'try-error'){
+          ui_koti_emphasis_box
+        }
       }
-      if(ui_events$count>0){
+      if(this_ui_count>0){
         # if( !is.null(input$koti_osoite_from_ui) ){
         if(input$ui_koti_selected  
            && ( input$koti_osoite_from_ui == koti_value_default || nchar(str_trim(input$koti_osoite_from_ui)) == 0 )
