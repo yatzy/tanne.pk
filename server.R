@@ -41,8 +41,8 @@ shinyServer(function(input, output, session) {
         Sys.sleep(2)
         ui_koti_emphasis_box_add = try(addClass("ui_koti_emphasis", "emph_box_koti"))
         if(class(ui_koti_emphasis_box) != 'try-error'){
-          print(ui_koti_emphasis_box)
-          ui_koti_emphasis_box
+          print(ui_koti_emphasis_box_add)
+          ui_koti_emphasis_box_add
         }
       }
       if(this_ui_count>0){

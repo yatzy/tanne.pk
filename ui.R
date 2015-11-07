@@ -118,29 +118,19 @@ shinyUI(
                         , column(9
                                  , HTML('<p><b>Infoa palvelusta</b></p>')
                                  , HTML('<p>Palvelun avulla pk-seudulle muuttoa harkitsevat saavat lisätietoja päätöksensä tueksi avoimen datan kautta. Palvelu on tarkoitettu ensisijaisesti pk-seudun sisällä muuttaville, jolloin nykyistä asuinaluettaan voi verrata potentiaaliseen muuttokohteeseen. Palvelu toimii toki muualtakin muuttaville, mutta silloin ei voi vertailla aluetta kotiosoitteeseensa. Haluamme palvelullamme avustaa muuttajaa tekemään paremman päätöksen tarjoamalla asuinalueeseen liittyvää tietoa helposti yhdestä paikasta.</p>
-                                        
                                         <p>Palvelu on vielä kehitysasteella, joten kaikki ominaisuudet eivät välttämättä toimi odotetulla tavalla. Voit lähettää tietoa virheistä tai kehittämisehdotuksista osoitteeseen X TODO.</p>
-                                        
                                         <p>Palvelusta saa katuosoitekohtaisena tietona seuraavat lähipalvelut: Ala-asteet, yläasteet, kirjastot, sairaalat, terveysasemat, päiväkodit ja vanhainkodit. Lisäksi osoitekohtaisena tietona annetaan reittioppaasta arvioidut matka-ajan vaihteluväli aamuisin ja iltaisin käyttäjän ilmoittamaan työpaikkaan sekä Helsingin keskustaan. Lisäksi käyttäjä voi vertailla kotialueensa ja potentiaalisen muuttoalueen asuntojen hintatietoja sekä demografista dataa kuten koulutustasot, ikäjakauman, tulojakauman, keskitulot, pääasialliset toiminnot ja yleisimmät ammattiryhmät.</p>
                                         
                                         <p>Tarkemmat kuvaukset toiminnoista alla:</p>'),
                         HTML('<p><b>Haettavat palvelut</b></p>
                              <p>Käyttäjän syöttäessä kotiosoitteen ja vastaavasti potentiaalisen osoitteen kartalla näytetään oletuksena yhden kilometrin päässä olevat ala-asteet, yläasteet, kirjastot, sairaalat, terveysasemat, päiväkodit ja vanhainkodit. Jos jotain näistä palveluista ei ole tarjolla ollenkaan yhden kilometrin päässä, näytetään kuitenkin yksi lähin palvelu.</p>
-                             
                              <p>Asetukset-sivulla käyttäjä voi muuttaa näytettävien palveluiden sädettä 1-5 kilometrin välillä. Lisäksi voi valita kunkin palvelukegorian kohdalla haluaako kyseistä kategoriaa näytettäväksi kartalla. Jos esimerkiksi päiväkodit tai vanhainkodit eivät ole sinulle kiinnostavia palveluita, voit ruksista valita ettei niitä näytetä kartalla.</p>
-                             
                              <p><b>Matka-ajat</b></p>
-                             
                              <p>Matka-aika arviot on haettu reittioppaan rajapinnan kautta. Käyttäjälle ilmoitetaan vaihteluväli reittioppaan ilmoittamasta matkan kestosta aamulla kellonajoilla X TODO ja illalla kellonajoilla X TODO. Helsingin keskustan osoitteeksi on valittu X TODO.</p>
-                             
                              <p><b>Muut näytettävät kuvaajat</b></p>
-                             
                              <p>Aluekohtaiset asuntojen hintatiedot on saatu palvelusta X TODO</p>
-                             
                              <p>Aluekohtaiset koulutustasot, ikäjakaumat, tulojakaumat, keskitulot, pääasialliset toiminnot ja yleisimmät ammattiryhmät on saatu palvelusta X TODO</p>
-                             
                              <p><b>Kiitokset</b></p>
-                             
                              <p>Duukkis TODO</p>')
                         )
                         
