@@ -114,7 +114,7 @@ shinyUI(
                         
              )
              , tabPanel("Info"  
-                        , style = "margin: 50px 5px;"
+                        , style = "margin: 60px 5px;"
                         , column(1)
                         , column(3
                                  , bsAlert("initiation_notification1")
@@ -123,7 +123,7 @@ shinyUI(
                         )
                         , column(1)
                         , column(5
-                                 , style = 'overflow:scroll'
+                                 , style = 'overflow:visible'
                                  , h2('Infoa palvelusta')
                                  , info1
                                  , h2('Haettavat palvelut')
