@@ -123,7 +123,7 @@ shinyUI(
                         )
                         , column(1)
                         , column(5
-                                 , style = 'overflow:visible'
+                                 , style = 'height:100%;overflow:visible;'
                                  , h2('Infoa palvelusta')
                                  , info1
                                  , h2('Haettavat palvelut')
