@@ -1,1 +1,3 @@
-Matka-aika arviot on haettu reittioppaan rajapinnan kautta. Käyttäjälle ilmoitetaan vaihteluväli reittioppaan ilmoittamasta matkan kestosta aamulla kellonajoilla X TODO ja illalla kellonajoilla X TODO. Helsingin keskustan osoitteeksi on valittu X TODO.
+<p>
+Matka-aika arviot on haettu reittioppaan rajapinnan kautta. Käyttäjälle ilmoitetaan vaihteluväli reittioppaan ilmoittamasta matkan kestosta aamulla kellonajoilla kello kahdelsalta ja illalla kello yhdeksältä. Helsingin keskustan osoitteeksi on valittu Helsingin rautatieasema.
+</p>

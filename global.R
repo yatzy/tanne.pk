@@ -44,7 +44,6 @@ source('runtime_scripts/zip_methods.R')
 source('runtime_scripts/route_methods.R')
 source('runtime_scripts/checkboxGroupInput_fork.R')
 source('runtime_scripts/message_contents.R')
-source('runtime_scripts/message_contents.R')
 
 ### iconit
 
@@ -124,7 +123,7 @@ durations$potentiaalinen_to_center_durations  = NULL
 palvelut_nimet = c(
   HTML('<img src="school.png" style="width:30px;">          Ala-asteet      '),
   HTML('<img src="high_school.png" style="width:30px;">     Yläasteet       '),
-  # HTML('<img src="shop.png" style="width:30px;">            Ruokakaupat      '),
+  HTML('<img src="shop.png" style="width:30px;">            Ruokakaupat      '),
   HTML('<img src="library.png" style="width:30px;">         Kirjastot         '),
   HTML('<img src="hospital.png" style="width:30px;">        Sairaalat        '),
   HTML('<img src="health_center.png" style="width:30px;">   Terveysasemat     '),
@@ -134,7 +133,7 @@ palvelut_nimet = c(
 
 palvelut  = c('ala_asteet' 
               , 'yla_asteet' 
-              # , 'ruokakaupat' 
+              , 'ruokakaupat' 
               , 'kirjastot' 
               , 'sairaalat' 
               , 'terveysasemat'
@@ -161,7 +160,7 @@ service_radius_by = 0.5
 
 # info_texts
 
-info1 = read_file('text/info1.txt') %>% gsub('\n','',.)
-info2 = read_file('text/info2.txt') %>% gsub('\n','',.)
-info3 = read_file('text/info3.txt') %>% gsub('\n','',.)
-info4 = read_file('text/info4.txt') %>% gsub('\n','',.)
+info1 = includeHTML('text/info1.txt')
+info2 = includeHTML('text/info2.txt')
+info3 = includeHTML('text/info3.txt')
+info4 = includeHTML('text/info4.txt')

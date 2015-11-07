@@ -109,24 +109,26 @@ shinyUI(
                         
              )
              , tabPanel("Info"  
-                        ### initiation notifications
+                        
+                        ,column(1)
                         , column(3
                                  , bsAlert("initiation_notification1")
                                  , bsAlert("initiation_notification2")
                                  , bsAlert("initiation_notification3")
                         )
-                        , column(9
+                        ,column(1)
+                        , column(5
                                  , h2('Infoa palvelusta')
-                                 , p(info1)
+                                 , info1
                                  , h2('Haettavat palvelut')
-                                 , p(info2)
+                                 , info2
                                  , h2('Matka-ajat')
-                                 , p(info3)
+                                 , info3
                                  , h2('Muut kuvaajat')
-                                 , p(info4)
-                                 , h2('Kiitokset')
-                                 , p('Duukkis TODO')
+                                 , info4
+                                 
                         )
+                        , column(2)
                         
              )
              

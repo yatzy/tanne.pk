@@ -1,3 +1,52 @@
+<p>
+Aluekohtaiset asuntojen hintatiedot on saatu Tilastokeskukselta, ja ne on haettu Helsinki Region InfoSharen avulla:
+</p>
+<p>
+Lähde: 
+<a href="http://www.hri.fi/fi/dataset/vanhojen-vapaarahoitteisten-asuntojen-hinnat-postinumeroalueittain-ja-rakennusvuosittain">
+http://www.hri.fi/fi/dataset/vanhojen-vapaarahoitteisten-asuntojen-hinnat-postinumeroalueittain-ja-rakennusvuosittain</a>
+</p>
 
-Aluekohtaiset asuntojen hintatiedot on saatu palvelusta X TODO
-Aluekohtaiset koulutustasot, ikäjakaumat, tulojakaumat, keskitulot, pääasialliset toiminnot ja yleisimmät ammattiryhmät on saatu palvelusta X TODO
+<br> 
+
+<p>
+Aluekohtaiset koulutustasot, ikäjakaumat, tulojakaumat, keskitulot, pääasialliset toiminnot ja yleisimmät ammattiryhmät on saatu Tilastokeskuksen Paavo-aineistosta.
+</p>
+<p>
+Lähde: 
+<a href="https://www.stat.fi/tup/paavo/index.html">
+https://www.stat.fi/tup/paavo/index.html</a>
+</p>
+
+<br> 
+
+<p>
+Kartalla näkyvät palvelut haetaan pääkaupunkiseudun palvelukartan REST-rajapinnasta. 
+</p>
+<p>
+Lähde: http://www.hel.fi/palvelukarttaws/rest/
+<a href="http://www.hel.fi/palvelukarttaws/rest/">
+http://www.hel.fi/palvelukarttaws/rest/</a>
+</p>
+
+<br> 
+
+<p>
+Aluesuosituksissa näkyvät karttarajat löytyvät KML-muodossa osoitteessa 
+<a href="https://www.google.com/fusiontables/DataSource?docid=1V5-SxUZ9zMlvG1uRpJ0NUK7j53tubyC7ZMYpbt0#rows:id=1">
+https://www.google.com/fusiontables/DataSource?docid=1V5-SxUZ9zMlvG1uRpJ0NUK7j53tubyC7ZMYpbt0#rows:id=1</a>
+</p>
+<p>
+Lähde: Maanmittauslaitos. KML muunnos: Yleisradio (Juha Rissanen & Teemo Tebest)
+</p>
+
+<br> 
+
+<p>
+Kauppoja koskevat tiedot on haettu aukiolot.com-palvelusta.
+</p>
+<p>
+Lähde: aukiolot.com
+<a href="aukiolot.com">
+aukiolot.com</a>
+</p>

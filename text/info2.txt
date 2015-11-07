@@ -1,3 +1,7 @@
-Käyttäjän syöttäessä kotiosoitteen ja vastaavasti potentiaalisen osoitteen kartalla näytetään oletuksena yhden kilometrin päässä olevat ala-asteet, yläasteet, kirjastot, sairaalat, terveysasemat, päiväkodit ja vanhainkodit. Jos jotain näistä palveluista ei ole tarjolla ollenkaan yhden kilometrin päässä, näytetään kuitenkin yksi lähin palvelu.
-
+<p>
+Käyttäjän syöttäessä kotiosoitteen ja vastaavasti potentiaalisen osoitteen kartalla näytetään oletuksena yhden kilometrin päässä olevat ala-asteet, yläasteet, kirjastot, sairaalat, terveysasemat, päiväkodit ja vanhainkodit. Jos jotain näistä palveluista ei ole tarjolla ollenkaan yhden kilometrin päässä, näytetään kuitenkin vähintään lähin jokaisesta, ellei käyttäjä ole asetuksista toisin valinnut.
+</p>
+<br>
+<p>
 Asetukset-sivulla käyttäjä voi muuttaa näytettävien palveluiden sädettä 1-5 kilometrin välillä. Lisäksi voi valita kunkin palvelukegorian kohdalla haluaako kyseistä kategoriaa näytettäväksi kartalla. Jos esimerkiksi päiväkodit tai vanhainkodit eivät ole sinulle kiinnostavia palveluita, voit ruksista valita ettei niitä näytetä kartalla.
+</p>
