@@ -31,15 +31,16 @@ shinyServer(function(input, output, session) {
   ### toggle emphasises on ui text 
   
   observe({
-    Sys.sleep(2)
+    
     empty_var = try(input$map_in_ui_marker_click)
     this_ui_count = try(ui_events$count)
     
     # init
     if(class(this_ui_count) != 'try-error' && !is.null(this_ui_count)){
       cat('this_ui_count: ' , this_ui_count , '\n')
+      
       if(this_ui_count == 0){
-        
+        Sys.sleep(2)
         addClass("ui_koti_emphasis", "emph_box_koti")          
       }
       

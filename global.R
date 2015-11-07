@@ -44,6 +44,7 @@ source('runtime_scripts/zip_methods.R')
 source('runtime_scripts/route_methods.R')
 source('runtime_scripts/checkboxGroupInput_fork.R')
 source('runtime_scripts/message_contents.R')
+source('runtime_scripts/message_contents.R')
 
 ### iconit
 
@@ -157,3 +158,10 @@ potentiaalinengroups = sapply(unique(palvelu_df$palvelut)
 service_radius_min = 1
 service_radius_max = 5
 service_radius_by = 0.5
+
+# info_texts
+
+info1 = read_file('text/info1.txt') %>% gsub('\n','',.)
+info2 = read_file('text/info2.txt') %>% gsub('\n','',.)
+info3 = read_file('text/info3.txt') %>% gsub('\n','',.)
+info4 = read_file('text/info4.txt') %>% gsub('\n','',.)

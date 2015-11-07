@@ -1,0 +1,3 @@
+
+Aluekohtaiset asuntojen hintatiedot on saatu palvelusta X TODO
+Aluekohtaiset koulutustasot, ikäjakaumat, tulojakaumat, keskitulot, pääasialliset toiminnot ja yleisimmät ammattiryhmät on saatu palvelusta X TODO
