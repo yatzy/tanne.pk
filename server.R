@@ -17,7 +17,6 @@ shinyServer(function(input, output, session) {
   
   # helper notifications 
   
-  
   # initiation notification
   createAlert(session, anchorId = "initiation_notification1", alertId = 'init_notification1' , title = "Lisää",
               content = init_content1, append = FALSE , dismiss = F)
@@ -25,8 +24,8 @@ shinyServer(function(input, output, session) {
               content = init_content2, append = FALSE, dismiss = F)
   createAlert(session, anchorId = "initiation_notification3", alertId = 'init_notification3' , title = "Poista",
               content = init_content3, append = FALSE, dismiss = F)
-  createAlert(session, anchorId = "initiation_notification4", alertId = 'init_notification4' , title = "Valitse",
-              content = init_content4, append = FALSE)
+#   createAlert(session, anchorId = "initiation_notification4", alertId = 'init_notification4' , title = "Valitse",
+#               content = init_content4, append = FALSE)
   
   ### toggle emphasises on ui text 
   
