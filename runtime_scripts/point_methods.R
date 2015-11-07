@@ -251,8 +251,8 @@ get_palvelu_points = function(palvelu, lat , lon , radius){
 }
 
 # example
-# lat = 60.226516;lon= 24.890556;radius =  0
-# asdf = get_point_objects(lat=lat , lon=lon,radius=radius)
+lat = 60.226516;lon= 24.890556;radius =  0
+asdf = get_point_objects(lat=lat , lon=lon,radius=radius)
 # lat = 60.18288
 # lon = 24.922
 # radius = 1
