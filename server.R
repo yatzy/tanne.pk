@@ -742,7 +742,7 @@ shinyServer(function(input, output, session) {
         theme(legend.position = "none"
               , strip.background = element_rect(fill="#ffffff")
               , strip.text.x = element_text(size=12) ) +
-        ggtitle('Matka-ajat (minuuttia)') 
+        ggtitle('Joukkoliikenteen matka-aikojen vaihteluväli minuuteissa') 
       
       incProgress(1)
       pic
