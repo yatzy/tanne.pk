@@ -2,10 +2,11 @@ shinyUI(
   
   navbarPage(title='pkmuutto.info'
              , theme = "cerulean_fork.css" 
+             # , style = "height:80%"
              , header = ""
              , windowTitle = 'pkmuutto.info'
              , tabPanel("Sovellus"  
-                        , style = "margin-top:-19px" 
+                        , style = "margin-top:-19px;padding-bottom:180px;" 
                         
                         , useShinyjs()  
                         # emphasis for next address to get updated
@@ -71,8 +72,9 @@ shinyUI(
                           
                           ### pääpaneeli
                           , mainPanel(  
-                            # style = "height: calc(100vh - 18px);background-color: #ffffff;padding:0;margin-left:0;"
-                            style = "height:100vh;background-color: #ffffff;padding:0;margin-left:0"
+                            # style = "height:100vh;background-color: #ffffff;padding:0;margin-left:0" # TOIMIVA SINÄNSÄ
+                            style = "height:calc(100vh-19px);background-color: #ffffff;padding:0;margin:0;"
+                            # style = "height: calc(100% - 60px);background-color: #ffffff;padding:0;margin:0;"
                             , width = 8
                             , leafletOutput("map_in_ui" , width = "100%", height = "100%")
                           )
@@ -110,13 +112,13 @@ shinyUI(
              )
              , tabPanel("Info"  
                         
-                        ,column(1)
+                        , column(1)
                         , column(3
                                  , bsAlert("initiation_notification1")
                                  , bsAlert("initiation_notification2")
                                  , bsAlert("initiation_notification3")
                         )
-                        ,column(1)
+                        , column(1)
                         , column(5
                                  , h2('Infoa palvelusta')
                                  , info1

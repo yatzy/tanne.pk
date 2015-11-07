@@ -2,7 +2,7 @@
 Palvelun avulla pk-seudulle muuttoa harkitsevat saavat lisätietoja päätöksensä tueksi avoimen datan kautta. Palvelu on tarkoitettu niin pääkaupunkiseudun sisällä muuttaville, kuin pääkaupunkiseudulle muuttoa harkitsevillekin. Palvelu antaa käyttäjälle mahdollisuuden vertailla pääkaupunkiseudulla sijaitsevan kotinsa, ja potentiaalisen muuttokohteen ominaisuuksia, ja julkisen liikenteen matka-aikoja pääkaupunkiseudulla sijaitsevaan työpaikkaan. </p>
 <br>
 <p>
-Palvelua kehitetään jatkuvasti, ja arvostamme suuresti palautettasi ja kehitysideoitasi. Voit lähettää tietoa virheistä tai kehittämisehdotuksista osoitteeseen <a href="pkmuutto@gmail.com"> pkmuutto@gmail.com </a>
+Palvelua kehitetään jatkuvasti, ja arvostamme suuresti palautettasi ja kehitysideoitasi. Voit lähettää tietoa virheistä tai kehittämisehdotuksista sähköpostiin <a href="mailto:pkmuutto@gmail.com"> pkmuutto@gmail.com </a>
 </p>
 <br>
 <p>
