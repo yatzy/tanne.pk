@@ -39,71 +39,80 @@ shinyServer(function(input, output, session) {
       cat('this_ui_count: ' , this_ui_count , '\n')
       
       if(this_ui_count == 0){
-        Sys.sleep(2)
         addClass("ui_koti_emphasis", "emph_box_koti")          
       }
       
-      
       if(this_ui_count>0){
         cat('this_ui_count: ' , this_ui_count , '\n')
-        # koti
-        # if( !koti_selected_error ){
         cat('input$ui_koti_selected: ' , input$ui_koti_selected , '\n')
         cat('input$koti_osoite_from_ui == koti_value_default || nchar(str_trim(input$koti_osoite_from_ui)) == 0' 
             , input$koti_osoite_from_ui == koti_value_default || nchar(str_trim(input$koti_osoite_from_ui)) == 0 , '\n' )
-        if(input$ui_koti_selected  
-           && ( input$koti_osoite_from_ui == koti_value_default || nchar(str_trim(input$koti_osoite_from_ui)) == 0 )
-        ){
-          
-          ui_koti_emphasis_box_add = try(addClass("ui_koti_emphasis", "emph_box_koti"))
-          ui_tyo_emphasis_box_remove = try(removeClass("ui_tyo_emphasis", "emph_box_tyo"))
-          ui_potentiaalinen_emphasis_box_remove = try(removeClass("ui_potentiaalinen_emphasis", "emph_box_potentiaalinen"))
-          
-          if(class(ui_koti_emphasis_box_add)!='try-error') {addClass("ui_koti_emphasis", "emph_box_koti")}
-          if(class(ui_tyo_emphasis_box_remove)!='try-error') {removeClass("ui_tyo_emphasis", "emph_box_tyo")}
-          if(class(ui_potentiaalinen_emphasis_box_remove)!='try-error') {removeClass("ui_potentiaalinen_emphasis", "emph_box_potentiaalinen")}
-          
-          #           addClass("ui_koti_emphasis", "emph_box_koti")
-          #           removeClass("ui_tyo_emphasis", "emph_box_tyo")
-          #           removeClass("ui_potentiaalinen_emphasis", "emph_box_potentiaalinen")
-        }
         
+        koti_condition = try(input$ui_koti_selected  && ( input$koti_osoite_from_ui == koti_value_default || nchar(str_trim(input$koti_osoite_from_ui)) == 0 ))
+        tyo_condition = try(input$ui_tyo_selected && ( input$tyo_osoite_from_ui == tyo_value_default || nchar(str_trim(input$tyo_osoite_from_ui)) == 0 ))
+        potentiaalinen_condition = try(!is.null(input$potentiaalinen_osoite_from_ui) && input$ui_potentiaalinen_selected )
+        
+        cat('koti_condition\n')
+        print(koti_condition)
+        cat('tyo_condition\n')
+        print(tyo_condition)
+        cat('potentiaalinen_condition\n')
+        print(potentiaalinen_condition)
+        
+        # koti
+        if(class(koti_condition) != 'try-error' && koti_condition){
+          # if(koti_condition){
+            
+            #             ui_koti_emphasis_box_add = try(addClass("ui_koti_emphasis", "emph_box_koti"))
+            #             ui_tyo_emphasis_box_remove = try(removeClass("ui_tyo_emphasis", "emph_box_tyo"))
+            #             ui_potentiaalinen_emphasis_box_remove = try(removeClass("ui_potentiaalinen_emphasis", "emph_box_potentiaalinen"))
+            #             
+            #             if(class(ui_koti_emphasis_box_add)!='try-error') {addClass("ui_koti_emphasis", "emph_box_koti")}
+            #             if(class(ui_tyo_emphasis_box_remove)!='try-error') {removeClass("ui_tyo_emphasis", "emph_box_tyo")}
+            #             if(class(ui_potentiaalinen_emphasis_box_remove)!='try-error') {removeClass("ui_potentiaalinen_emphasis", "emph_box_potentiaalinen")}
+            
+            addClass("ui_koti_emphasis", "emph_box_koti")
+            removeClass("ui_tyo_emphasis", "emph_box_tyo")
+            removeClass("ui_potentiaalinen_emphasis", "emph_box_potentiaalinen")
+          # }
+        }
         
         # tyo
-        else if(input$ui_tyo_selected  
-                && ( input$tyo_osoite_from_ui == tyo_value_default || nchar(str_trim(input$tyo_osoite_from_ui)) == 0 )
-        ){
-          
-          ui_tyo_emphasis_box_add = try(addClass("ui_tyo_emphasis", "emph_box_tyo"))
-          ui_koti_emphasis_box_remove = try(removeClass("ui_koti_emphasis", "emph_box_koti"))
-          ui_potentiaalinen_emphasis_box_remove = try(removeClass("ui_tyo_emphasis", "emph_box_tyo"))
-          
-          if(class(ui_tyo_emphasis_box_add)!='try-error') {addClass("ui_tyo_emphasis", "emph_box_tyo")}
-          if(class(ui_koti_emphasis_box_remove)!='try-error') {removeClass("ui_koti_emphasis", "emph_box_koti")}
-          if(class(ui_potentiaalinen_emphasis_box_remove)!='try-error') {removeClass("ui_tyo_emphasis", "emph_box_tyo")}
-          
-          #           addClass("ui_tyo_emphasis", "emph_box_tyo")
-          #           removeClass("ui_koti_emphasis", "emph_box_koti")
-          #           removeClass("ui_potentiaalinen_emphasis", "emph_box_potentiaalinen")
-          
-        }
+        else if(class(tyo_condition) != 'try-error' && tyo_condition){
+          # if(tyo_condition){
+            
+            
+            #           ui_tyo_emphasis_box_add = try(addClass("ui_tyo_emphasis", "emph_box_tyo"))
+            #           ui_koti_emphasis_box_remove = try(removeClass("ui_koti_emphasis", "emph_box_koti"))
+            #           ui_potentiaalinen_emphasis_box_remove = try(removeClass("ui_tyo_emphasis", "emph_box_tyo"))
+            #           
+            #           if(class(ui_tyo_emphasis_box_add)!='try-error') {addClass("ui_tyo_emphasis", "emph_box_tyo")}
+            #           if(class(ui_koti_emphasis_box_remove)!='try-error') {removeClass("ui_koti_emphasis", "emph_box_koti")}
+            #           if(class(ui_potentiaalinen_emphasis_box_remove)!='try-error') {removeClass("ui_tyo_emphasis", "emph_box_tyo")}
+            
+            addClass("ui_tyo_emphasis", "emph_box_tyo")
+            removeClass("ui_koti_emphasis", "emph_box_koti")
+            removeClass("ui_potentiaalinen_emphasis", "emph_box_potentiaalinen")
+            
+          # }
+        }      
         
         # potentiaalinen
-        else if(
-          !is.null(input$potentiaalinen_osoite_from_ui) && input$ui_potentiaalinen_selected  
-        ){
-          
-          ui_potentiaalinen_emphasis_box_add = try(addClass("ui_potentiaalinen_emphasis", "emph_box_potentiaalinen"))
-          ui_koti_emphasis_box_remove = try(removeClass("ui_koti_emphasis", "emph_box_koti"))
-          ui_tyo_emphasis_box_remove = try(removeClass("ui_tyo_emphasis", "emph_box_tyo"))
-          
-          if(class(ui_potentiaalinen_emphasis_box_add)!='try-error') {addClass("ui_potentiaalinen_emphasis", "emph_box_potentiaalinen")}
-          if(class(ui_koti_emphasis_box_remove)!='try-error') {removeClass("ui_koti_emphasis", "emph_box_koti")}
-          if(class(ui_tyo_emphasis_box_remove)!='try-error') {removeClass("ui_tyo_emphasis", "emph_box_tyo")}
-          
-          #           addClass("ui_potentiaalinen_emphasis", "emph_box_potentiaalinen")
-          #           removeClass("ui_koti_emphasis", "emph_box_koti")
-          #           removeClass("ui_tyo_emphasis", "emph_box_tyo")
+        else if(class(potentiaalinen_condition) != 'try-error' && potentiaalinen_condition){
+          # if(potentiaalinen_condition){
+            
+            #           ui_potentiaalinen_emphasis_box_add = try(addClass("ui_potentiaalinen_emphasis", "emph_box_potentiaalinen"))
+            #           ui_koti_emphasis_box_remove = try(removeClass("ui_koti_emphasis", "emph_box_koti"))
+            #           ui_tyo_emphasis_box_remove = try(removeClass("ui_tyo_emphasis", "emph_box_tyo"))
+            #           
+            #           if(class(ui_potentiaalinen_emphasis_box_add)!='try-error') {addClass("ui_potentiaalinen_emphasis", "emph_box_potentiaalinen")}
+            #           if(class(ui_koti_emphasis_box_remove)!='try-error') {removeClass("ui_koti_emphasis", "emph_box_koti")}
+            #           if(class(ui_tyo_emphasis_box_remove)!='try-error') {removeClass("ui_tyo_emphasis", "emph_box_tyo")}
+            
+            addClass("ui_potentiaalinen_emphasis", "emph_box_potentiaalinen")
+            removeClass("ui_koti_emphasis", "emph_box_koti")
+            removeClass("ui_tyo_emphasis", "emph_box_tyo")
+          # }
         }
       }
     }
