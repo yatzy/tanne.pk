@@ -3,9 +3,10 @@ shinyUI(
   navbarPage(title='pkmuutto.info'
              , theme = "cerulean_fork.css" 
              , header = ""
+             , position = "fixed-top"
              , windowTitle = 'pkmuutto.info'
              , tabPanel("Sovellus"  
-                        , style = "margin-top:-19px" 
+                        # , style = "margin-top:50px" 
                         
                         , useShinyjs()  
                         # emphasis for next address to get updated
@@ -15,7 +16,8 @@ shinyUI(
                         
                         , sidebarLayout(
                           ### vasemman puolen paneeeli
-                          sidebarPanel( style = "height:100vh;background-color: #ffffff;overflow-y:auto" , width = 4
+                          sidebarPanel( 
+                            style = "height:95vh;background-color: #ffffff;overflow-y:auto;margin:50px 0px 20px" , width = 4
                                         
                                         # osoitteet
                                         , div(style = "display:flex", id = "ui_koti_emphasis"
@@ -71,7 +73,7 @@ shinyUI(
                           
                           ### pääpaneeli
                           , mainPanel(  
-                            style = "height:100vh;background-color: #ffffff;padding:0;margin-left:0" # TOIMIVA SINÄNSÄ
+                            style = "height:95vh;background-color: #ffffff;margin: 40px 0px 40px 0px;" # TOIMIVA SINÄNSÄ
                             # style = "height:100vh;background-color: #ffffff;margin-bottom:160px;"
                             # style = "height:calc(100vh-19px);background-color: #ffffff;padding:0;margin:0;"
                             # style = "height: calc(100%-19px);background-color: #ffffff;padding:0;margin:0;"
