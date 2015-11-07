@@ -35,10 +35,19 @@ get_paivakodit = function(lat , lon  , radius  ){
   }
   
   # if called with force_one in get_palvelut
-  if( max(paivakodit$distance) > 5 ){
-    paivakodit = paivakodit %>% arrange(distance) %>% .[1,] 
-    print(paivakodit)
+  
+  if( sum(paivakodit$distance < radius) == 0  ){
+    # if all out of borders -> return nearest
+    paivakodit = paivakodit %>% arrange(distance) %>% .[1,]
+  } else{
+    # else return all within the boundaries
+    paivakodit = paivakodit[paivakodit$distance < radius , ]
   }
+  
+#   if( max(paivakodit$distance) > radius ){
+#     paivakodit = paivakodit %>% arrange(distance) %>% .[1,] 
+#     print(paivakodit)
+#   }
   
   if(nrow(paivakodit)==0 ){
     stop('no päiväkodit found')
@@ -91,18 +100,29 @@ get_vanhainkodit = function(lat , lon  , radius  ){
   }
   
   # if called with force_one in get_palvelut
-  if( max(vanhainkodit$distance) > 5 ){
-    cat('called with force_one, getting just one\n')
+  
+  if( sum(vanhainkodit$distance < radius) == 0  ){
+    # if all out of borders -> return nearest
     vanhainkodit = vanhainkodit %>% arrange(distance) %>% .[1,]
-    print(vanhainkodit)
+  } else{
+    # else return all within the boundaries
+    vanhainkodit = vanhainkodit[vanhainkodit$distance < radius , ]
   }
+  
+#   if( min(vanhainkodit$distance) > radius ){
+#     cat('called with force_one, getting just one\n')
+#     vanhainkodit = vanhainkodit %>% arrange(distance) %>% .[1,]
+#     print(vanhainkodit)
+#   }
   
   if(nrow(vanhainkodit)==0 ){
     stop('no vanhainkodit found')
   }
   
   vanhainkodit$tyyppi = 'vanhainkodit'
-  
+  cat('Returning these for vanhankodit: \n')
+  print(vanhainkodit)
+  cat('\n')
   return(vanhainkodit)
 
 }
@@ -251,8 +271,8 @@ get_palvelu_points = function(palvelu, lat , lon , radius){
 }
 
 # example
-lat = 60.226516;lon= 24.890556;radius =  0
-asdf = get_point_objects(lat=lat , lon=lon,radius=radius)
+# lat = 60.226516;lon= 24.890556;radius =  0
+# asdf = get_point_objects(lat=lat , lon=lon,radius=radius)
 # lat = 60.18288
 # lon = 24.922
 # radius = 1

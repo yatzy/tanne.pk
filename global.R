@@ -123,7 +123,7 @@ durations$potentiaalinen_to_center_durations  = NULL
 palvelut_nimet = c(
   HTML('<img src="school.png" style="width:30px;">          Ala-asteet      '),
   HTML('<img src="high_school.png" style="width:30px;">     Yläasteet       '),
-  HTML('<img src="shop.png" style="width:30px;">            Ruokakaupat      '),
+  # HTML('<img src="shop.png" style="width:30px;">            Ruokakaupat      '),
   HTML('<img src="library.png" style="width:30px;">         Kirjastot         '),
   HTML('<img src="hospital.png" style="width:30px;">        Sairaalat        '),
   HTML('<img src="health_center.png" style="width:30px;">   Terveysasemat     '),
@@ -148,9 +148,14 @@ palvelut_nimet = c(
 #                    , 'Terveysasemat'
 #                    , 'Päiväkodit')
 
-palvelut  = c('ala_asteet' , 'yla_asteet' , 'ruokakaupat' 
-              , 'kirjastot' , 'sairaalat' , 'terveysasemat'
-              ,'paivakodit','vanhainkodit')
+palvelut  = c('ala_asteet' 
+              , 'yla_asteet' 
+              # , 'ruokakaupat' 
+              , 'kirjastot' 
+              , 'sairaalat' 
+              , 'terveysasemat'
+              , 'paivakodit'
+              , 'vanhainkodit')
 
 names(palvelut_nimet)  = palvelut
 
