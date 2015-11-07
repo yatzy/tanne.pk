@@ -34,84 +34,75 @@ shinyServer(function(input, output, session) {
     
     empty_var = try(input$map_in_ui_marker_click)
     this_ui_count = try(ui_events$count)
-    koti_selected_error = class(try(input$ui_koti_selected) ) == 'try-error'
-    cat('koti_selected_error for emhpasis box: ' , koti_selected_error , '\n')
     
     # init
     if(class(this_ui_count) != 'try-error'){
       if(this_ui_count == 0){
-        # Sys.sleep(2)
-        ui_koti_emphasis_box_add = try(addClass("ui_koti_emphasis", "emph_box_koti"))
-        if(class(ui_koti_emphasis_box_add) != 'try-error'){
-          print(ui_koti_emphasis_box_add)
-          if(!is.null(ui_koti_emphasis_box_add)){
-            ui_koti_emphasis_box_add
-          }
-        }
+        Sys.sleep(2)
+        addClass("ui_koti_emphasis", "emph_box_koti")          
       }
+    }
+    
+    if(this_ui_count>0){
       
-      if(this_ui_count>0){
+      # koti
+      # if( !koti_selected_error ){
+      cat('input$ui_koti_selected: ' , input$ui_koti_selected , '\n')
+      cat('input$koti_osoite_from_ui == koti_value_default || nchar(str_trim(input$koti_osoite_from_ui)) == 0' 
+          , input$koti_osoite_from_ui == koti_value_default || nchar(str_trim(input$koti_osoite_from_ui)) == 0 , '\n' )
+      if(input$ui_koti_selected  
+         && ( input$koti_osoite_from_ui == koti_value_default || nchar(str_trim(input$koti_osoite_from_ui)) == 0 )
+      ){
         
-        # koti
-        if( !koti_selected_error ){
-          cat('input$ui_koti_selected: ' , input$ui_koti_selected , '\n')
-          cat('input$koti_osoite_from_ui == koti_value_default || nchar(str_trim(input$koti_osoite_from_ui)) == 0' 
-              , input$koti_osoite_from_ui == koti_value_default || nchar(str_trim(input$koti_osoite_from_ui)) == 0 , '\n' )
-          if(input$ui_koti_selected  
-             && ( input$koti_osoite_from_ui == koti_value_default || nchar(str_trim(input$koti_osoite_from_ui)) == 0 )
-          ){
-            
-            #             ui_koti_emphasis_box_add = try(addClass("ui_koti_emphasis", "emph_box_koti"))
-            #             ui_tyo_emphasis_box_remove = try(removeClass("ui_tyo_emphasis", "emph_box_tyo"))
-            #             ui_potentiaalinen_emphasis_box_remove = try(removeClass("ui_potentiaalinen_emphasis", "emph_box_potentiaalinen"))
-            #             
-            #             if(class(ui_koti_emphasis_box_add)!='try-error') {ui_koti_emphasis_box_add}
-            #             if(class(ui_tyo_emphasis_box_remove)!='try-error') {ui_tyo_emphasis_box_remove}
-            #             if(class(ui_potentiaalinen_emphasis_box_remove)!='try-error') {ui_potentiaalinen_emphasis_box_remove}
-            
-            addClass("ui_koti_emphasis", "emph_box_koti")
-            removeClass("ui_tyo_emphasis", "emph_box_tyo")
-            removeClass("ui_potentiaalinen_emphasis", "emph_box_potentiaalinen")
-          }
-        }
+        #             ui_koti_emphasis_box_add = try(addClass("ui_koti_emphasis", "emph_box_koti"))
+        #             ui_tyo_emphasis_box_remove = try(removeClass("ui_tyo_emphasis", "emph_box_tyo"))
+        #             ui_potentiaalinen_emphasis_box_remove = try(removeClass("ui_potentiaalinen_emphasis", "emph_box_potentiaalinen"))
+        #             
+        #             if(class(ui_koti_emphasis_box_add)!='try-error') {ui_koti_emphasis_box_add}
+        #             if(class(ui_tyo_emphasis_box_remove)!='try-error') {ui_tyo_emphasis_box_remove}
+        #             if(class(ui_potentiaalinen_emphasis_box_remove)!='try-error') {ui_potentiaalinen_emphasis_box_remove}
         
-        # tyo
-        else if(input$ui_tyo_selected  
-                && ( input$tyo_osoite_from_ui == tyo_value_default || nchar(str_trim(input$tyo_osoite_from_ui)) == 0 )
-        ){
-          
-          #           ui_tyo_emphasis_box_add = try(addClass("ui_tyo_emphasis", "emph_box_tyo"))
-          #           ui_koti_emphasis_box_remove = try(removeClass("ui_koti_emphasis", "emph_box_koti"))
-          #           ui_potentiaalinen_emphasis_box_remove = try(removeClass("ui_tyo_emphasis", "emph_box_tyo"))
-          #           
-          #           if(class(ui_tyo_emphasis_box_add)!='try-error') {ui_tyo_emphasis_box_add}
-          #           if(class(ui_koti_emphasis_box_remove)!='try-error') {ui_koti_emphasis_box_remove}
-          #           if(class(ui_potentiaalinen_emphasis_box_remove)!='try-error') {ui_potentiaalinen_emphasis_box_remove}
-          
-          addClass("ui_tyo_emphasis", "emph_box_tyo")
-          removeClass("ui_koti_emphasis", "emph_box_koti")
-          removeClass("ui_potentiaalinen_emphasis", "emph_box_potentiaalinen")
-          
-        }
-        
-        # potentiaalinen
-        else if(
-          !is.null(input$potentiaalinen_osoite_from_ui) && input$ui_potentiaalinen_selected  
-        ){
-          
-          #           ui_potentiaalinen_emphasis_box_add = try(addClass("ui_potentiaalinen_emphasis", "emph_box_potentiaalinen"))
-          #           ui_koti_emphasis_box_remove = try(removeClass("ui_koti_emphasis", "emph_box_koti"))
-          #           ui_tyo_emphasis_box_remove = try(removeClass("ui_tyo_emphasis", "emph_box_tyo"))
-          #           
-          #           if(class(ui_potentiaalinen_emphasis_box_add)!='try-error') {ui_potentiaalinen_emphasis_box_add}
-          #           if(class(ui_koti_emphasis_box_remove)!='try-error') {ui_koti_emphasis_box_remove}
-          #           if(class(ui_tyo_emphasis_box_remove)!='try-error') {ui_tyo_emphasis_box_remove}
-          
-          addClass("ui_potentiaalinen_emphasis", "emph_box_potentiaalinen")
-          removeClass("ui_koti_emphasis", "emph_box_koti")
-          removeClass("ui_tyo_emphasis", "emph_box_tyo")
-        }
+        addClass("ui_koti_emphasis", "emph_box_koti")
+        removeClass("ui_tyo_emphasis", "emph_box_tyo")
+        removeClass("ui_potentiaalinen_emphasis", "emph_box_potentiaalinen")
       }
+    }
+    
+    # tyo
+    else if(input$ui_tyo_selected  
+            && ( input$tyo_osoite_from_ui == tyo_value_default || nchar(str_trim(input$tyo_osoite_from_ui)) == 0 )
+    ){
+      
+      #           ui_tyo_emphasis_box_add = try(addClass("ui_tyo_emphasis", "emph_box_tyo"))
+      #           ui_koti_emphasis_box_remove = try(removeClass("ui_koti_emphasis", "emph_box_koti"))
+      #           ui_potentiaalinen_emphasis_box_remove = try(removeClass("ui_tyo_emphasis", "emph_box_tyo"))
+      #           
+      #           if(class(ui_tyo_emphasis_box_add)!='try-error') {ui_tyo_emphasis_box_add}
+      #           if(class(ui_koti_emphasis_box_remove)!='try-error') {ui_koti_emphasis_box_remove}
+      #           if(class(ui_potentiaalinen_emphasis_box_remove)!='try-error') {ui_potentiaalinen_emphasis_box_remove}
+      
+      addClass("ui_tyo_emphasis", "emph_box_tyo")
+      removeClass("ui_koti_emphasis", "emph_box_koti")
+      removeClass("ui_potentiaalinen_emphasis", "emph_box_potentiaalinen")
+      
+    }
+    
+    # potentiaalinen
+    else if(
+      !is.null(input$potentiaalinen_osoite_from_ui) && input$ui_potentiaalinen_selected  
+    ){
+      
+      #           ui_potentiaalinen_emphasis_box_add = try(addClass("ui_potentiaalinen_emphasis", "emph_box_potentiaalinen"))
+      #           ui_koti_emphasis_box_remove = try(removeClass("ui_koti_emphasis", "emph_box_koti"))
+      #           ui_tyo_emphasis_box_remove = try(removeClass("ui_tyo_emphasis", "emph_box_tyo"))
+      #           
+      #           if(class(ui_potentiaalinen_emphasis_box_add)!='try-error') {ui_potentiaalinen_emphasis_box_add}
+      #           if(class(ui_koti_emphasis_box_remove)!='try-error') {ui_koti_emphasis_box_remove}
+      #           if(class(ui_tyo_emphasis_box_remove)!='try-error') {ui_tyo_emphasis_box_remove}
+      
+      addClass("ui_potentiaalinen_emphasis", "emph_box_potentiaalinen")
+      removeClass("ui_koti_emphasis", "emph_box_koti")
+      removeClass("ui_tyo_emphasis", "emph_box_tyo")
     }
   })
   
