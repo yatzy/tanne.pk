@@ -112,7 +112,7 @@ shinyUI(
                         
              )
              , tabPanel("Info"  
-                        , style = 'overflow:auto'
+                        , style = 'overflow:scroll'
                         , column(1)
                         , column(3
                                  , bsAlert("initiation_notification1")
