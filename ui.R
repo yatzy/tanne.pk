@@ -114,6 +114,7 @@ shinyUI(
                         
              )
              , tabPanel("Info"  
+                        , style = "margin: 50px 5px;"
                         , column(1)
                         , column(3
                                  , bsAlert("initiation_notification1")
