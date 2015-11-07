@@ -17,10 +17,10 @@ shinyServer(function(input, output, session) {
   
   # helper notifications 
   
-  observe({
-    cat('ui_events$count:', ui_events$count , '\n')
+  # observe({
+    # cat('ui_events$count:', ui_events$count , '\n')
     
-    if( ui_events$count == 0 ){
+    # if( ui_events$count == 0 ){
       # initiation notification
       createAlert(session, anchorId = "initiation_notification1", alertId = 'init_notification1' , title = "Lisää",
                   content = init_content1, append = FALSE)
@@ -30,29 +30,29 @@ shinyServer(function(input, output, session) {
                   content = init_content3, append = FALSE)
       createAlert(session, anchorId = "initiation_notification4", alertId = 'init_notification4' , title = "Valitse",
                   content = init_content4, append = FALSE)
-    }
+    # }
     
-    if(ui_events$count > 0 ){
-      closeAlert(session, "init_notification1")
-      closeAlert(session, "init_notification2")
-      closeAlert(session, "init_notification3")
-      closeAlert(session, "init_notification4")
-      
-      if(input$settings_button %% 2 != 0){
-        createAlert(session, anchorId = "initiation_notification1", alertId = 'init_notification1' , title = "Lisää",
-                    content = init_content1, append = FALSE)
-        createAlert(session, anchorId = "initiation_notification2", alertId = 'init_notification2' , title = "Jatka",
-                    content = init_content2, append = FALSE)
-        createAlert(session, anchorId = "initiation_notification3", alertId = 'init_notification3' , title = "Poista",
-                    content = init_content3, append = FALSE)
-      } else{
-        closeAlert(session, "init_notification1")
-        closeAlert(session, "init_notification2")
-        closeAlert(session, "init_notification3")
-        
-      }
-    }
-  })
+#     if(ui_events$count > 0 ){
+#       closeAlert(session, "init_notification1")
+#       closeAlert(session, "init_notification2")
+#       closeAlert(session, "init_notification3")
+#       closeAlert(session, "init_notification4")
+#       
+#       if(input$settings_button %% 2 != 0){
+#         createAlert(session, anchorId = "initiation_notification1", alertId = 'init_notification1' , title = "Lisää",
+#                     content = init_content1, append = FALSE)
+#         createAlert(session, anchorId = "initiation_notification2", alertId = 'init_notification2' , title = "Jatka",
+#                     content = init_content2, append = FALSE)
+#         createAlert(session, anchorId = "initiation_notification3", alertId = 'init_notification3' , title = "Poista",
+#                     content = init_content3, append = FALSE)
+#       } else{
+#         closeAlert(session, "init_notification1")
+#         closeAlert(session, "init_notification2")
+#         closeAlert(session, "init_notification3")
+#         
+#       }
+#     }
+  # })
   
   ### toggle emphasises on ui text 
   
@@ -1061,53 +1061,75 @@ shinyServer(function(input, output, session) {
   
   ################################## DEBUGGAUS ##################################
   
-  if(DEBUG){
-    test_data_time_series = data.frame(  value = c(cumsum(rnorm( 16,0,1 ) ) , cumsum(rnorm( 16,0,1 ) ) )
-                                         , paikka = rep( c('koti','muutto') , each=16 )
-                                         , vuosi = 2000:2015)
-    
-    output$test_data_time_series_plot <- renderChart({
-      n <- nPlot(value ~ vuosi, data=test_data_time_series, type = "lineChart" , group="paikka")
-      #     n$xAxis(tickFormat ="#!function (d) {return d3.time.format('%m/%Y')(new Date(d * 86400000 ));}!#",showMaxMin=FALSE)
-      #     n$yAxis(tickFormat ="#!function (d) {return d3.format('.1f')(d);}!#",showMaxMin = FALSE)
-      n$chart(useInteractiveGuideline=TRUE)
-      n$set(dom = 'test_data_time_series_plot', width = 330 , height=280)
-      n
-    })
-    
-    # example placeholder for texst
-    output$kotiosoite <- renderText({ paste( input$koti_osoite_from_ui ) })
-    output$muutto_osoite <- renderPrint({ cat(input$muutto_osoite_from_ui) })
-    # example placeholder for pictures  
-    output$koti_pic = renderPlot( plot(1:10) )
-    output$muutto_pic = renderPlot( plot(10:1) )
-    
-    
-    # output$click_... - textit debuggausta varten
-    output$click_latlon = renderText( paste( 'click lon lat: ' , click_info()$rounded[1] , click_info()$rounded[2]  ))
-    output$click_address = renderText( paste( 'address: ' 
-                                              , reverse_geocode_nominatim(lat = click_info()$value[2] 
-                                                                          , lon = click_info()$value[1]  )))
-    # palauttaa kaiken click_info()-funktion antaman infon yhtenä pötkönä
-    output$click_all_info = renderText(
-      paste( reverse_geocode_nominatim(lat = click_info()$value[2] 
-                                       , lon = click_info()$value[1] 
-                                       , get = 'listing' ) )
-    )
-    
-    # testitaulukko
-    test_table_head = reactive({
-      test_table_head =head(
-        get_nearest( conn , 'coord' , click_info()$value[2] , click_info()$value[1] , 2 , 'Ruokakaupat' , 100 ) 
-        , 2 )
-      #print(test_table_head)
-      return(test_table_head)
-    })
-    output$test_table <- renderDataTable({ test_table_head() })
-    output$click_count_text = renderPrint(output$click_count)
-    
-    output$selected_boxes = renderText({
-      input$output_selector
-    })
-  } 
+  # LIITÄ TÄMÄ UIHIN, JOS TARVETTA
+  ### oikean puolen debug-paneeeli
+#   , if(DEBUG){
+#     absolutePanel(  
+#       style = "background-color: #ffffff;"
+#       , fixed = F
+#       , draggable = T
+#       , top = 60
+#       , left = "auto"
+#       , right = 40
+#       , bottom = "auto"
+#       , width = 500
+#       , height = "auto"
+#       , textOutput("input.selected_boxes")
+#       , textOutput("click_latlon")
+#       , textOutput("click_address")
+#       , textOutput("click_all_info")
+#       , dataTableOutput("test_table")
+#       , textOutput("click_count_text")
+#     )
+#   }
+  
+#   if(DEBUG){
+#     test_data_time_series = data.frame(  value = c(cumsum(rnorm( 16,0,1 ) ) , cumsum(rnorm( 16,0,1 ) ) )
+#                                          , paikka = rep( c('koti','muutto') , each=16 )
+#                                          , vuosi = 2000:2015)
+#     
+#     output$test_data_time_series_plot <- renderChart({
+#       n <- nPlot(value ~ vuosi, data=test_data_time_series, type = "lineChart" , group="paikka")
+#       #     n$xAxis(tickFormat ="#!function (d) {return d3.time.format('%m/%Y')(new Date(d * 86400000 ));}!#",showMaxMin=FALSE)
+#       #     n$yAxis(tickFormat ="#!function (d) {return d3.format('.1f')(d);}!#",showMaxMin = FALSE)
+#       n$chart(useInteractiveGuideline=TRUE)
+#       n$set(dom = 'test_data_time_series_plot', width = 330 , height=280)
+#       n
+#     })
+#     
+#     # example placeholder for texst
+#     output$kotiosoite <- renderText({ paste( input$koti_osoite_from_ui ) })
+#     output$muutto_osoite <- renderPrint({ cat(input$muutto_osoite_from_ui) })
+#     # example placeholder for pictures  
+#     output$koti_pic = renderPlot( plot(1:10) )
+#     output$muutto_pic = renderPlot( plot(10:1) )
+#     
+#     
+#     # output$click_... - textit debuggausta varten
+#     output$click_latlon = renderText( paste( 'click lon lat: ' , click_info()$rounded[1] , click_info()$rounded[2]  ))
+#     output$click_address = renderText( paste( 'address: ' 
+#                                               , reverse_geocode_nominatim(lat = click_info()$value[2] 
+#                                                                           , lon = click_info()$value[1]  )))
+#     # palauttaa kaiken click_info()-funktion antaman infon yhtenä pötkönä
+#     output$click_all_info = renderText(
+#       paste( reverse_geocode_nominatim(lat = click_info()$value[2] 
+#                                        , lon = click_info()$value[1] 
+#                                        , get = 'listing' ) )
+#     )
+#     
+#     # testitaulukko
+#     test_table_head = reactive({
+#       test_table_head =head(
+#         get_nearest( conn , 'coord' , click_info()$value[2] , click_info()$value[1] , 2 , 'Ruokakaupat' , 100 ) 
+#         , 2 )
+#       #print(test_table_head)
+#       return(test_table_head)
+#     })
+#     output$test_table <- renderDataTable({ test_table_head() })
+#     output$click_count_text = renderPrint(output$click_count)
+#     
+#     output$selected_boxes = renderText({
+#       input$output_selector
+#     })
+#   } 
 })
