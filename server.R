@@ -38,6 +38,7 @@ shinyServer(function(input, output, session) {
     if(class(this_ui_count) != 'try-error'){
       
       if(ui_events$count == 0){
+        Sys.sleep(1)
         addClass("ui_koti_emphasis", "emph_box_koti")
       }
       if(ui_events$count>0){
