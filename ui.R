@@ -1,8 +1,11 @@
 shinyUI(
   
-  navbarPage("pkmuutto.info" , theme = "cerulean_fork.css" , header = ""
+  navbarPage(title='pkmuutto.info'
+             , theme = "cerulean_fork.css" 
+             , header = ""
+             , windowTitle = 'pkmuutto.info'
              , tabPanel("Sovellus"  
-                        , style = "margin-top:-19px;" 
+                        , style = "margin-top:-19px" 
                         
                         , useShinyjs()  
                         # emphasis for next address to get updated
@@ -17,7 +20,7 @@ shinyUI(
                                         # osoitteet
                                         , div(style = "display:flex", id = "ui_koti_emphasis"
                                               , div(style="flex: 1;margin-left:-20px;" , img(src="home.png") )
-                                              , div(style = "flex: 0;" , checkboxInput(inputId='ui_koti_selected' , label=NULL , value = T ) )
+                                              , div(style = "flex:0;" , checkboxInput(inputId='ui_koti_selected' , label=NULL , value = T ) )
                                               , div(style="flex: 8;" , uiOutput("koti_valikko") )
                                         )
                                         , div(style= "display: flex", id = "ui_tyo_emphasis"
@@ -30,7 +33,6 @@ shinyUI(
                                               , div(style = "flex: 0;" , checkboxInput(inputId='ui_potentiaalinen_selected' , label=NULL,value = T ) )
                                               , div(style ="flex:8;" , uiOutput("potentiaalinen_valikko") )
                                         )
-                                        
                                         
                                         ### reitit
                                         , conditionalPanel(condition = "input.show_pendeling_plot == true"
@@ -68,16 +70,16 @@ shinyUI(
                           )
                           
                           ### pääpaneeli
-                          , mainPanel(  style = "height:100vh;background-color: #ffffff;padding:0;margin-left:0"
-                                        , width = 8
-                                        , leafletOutput("map_in_ui" , width = "100%", height = "100%")
+                          , mainPanel(  
+                            # style = "height: calc(100vh - 18px);background-color: #ffffff;padding:0;margin-left:0;"
+                            style = "height:100vh;background-color: #ffffff;padding:0;margin-left:0"
+                            , width = 8
+                            , leafletOutput("map_in_ui" , width = "100%", height = "100%")
                           )
-                          
                         )  
              )
              , tabPanel("Asetukset"  ,
                         fluidRow(
-                          
                           column(3)
                           , column(3
                                    , checkboxGroupInput_fork(inputId = 'palvelut_extra_group'
@@ -89,19 +91,18 @@ shinyUI(
                                                   , min = service_radius_min 
                                                   , max = service_radius_max 
                                                   , value = service_radius_by )
-                          ),
-                          column(3 , HTML('<b>Näytettävät kuvaajat</b>')
-                                 , checkboxInput(inputId = 'show_pendeling_plot','Työmatkat',T)
-                                 , checkboxInput(inputId = 'show_asuntojen_hinnat_plot','Asuntojen hinnat',T)
-                                 , checkboxInput(inputId = 'show_talojakauma_plot','Talotyypit',T)
-                                 , checkboxInput(inputId = 'show_asumisvaljyys_plot','Asumisväljyys',T)
-                                 , checkboxInput(inputId = 'show_koulutusjakauma_plot','Koulutustasot',T)
-                                 , checkboxInput(inputId = 'show_ikajakauma_plot','Ikäjakauma',T)
-                                 , checkboxInput(inputId = 'show_tulojakauma_plot','Tulojakauma',T)
-                                 , checkboxInput(inputId = 'show_keskitulot_plot','Keskitulot',T)
-                                 , checkboxInput(inputId = 'show_toimintajakauma_plot','Pääasiallinen toiminta',T)
-                                 , checkboxInput(inputId = 'show_yleisimmat_ammatit_table','Yleisimmät ammattiryhmät',T)
-                                 
+                          )
+                          , column(3 , HTML('<b>Näytettävät kuvaajat</b>')
+                                   , checkboxInput(inputId = 'show_pendeling_plot','Työmatkat',T)
+                                   , checkboxInput(inputId = 'show_asuntojen_hinnat_plot','Asuntojen hinnat',T)
+                                   , checkboxInput(inputId = 'show_talojakauma_plot','Talotyypit',T)
+                                   , checkboxInput(inputId = 'show_asumisvaljyys_plot','Asumisväljyys',T)
+                                   , checkboxInput(inputId = 'show_koulutusjakauma_plot','Koulutustasot',T)
+                                   , checkboxInput(inputId = 'show_ikajakauma_plot','Ikäjakauma',T)
+                                   , checkboxInput(inputId = 'show_tulojakauma_plot','Tulojakauma',T)
+                                   , checkboxInput(inputId = 'show_keskitulot_plot','Keskitulot',T)
+                                   , checkboxInput(inputId = 'show_toimintajakauma_plot','Pääasiallinen toiminta',T)
+                                   , checkboxInput(inputId = 'show_yleisimmat_ammatit_table','Yleisimmät ammattiryhmät',T)
                           )
                           , column(3)
                         )
@@ -113,7 +114,6 @@ shinyUI(
                                  , bsAlert("initiation_notification1")
                                  , bsAlert("initiation_notification2")
                                  , bsAlert("initiation_notification3")
-                                 # , bsAlert("initiation_notification4")
                         )
                         , column(9
                                  

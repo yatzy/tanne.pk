@@ -131,23 +131,6 @@ palvelut_nimet = c(
   HTML('<img src="nursing_home.png" style="width:30px;">   Vanhainkodit        ')
 )
 
-# names(palvelut_nimet) = c('Ala-asteet',
-#                           'Yläasteet',
-#                           'Ruokakaupat',
-#                           'Kirjastot',
-#                           'Sairaalat',
-#                           'Terveysasemat',
-#                           'Päiväkodit',
-#                           'Vanhainkodit')
-
-# palvelut_nimet = c('Ala-asteet' 
-#                    , 'Yläasteet' 
-#                    , 'Ruokakaupat' 
-#                    , 'Kirjastot' 
-#                    , 'Sairaalat' 
-#                    , 'Terveysasemat'
-#                    , 'Päiväkodit')
-
 palvelut  = c('ala_asteet' 
               , 'yla_asteet' 
               # , 'ruokakaupat' 
