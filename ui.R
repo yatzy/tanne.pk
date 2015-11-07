@@ -112,7 +112,6 @@ shinyUI(
                         
              )
              , tabPanel("Info"  
-                        , style = 'overflow:scroll'
                         , column(1)
                         , column(3
                                  , bsAlert("initiation_notification1")
@@ -121,6 +120,7 @@ shinyUI(
                         )
                         , column(1)
                         , column(5
+                                 , style = 'overflow:scroll'
                                  , h2('Infoa palvelusta')
                                  , info1
                                  , h2('Haettavat palvelut')
