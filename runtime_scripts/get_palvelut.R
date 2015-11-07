@@ -16,7 +16,7 @@ id palvelu
 26972 lukiot
 34194 ala_asteet
 34272 yla_asteet
-25004 sairaalat
+25040 sairaalat
 25002 terveysasemat
 25626 kirjastot
 28020 vanhusten_itsenäinen_asuminen
