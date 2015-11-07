@@ -10,7 +10,6 @@ html {
 
 body {
   margin: 0;
-  height:100vh;
 }
 
 article,
@@ -39,6 +38,9 @@ summary {
 
 }
 
+.col-sm-8{
+  height:100vh;
+}
 
 audio,
 canvas,
