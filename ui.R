@@ -80,15 +80,15 @@ shinyUI(
                           
                           column(3)
                           , column(3
-                                 , checkboxGroupInput_fork(inputId = 'palvelut_extra_group'
-                                                           , label = 'Haettavat palvelut'
-                                                           , choices = palvelut_nimet
-                                                           , selected = names(palvelut_nimet) )
-                                 
-                                 , sliderInput( 'radius' , 'Palvelujen hakusäde (km)' 
-                                                , min = service_radius_min 
-                                                , max = service_radius_max 
-                                                , value = service_radius_by )
+                                   , checkboxGroupInput_fork(inputId = 'palvelut_extra_group'
+                                                             , label = 'Haettavat palvelut'
+                                                             , choices = palvelut_nimet
+                                                             , selected = names(palvelut_nimet) )
+                                   
+                                   , sliderInput( 'radius' , 'Palvelujen hakusäde (km)' 
+                                                  , min = service_radius_min 
+                                                  , max = service_radius_max 
+                                                  , value = service_radius_by )
                           ),
                           column(3 , HTML('<b>Näytettävät kuvaajat</b>')
                                  , checkboxInput(inputId = 'show_pendeling_plot','Työmatkat',T)
@@ -109,10 +109,15 @@ shinyUI(
              )
              , tabPanel("Info"  
                         ### initiation notifications
-                        , bsAlert("initiation_notification1")
-                        , bsAlert("initiation_notification2")
-                        , bsAlert("initiation_notification3")
-                        # , bsAlert("initiation_notification4")
+                        , column(3
+                                 , bsAlert("initiation_notification1")
+                                 , bsAlert("initiation_notification2")
+                                 , bsAlert("initiation_notification3")
+                                 # , bsAlert("initiation_notification4")
+                        )
+                        , column(9
+                                 
+                        )
                         
              )
              

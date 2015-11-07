@@ -23,11 +23,11 @@ shinyServer(function(input, output, session) {
     # if( ui_events$count == 0 ){
       # initiation notification
       createAlert(session, anchorId = "initiation_notification1", alertId = 'init_notification1' , title = "Lisää",
-                  content = init_content1, append = FALSE)
+                  content = init_content1, append = FALSE , dismiss = F)
       createAlert(session, anchorId = "initiation_notification2", alertId = 'init_notification2' , title = "Jatka",
-                  content = init_content2, append = FALSE)
+                  content = init_content2, append = FALSE, dismiss = F)
       createAlert(session, anchorId = "initiation_notification3", alertId = 'init_notification3' , title = "Poista",
-                  content = init_content3, append = FALSE)
+                  content = init_content3, append = FALSE, dismiss = F)
       createAlert(session, anchorId = "initiation_notification4", alertId = 'init_notification4' , title = "Valitse",
                   content = init_content4, append = FALSE)
     # }
