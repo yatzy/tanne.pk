@@ -1,6 +1,8 @@
 shinyUI(
   
-  navbarPage(title='pkmuutto.info'
+  navbarPage(title= div(style="  position: relative;top: 50%;transform: translateY(-50%);"
+     , img(src="home.svg", height="50px") , 'pkmuutto.info' , img(src="potential.svg", height="50px") 
+    )
              , theme = "cerulean_fork.css" 
              , header = ""
              , position = "fixed-top"

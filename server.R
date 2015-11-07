@@ -1059,9 +1059,9 @@ shinyServer(function(input, output, session) {
   , sanitize.rownames.function=bold_xtable
   )
   
-  output$closest_services_table = renderTable({
-    
-  })
+#   output$closest_services_table = renderTable({
+#     
+#   })
   
   ################################## VANHAT ##################################
   
