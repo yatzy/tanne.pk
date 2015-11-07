@@ -35,7 +35,7 @@ shinyServer(function(input, output, session) {
     empty_var = try(input$map_in_ui_marker_click)
     this_ui_count = try(ui_events$count)
     koti_selected_error = class(try(input$ui_koti_selected) ) == 'try-error'
-    tyo_selected_value = try(input$ui_tyo_selected)
+    cat('koti_selected_error for emhpasis box: ' , koti_selected_error , '\n')
     
     # init
     if(class(this_ui_count) != 'try-error'){
@@ -52,6 +52,9 @@ shinyServer(function(input, output, session) {
         
         # koti
         if( !koti_selected_error ){
+          cat('input$ui_koti_selected: ' , input$ui_koti_selected , '\n')
+          cat('input$koti_osoite_from_ui == koti_value_default || nchar(str_trim(input$koti_osoite_from_ui)) == 0' 
+              , input$koti_osoite_from_ui == koti_value_default || nchar(str_trim(input$koti_osoite_from_ui)) == 0 , '\n' )
           if(input$ui_koti_selected  
              && ( input$koti_osoite_from_ui == koti_value_default || nchar(str_trim(input$koti_osoite_from_ui)) == 0 )
           ){
