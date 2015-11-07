@@ -80,8 +80,9 @@ shinyUI(
                           )
                         )  
              )
-             , tabPanel("Asetukset"  ,
-                        fluidRow(
+             , tabPanel("Asetukset"  
+                        , style='overflow:none;margin:30px'
+                        , fluidRow(
                           column(3)
                           , column(3
                                    , checkboxGroupInput_fork(inputId = 'palvelut_extra_group'
@@ -111,7 +112,7 @@ shinyUI(
                         
              )
              , tabPanel("Info"  
-                        
+                        , style = 'overflow:auto'
                         , column(1)
                         , column(3
                                  , bsAlert("initiation_notification1")
