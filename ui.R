@@ -83,7 +83,7 @@ shinyUI(
                         )  
              )
              , tabPanel("Asetukset"  
-                        , style='overflow:none;margin:30px'
+                        , style='overflow:none;margin:70px 20px'
                         , fluidRow(
                           column(3)
                           , column(3
@@ -114,7 +114,7 @@ shinyUI(
                         
              )
              , tabPanel("Info"  
-                        , style = "margin: 60px 5px;"
+                        , style = "margin: 60px 5px;text-align: justify;text-justify: inter-word;"
                         , column(1)
                         , column(3
                                  , bsAlert("initiation_notification1")
@@ -124,7 +124,7 @@ shinyUI(
                         , column(1)
                         , column(5
                                  , style = 'height:100%;overflow:visible;'
-                                 , h2('Infoa palvelusta')
+                                 , h1('Infoa palvelusta')
                                  , info1
                                  , h2('Haettavat palvelut')
                                  , info2
