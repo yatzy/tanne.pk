@@ -116,6 +116,7 @@ shinyUI(
                         , style = "height:100%;margin: 60px 5px;text-align: justify;text-justify: inter-word;"
                         , column(1)
                         , column(4
+                                 , style='height:95vh;overflow:auto;'
                                  , bsAlert("initiation_notification1")
                                  , bsAlert("initiation_notification2")
                                  , bsAlert("initiation_notification3")

@@ -1048,14 +1048,15 @@ shinyServer(function(input, output, session) {
                                           , 'yleisimmat')]
         data = cbind(data$paikka, data.frame(str_split_fixed(data$yleisimmat, ",",3) ) )
         print(data)         
-        
+        rownames(data) = data[,1]
+        data = data[,-1]
         incProgress(1)
         data
       })
     }
   }
   , include.colnames=F
-  , include.rownames=F
+  , sanitize.rownames.function=bold_xtable
   )
   
   output$closest_services_table = renderTable({

@@ -164,3 +164,5 @@ info1 = includeHTML('text/info1.txt')
 info2 = includeHTML('text/info2.txt')
 info3 = includeHTML('text/info3.txt')
 info4 = includeHTML('text/info4.txt')
+
+bold_xtable <- function(x) {paste('<b>',x,'</b>', sep ='')}
