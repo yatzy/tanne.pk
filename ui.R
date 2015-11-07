@@ -111,19 +111,18 @@ shinyUI(
                           )
                           , column(3)
                         )
-                        
              )
              , tabPanel("Info"  
-                        , style = "margin: 60px 5px;text-align: justify;text-justify: inter-word;"
+                        , style = "height:100%;margin: 60px 5px;text-align: justify;text-justify: inter-word;"
                         , column(1)
-                        , column(3
+                        , column(4
                                  , bsAlert("initiation_notification1")
                                  , bsAlert("initiation_notification2")
                                  , bsAlert("initiation_notification3")
                         )
                         , column(1)
                         , column(5
-                                 , style = 'height:100%;overflow:visible;'
+                                 , style = 'height:95vh;overflow:auto;'
                                  , h1('Infoa palvelusta')
                                  , info1
                                  , h2('Haettavat palvelut')
@@ -134,9 +133,7 @@ shinyUI(
                                  , info4
                                  
                         )
-                        , column(2)
-                        
+                        , column(1)
              )
-             
   )
 )
