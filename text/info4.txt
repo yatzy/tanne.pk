@@ -24,7 +24,7 @@ https://www.stat.fi/tup/paavo/index.html</a>
 Kartalla näkyvät palvelut haetaan pääkaupunkiseudun palvelukartan REST-rajapinnasta. 
 </p>
 <p>
-Lähde: http://www.hel.fi/palvelukarttaws/rest/
+Lähde:
 <a href="http://www.hel.fi/palvelukarttaws/rest/">
 http://www.hel.fi/palvelukarttaws/rest/</a>
 </p>
