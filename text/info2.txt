@@ -1,5 +1,5 @@
 <p>
-Käyttäjän syöttäessä kotiosoitteen ja vastaavasti potentiaalisen osoitteen kartalla näytetään oletuksena yhden kilometrin päässä olevat ala-asteet, yläasteet, kirjastot, sairaalat, terveysasemat, päiväkodit ja vanhainkodit. Jos jotain näistä palveluista ei ole tarjolla ollenkaan yhden kilometrin päässä, näytetään kuitenkin vähintään lähin jokaisesta, ellei käyttäjä ole asetuksista toisin valinnut.
+Käyttäjän syöttäessä kotiosoitteen ja vastaavasti potentiaalisen osoitteen kartalla näytetään oletuksena yhden kilometrin päässä olevat ruokakaupat, ala-asteet, yläasteet, kirjastot, sairaalat, terveysasemat, päiväkodit ja vanhainkodit. Jos jotain näistä palveluista ei ole tarjolla ollenkaan yhden kilometrin päässä, näytetään kuitenkin vähintään lähin jokaisesta, ellei käyttäjä ole asetuksista toisin valinnut.
 </p>
 <br>
 <p>

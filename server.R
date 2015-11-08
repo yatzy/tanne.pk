@@ -706,7 +706,7 @@ shinyServer(function(input, output, session) {
     
     withProgress(message = 'Päivitetään reittikuvaajaa',{
       
-      dat_titles = c('Kodista töihin' , 'Kodista Helsingin keskustaan' , 'Potentiaalisesta töihin' , 'Potentiaalisesta Helsingin keskustaan')
+      dat_titles = c('Kodista töihin' , 'Kodista Helsingin rautatieasemalle' , 'Potentiaalisesta töihin' , 'Potentiaalisesta Helsingin rautatieasemalle')
       
       dats = list(durations$koti_to_tyo_durations
                   , durations$koti_to_center_durations
@@ -1027,7 +1027,8 @@ shinyServer(function(input, output, session) {
         pic = ggplot(data , aes(x=variable , y=value , fill=paikka)) + 
           geom_bar(stat="identity" , position=position_dodge() ) + 
           scale_fill_manual( values = pal ) + 
-          xlab('') + 
+          ylab('') +
+          xlab('m^2/henkilö') +
           scale_y_continuous("") +
           coord_flip() + 
           theme(legend.position = "none") + 
