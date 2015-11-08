@@ -46,7 +46,7 @@ Lähde: Maanmittauslaitos. KML muunnos: Yleisradio (Juha Rissanen & Teemo Tebest
 Kauppoja koskevat tiedot on haettu aukiolot.com-palvelusta.
 </p>
 <p>
-Lähde: aukiolot.com
+Lähde:
 <a href="aukiolot.com">
 aukiolot.com</a>
 </p>
