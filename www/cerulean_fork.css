@@ -12,13 +12,17 @@ body {
   margin: 0;
 }
 
+header { 
+    background-image: url('koti.svg');
+}
+
 article,
 aside,
 details,
 figcaption,
 figure,
 footer,
-header,
+/*header, */
 hgroup,
 main,
 menu,
