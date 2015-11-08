@@ -6,5 +6,5 @@ Palvelua kehitetään jatkuvasti, ja arvostamme suuresti palautettasi ja kehitys
 </p>
 <br>
 <p>
-Palvelusta saa katuosoitekohtaisena tietona seuraavat lähipalvelut: ala-asteet, yläasteet, kirjastot, sairaalat, terveysasemat, päiväkodit ja vanhainkodit. Lisäksi osoitekohtaisena tietona annetaan reittioppaasta arvioitu matka-ajan vaihteluväli aamuisin ja iltaisin käyttäjän ilmoittamaan työpaikkaan sekä Helsingin rautatieasemalle. Lisäksi käyttäjä voi vertailla kotialueensa ja potentiaalisen muuttoalueen asuntojen hintatietoja sekä demografista dataa kuten koulutustasoja, ikäjakaumaa, tulojakaumaa, keskituloja, pääasiallisia toimintoja sekä yleisimpiä ammattiryhmiä.
+Palvelusta saa katuosoitekohtaisena tietona seuraavat lähipalvelut: ruokakaupat, ala-asteet, yläasteet, kirjastot, sairaalat, terveysasemat, päiväkodit ja vanhainkodit. Lisäksi osoitekohtaisena tietona annetaan reittioppaasta arvioitu matka-ajan vaihteluväli aamuisin ja iltaisin käyttäjän ilmoittamaan työpaikkaan sekä Helsingin rautatieasemalle. Lisäksi käyttäjä voi vertailla kotialueensa ja potentiaalisen muuttoalueen asuntojen hintatietoja sekä demografista dataa eli talotyyppejä, asumisväljyyttä, koulutustasoja, ikäjakaumaa, tulojakaumaa, keskituloja, pääasiallisia toimintoja sekä yleisimpiä ammattiryhmiä. Käyttävä voi asetuksista muokata näytettävien kuvaajien määrää.
 </p>

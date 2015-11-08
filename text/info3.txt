@@ -1,3 +1,3 @@
 <p>
-Matka-ajat on haettu reittioppaan rajapinnan kautta. Käyttäjälle ilmoitetaan vaihteluväli reittioppaan ilmoittamasta matkan kestosta aamulla kello kahdelsalta ja illalla kello yhdeksältä.
+Matka-ajat on haettu reittioppaan rajapinnan kautta. Käyttäjälle ilmoitetaan vaihteluväli reittioppaan ilmoittamista matkan kestoista muutamalla otoksella aamulla kello kahdelsalta ja illalla kello yhdeksältä.
 </p>

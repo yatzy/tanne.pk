@@ -1027,7 +1027,8 @@ shinyServer(function(input, output, session) {
         pic = ggplot(data , aes(x=variable , y=value , fill=paikka)) + 
           geom_bar(stat="identity" , position=position_dodge() ) + 
           scale_fill_manual( values = pal ) + 
-          xlab('') + 
+          ylab('') +
+          xlab('m^2/henkilö') +
           scale_y_continuous("") +
           coord_flip() + 
           theme(legend.position = "none") + 

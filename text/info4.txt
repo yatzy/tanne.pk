@@ -10,7 +10,7 @@ http://www.hri.fi/fi/dataset/vanhojen-vapaarahoitteisten-asuntojen-hinnat-postin
 <br> 
 
 <p>
-Aluekohtaiset koulutustasot, ikäjakaumat, tulojakaumat, keskitulot, pääasialliset toiminnot ja yleisimmät ammattiryhmät on saatu Tilastokeskuksen Paavo-aineistosta.
+Aluekohtaiset talotyypit, asumisväljyydet, koulutustasot, ikäjakaumat, tulojakaumat, keskitulot, pääasialliset toiminnot ja yleisimmät ammattiryhmät on saatu Tilastokeskuksen Paavo-aineistosta.
 </p>
 <p>
 Lähde: 
