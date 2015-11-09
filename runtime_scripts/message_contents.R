@@ -5,6 +5,6 @@ init_content1 = "Syötä osoitteet klikkaamalla karttaan, tai syöttämällä te
 # <td> <img src='lisaa.png' style='float:right;' > </td>
 # </tr>"
 
-init_content2 = "Jatkamalla klikkailua osoiteet päivittyvät järjestyksessä. <img src='jatka.png'>"
+init_content2 = "Jatkamalla klikkailua osoitteet päivittyvät järjestyksessä. <img src='jatka.png'>"
 init_content3 = "Poista osoite klikkaamalla, tai tyhjentämällä tekstikenttä. <img src='poista.png'>"
 # init_content4 = "Valitse haluamasi palvelut yläkulman asetusvalikosta <img src='valitse.png'>"

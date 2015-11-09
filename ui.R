@@ -79,9 +79,6 @@ shinyUI(
                  ### pääpaneeli
                  , mainPanel(  
                    style = "height:95vh;background-color: #ffffff;margin: 40px 0px 40px 0px;" # TOIMIVA SINÄNSÄ
-                   # style = "height:100vh;background-color: #ffffff;margin-bottom:160px;"
-                   # style = "height:calc(100vh-19px);background-color: #ffffff;padding:0;margin:0;"
-                   # style = "height: calc(100%-19px);background-color: #ffffff;padding:0;margin:0;"
                    , width = 8
                    , leafletOutput("map_in_ui" , width = "100%", height = "100%")
                  )

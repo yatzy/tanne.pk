@@ -26,7 +26,7 @@ Kartalla näkyvät palvelut haetaan pääkaupunkiseudun palvelukartan REST-rajap
 <p>
 Lähde:
 <a href="http://www.hel.fi/palvelukarttaws/rest/">
-http://www.hel.fi/palvelukarttaws/rest/</a>
+http://www.hel.fi/palvelukarttaws/rest/ </a>
 </p>
 
 <br> 
