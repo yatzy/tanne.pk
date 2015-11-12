@@ -6,7 +6,7 @@ shinyUI(
     , theme = "cerulean_fork.css"
     , position = "fixed-top"
     , windowTitle = 'pkmuutto.info'
-    , header = singleton(tags$script("www/piwik.js"))
+    , header = tags$script("www/piwik.js")
     , tabPanel("Sovellus"  
                
                , useShinyjs()  
