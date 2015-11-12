@@ -14,6 +14,7 @@ library(tidyr)
 library(sp)
 library(shinyBS)
 library(shinyjs)
+# library(parallel)
 
 theme_set(theme_bw())
 

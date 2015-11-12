@@ -38,6 +38,16 @@ get_route_durations = function(from_lat , from_lon , to_lat , to_lon ){
     stop('cannot mutate coordinates to numeric')
   }
   
+#   reittiopas_res_list = mclapply( c(morning , evening) , function(this_time){
+#     print(this_time)
+#     base_url = 'http://api.reittiopas.fi/hsl/prod/?request=route&user=tannepk&pass=karttasovellus&date=%s&time=%s&show=5&detail=limited&format=json&epsg_in=wgs84&epsg_out=wgs84&from=%f,%f&to=%f,%f'
+#     query_url = sprintf(base_url , this_monday , this_time ,  from_lon , from_lat  , to_lon , to_lat)
+#     con <- url(query_url)
+#     on.exit(close(con)) # sulje kun loppuu
+#     api_res = readLines(con)
+#     res = try(jsonlite::fromJSON(api_res) )
+#     return(res)
+#   })
   reittiopas_res_list = lapply( c(morning , evening) , function(this_time){
     print(this_time)
     base_url = 'http://api.reittiopas.fi/hsl/prod/?request=route&user=tannepk&pass=karttasovellus&date=%s&time=%s&show=5&detail=limited&format=json&epsg_in=wgs84&epsg_out=wgs84&from=%f,%f&to=%f,%f'
