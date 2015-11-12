@@ -1,20 +1,17 @@
 shinyUI(
   
   navbarPage(
-    tags$head(includeScript("www/piwik.js") 
-              , div(style="  position: relative;top: 50%;transform: translateY(-50%);"
-                                                 , img(src='logo20151108.png' , height="45px" ) ) )  
-#     title= div(style="  position: relative;top: 50%;transform: translateY(-50%);"
-#                , img(src='logo20151108.png' , height="45px" ) )
-#     title= div(style="  position: relative;top: 50%;transform: translateY(-50%);"
-#                , img(src="home.svg", height="50px") , 'pkmuutto.info' , img(src="potential.svg", height="50px") )
-
+    title= div(style="position: relative;top: 50%;transform: translateY(-50%);"
+               , img(src='logo20151108.png' , height="45px" ) )
+    
+    #     title= div(style="  position: relative;top: 50%;transform: translateY(-50%);"
+    #                , img(src="home.svg", height="50px") , 'pkmuutto.info' , img(src="potential.svg", height="50px") )
+    
     , theme = "cerulean_fork.css" 
-    , header = ""
     , position = "fixed-top"
     , windowTitle = 'pkmuutto.info'
+    , header= tags$script("www/piwik.js")
     , tabPanel("Sovellus"  
-               # , style = "margin-top:50px" 
                
                , useShinyjs()  
                # emphasis for next address to get updated
