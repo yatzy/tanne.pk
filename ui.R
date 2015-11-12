@@ -1,7 +1,7 @@
 shinyUI(
   
   navbarPage(
-    tags$head(includeScript("piwik.js")),
+    tags$head(includeScript("www/piwik.js")),
     title= div(style="  position: relative;top: 50%;transform: translateY(-50%);"
                , img(src='logo20151108.png' , height="45px" ) )
 #     title= div(style="  position: relative;top: 50%;transform: translateY(-50%);"
