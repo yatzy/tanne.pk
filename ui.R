@@ -3,10 +3,6 @@ shinyUI(
   navbarPage(
     title= div(style="position: relative;top: 50%;transform: translateY(-50%);"
                , img(src='logo20151108.png' , height="45px" ) )
-    , theme = "cerulean_fork.css"
-    , position = "fixed-top"
-    , windowTitle = 'pkmuutto.info'
-    , header = tags$script("www/piwik.js")
     , tabPanel("Sovellus"  
                
                , useShinyjs()  
@@ -134,5 +130,12 @@ shinyUI(
                )
                , column(1)
     )
+    
+    , theme = "cerulean_fork.css"
+    , position = "fixed-top"
+    , windowTitle = 'pkmuutto.info'
+    , tags$head(includeScript("www/piwik.js"))
+    
+    
   )
 )
